@@ -14,16 +14,17 @@ the repository is organized as a research release, not as a production package. 
 .
 ├── README.md
 ├── REPRODUCIBILITY.md
-├── IBF_Paper.pdf
+├── information-as-alignment.pdf
 │
 ├── (IBF)Toy-Model.ipynb
 ├── (IBF)Domain-I-RRW.ipynb
 ├── (IBF)Domain-II-Chess.ipynb
 ├── (IBF)Domain-III-CIFAR-100.ipynb
 │
-├── paper_results.json
-├── results_seeds.json
-└── ... additional run artifacts produced by the notebooks
+├── RRW-paper-results.json
+├── chess-results-seeds.json
+├── chess-paper-results.json
+└── CIFAR-paper-results.json
 ```
 
 the four notebooks correspond to the toy model, RRW, chess, and CIFAR-100. the json artifacts contain the saved outputs used for the paper-facing comparisons, especially in chess.
@@ -57,7 +58,7 @@ approximate wall-clock estimates on the reference pod:
 |---|---:|---|
 | toy model | < 1 min | full notebook |
 | RRW | ~30 min | 5 seeds, table 1 |
-| chess | ~50 h | full run suite |
+| chess | ~65 h | full run suite |
 | CIFAR-100 | ~75 h | main run + ablations + weak-head |
 
 these are practical estimates, not promises. checkpoint reuse, local I/O, cached assets, and external binaries all affect total time.
