@@ -1,2 +1,337 @@
 # information-as-alignment
-Code, configurations, and result artifacts for Information as Alignment, including the toy model, RRW, chess, and CIFAR-100 experiments.
+
+Code, configurations, and result artifacts for the paper **_Information as Structural Alignment: A Dynamical Theory of Continual Learning_**.
+
+This repository is the paper made executable. It contains the toy model, the three validation domains, the saved result artifacts behind the reported numbers, and the minimum instructions needed to inspect or reproduce the main experiments.
+
+---
+
+## What is here
+
+This release contains four layers:
+
+- **Toy model** — the full seven-step mechanism made visible in 2D
+- **RRW** — the controlled mechanism-confirmation domain
+- **Chess** — the strategic external-oracle domain
+- **CIFAR-100** — the high-dimensional benchmark domain
+
+Together, they map directly onto the paper's validation arc:
+
+1. mechanism visibility
+2. mechanism confirmation
+3. emergent behavior under genuine structure
+4. scaling and non-destructiveness
+
+---
+
+## Repository layout
+
+```text
+.
+├── README.md
+├── INSTRUCTIONS.md
+├── IBF_Paper.pdf
+│
+├── (IBF)Toy-Model.ipynb
+├── (IBF)Domain-I-RRW.ipynb
+├── (IBF)Domain-II-Chess.ipynb
+├── (IBF)Domain-III-CIFAR-100.ipynb
+│
+├── paper_results.json
+├── results_seeds.json
+└── ... additional result artifacts produced by the notebooks
+```
+
+---
+
+## What reproduces what
+
+### Toy model
+Reproduces:
+- Section 2
+- Figures 1–8
+- the mini-ablation table
+
+Notebook:
+- `(IBF)Toy-Model.ipynb`
+
+### RRW
+Reproduces:
+- Section 7.1
+- Table 1
+- five-seed mechanism confirmation
+- RRW evaluation-bandwidth sweep
+
+Notebook:
+- `(IBF)Domain-I-RRW.ipynb`
+
+### Chess
+Reproduces:
+- Section 7.2
+- Table 2
+- independent Stockfish evaluation
+- post-training readout sweep
+- seed-level replication artifacts
+- agency / Crucible diagnostics
+
+Notebook:
+- `(IBF)Domain-II-Chess.ipynb`
+
+Primary saved artifacts:
+- `paper_results.json`
+- `results_seeds.json`
+
+### CIFAR-100
+Reproduces:
+- Section 7.3
+- Table 3
+- ablation outputs
+- weak-head analysis
+- Class-IL evaluation
+
+Notebook:
+- `(IBF)Domain-III-CIFAR-100.ipynb`
+
+---
+
+## Reference compute environment
+
+The reported runs were produced on the following reference pod:
+
+- **GPU:** 1 × NVIDIA RTX 5090
+- **vCPU:** 21 (`AMD EPYC 9354 32-Core Processor`)
+- **Memory:** 125 GB
+- **Container disk:** 30 GB
+- **Observed pod uptime during the main run window:** 4w 4d
+
+This is the reference environment for the runtime estimates below.
+
+---
+
+## Runtime estimates
+
+Approximate wall-clock times on the reference pod:
+
+| Experiment | Estimated runtime | Notes |
+|---|---:|---|
+| Toy model | < 1 min | full notebook |
+| RRW | ~30 min | 5 seeds, Table 1 |
+| Chess | ~50 h | main run + ablations + sweep |
+| CIFAR-100 | ~75 h | main run + ablations + weak-head analysis |
+
+Notes:
+
+- runtimes are approximate
+- cached assets, local I/O, and checkpoint reuse affect wall-clock time
+- smoke checks are substantially cheaper than full paper runs
+- the notebooks are useful even without full reruns because they contain embedded reported outputs
+
+---
+
+## Software requirements
+
+Recommended environment:
+
+- Python 3.12+
+- Jupyter Notebook or JupyterLab
+- PyTorch 2.x
+- torchvision
+- numpy
+- scipy
+- scikit-learn
+- matplotlib
+- python-chess
+
+---
+
+## External dependencies
+
+### Stockfish
+
+The chess notebook requires **Stockfish 16**.
+
+Examples:
+
+```bash
+# Ubuntu / Debian
+sudo apt install stockfish
+
+# macOS
+brew install stockfish
+```
+
+If Stockfish is not available on `PATH`, edit the engine path inside the notebook.
+
+### CIFAR-100
+
+The CIFAR-100 notebook uses the torchvision loader and can download the dataset automatically if needed.
+
+### Chess PGN database
+
+The chess notebook expects an elite-game PGN file at the path specified inside the notebook.
+
+Recommended source:
+- a Lichess elite PGN dump or equivalent elite-game corpus
+
+Place the PGN file at the expected path, or edit the path variable before running.
+
+---
+
+## Quick start
+
+If you want the fastest sanity check, run the notebooks in this order:
+
+1. `(IBF)Toy-Model.ipynb`
+2. `(IBF)Domain-I-RRW.ipynb`
+3. `(IBF)Domain-II-Chess.ipynb`
+4. `(IBF)Domain-III-CIFAR-100.ipynb`
+
+That order is deliberate:
+- the toy model shows every mechanism in the open
+- RRW confirms the mechanism under controlled contradiction
+- chess shows the mechanism under real strategic structure
+- CIFAR-100 shows the same substrate surviving at larger scale
+
+---
+
+## Reproduction guide
+
+### 1. Toy model
+Purpose:
+- inspect the full mechanism in the smallest visible setting
+
+Expected outputs:
+- the seven-step lifecycle
+- generated figures corresponding to Section 2
+- mini-ablation table
+
+### 2. RRW
+Purpose:
+- reproduce the controlled mechanism-confirmation domain
+
+Expected outputs:
+- Table 1 values
+- five-seed summary
+- RRW bandwidth sweep
+- No-Agency / No-Crystallization / No-Crucible outputs
+
+### 3. Chess
+Purpose:
+- reproduce the strategic domain under independent Stockfish evaluation
+
+Expected outputs:
+- Table 2 comparison
+- behavioral advantage under external-oracle evaluation
+- post-training readout sweep
+- seed-level replication artifacts
+- agency and Crucible diagnostics
+
+Recommended workflow:
+- inspect the saved result artifacts first
+- inspect the notebook outputs second
+- rerun only if you want end-to-end reconstruction
+
+### 4. CIFAR-100
+Purpose:
+- reproduce the high-dimensional continual-learning validation
+
+Expected outputs:
+- main Task-IL benchmark outputs
+- ablation outputs
+- weak-head analysis
+- Class-IL evaluation
+
+Recommended workflow:
+- verify the saved outputs first
+- then run the notebook sections required for the specific comparison you want to inspect
+
+---
+
+## Result artifacts
+
+### `paper_results.json`
+Main chess result artifact.
+
+Contains:
+- per-position outputs
+- values used for the primary comparison table
+- the data needed to verify the main centipawn comparisons
+
+### `results_seeds.json`
+Chess seed-replication artifact.
+
+Contains:
+- per-seed behavioral advantage
+- backward-transfer values
+- verified-center counts
+- dissolution-event counts
+
+### Notebook outputs
+The notebooks themselves contain embedded reported outputs. In many cases, inspecting the notebook output is enough to audit the paper-facing result without rerunning the full experiment.
+
+---
+
+## Recommended audit path
+
+If your goal is to verify the paper efficiently:
+
+1. read `IBF_Paper.pdf`
+2. inspect `(IBF)Toy-Model.ipynb`
+3. inspect RRW notebook outputs and confirm Table 1
+4. inspect `paper_results.json` and `results_seeds.json`
+5. inspect the chess notebook outputs and confirm Table 2 / seed replication / sweep
+6. inspect CIFAR notebook outputs and confirm Table 3 / ablations / weak-head result
+
+This is the fastest serious path through the release.
+
+---
+
+## Reproducibility notes
+
+- the notebooks are the primary entry points for inspection and reproduction
+- the paper's reported numbers are tied to notebook outputs and saved artifacts
+- chess combines:
+  - multi-seed headline results for the main behavioral and backward-transfer metrics
+  - a designated run for the finer mechanism comparisons
+- CIFAR combines:
+  - the main benchmark outputs
+  - ablations
+  - the weaker-head diagnostic used to test whether corrections remain informative below the strong-baseline regime
+
+---
+
+## Intended use
+
+This repository is meant for:
+
+- inspection of the reported experiments
+- reproduction of the main paper results
+- audit of the saved result artifacts
+- further research on the IBF engine and its domain instantiations
+
+---
+
+## Paper citation
+
+If you use this repository, please cite:
+
+**Information as Structural Alignment: A Dynamical Theory of Continual Learning**  
+Radu Negulescu  
+The Informational Buildup Foundation  
+April 2026
+
+---
+
+## Contact
+
+For questions related to the paper or the repository:
+
+**radu@ibf.xyz**
+
+---
+
+## License
+
+Code in this repository is licensed under **Apache-2.0**.
+
+Documentation, paper text, figures, and result artifacts are licensed under **CC BY 4.0**, unless otherwise noted.
