@@ -8,14 +8,14 @@ This repository is the paper made executable. It contains the toy model, the thr
 
 ## What is here
 
-This release contains four layers:
+this release contains four layers:
 
 - **Toy model** — the full seven-step mechanism made visible in 2D
 - **RRW** — the controlled mechanism-confirmation domain
 - **Chess** — the strategic external-oracle domain
 - **CIFAR-100** — the high-dimensional benchmark domain
 
-Together, they map directly onto the paper's validation arc:
+together, they map directly onto the paper's validation arc:
 
 1. mechanism visibility
 2. mechanism confirmation
@@ -47,56 +47,42 @@ Together, they map directly onto the paper's validation arc:
 ## What reproduces what
 
 ### Toy model
-Reproduces:
-- Section 2
-- Figures 1–8
-- the mini-ablation table
+reproduces:
+- Section 2 / Figures 1–8 / the mini-ablation table
 
-Notebook:
+notebook:
 - `(IBF)Toy-Model.ipynb`
 
 ### RRW
-Reproduces:
-- Section 7.1
-- Table 1
-- five-seed mechanism confirmation
-- RRW evaluation-bandwidth sweep
+reproduces:
+- Section 7.1 / Table 1 / five-seed mechanism confirmation / RRW evaluation-bandwidth sweep
 
-Notebook:
+notebook:
 - `(IBF)Domain-I-RRW.ipynb`
 
 ### Chess
-Reproduces:
-- Section 7.2
-- Table 2
-- independent Stockfish evaluation
-- post-training readout sweep
-- seed-level replication artifacts
-- agency / Crucible diagnostics
+reproduces:
+- Section 7.2 / Table 2 / independent Stockfish evaluation / post-training readout sweep / seed-level replication artifacts / agency / crucible diagnostics
 
-Notebook:
+notebook:
 - `(IBF)Domain-II-Chess.ipynb`
 
-Primary saved artifacts:
+primary saved artifacts:
 - `paper_results.json`
 - `results_seeds.json`
 
 ### CIFAR-100
-Reproduces:
-- Section 7.3
-- Table 3
-- ablation outputs
-- weak-head analysis
-- Class-IL evaluation
+reproduces:
+- Section 7.3 / Table 3 / ablation outputs / weak-head analysis / Class-IL evaluation
 
-Notebook:
+notebook:
 - `(IBF)Domain-III-CIFAR-100.ipynb`
 
 ---
 
 ## Reference compute environment
 
-The reported runs were produced on the following reference pod:
+the reported runs were produced on the following reference pod:
 
 - **GPU:** 1 × NVIDIA RTX 5090
 - **vCPU:** 21 (`AMD EPYC 9354 32-Core Processor`)
@@ -104,33 +90,33 @@ The reported runs were produced on the following reference pod:
 - **Container disk:** 30 GB
 - **Observed pod uptime during the main run window:** 4w 4d
 
-This is the reference environment for the runtime estimates below.
+this is the reference environment for the runtime estimates below.
 
 ---
 
 ## Runtime estimates
 
-Approximate wall-clock times on the reference pod:
+approximate wall-clock times on the reference pod:
 
 | Experiment | Estimated runtime | Notes |
 |---|---:|---|
 | Toy model | < 1 min | full notebook |
 | RRW | ~30 min | 5 seeds, Table 1 |
-| Chess | ~50 h | main run + ablations + sweep |
+| Chess | ~60 h | main run + ablations + sweep |
 | CIFAR-100 | ~75 h | main run + ablations + weak-head analysis |
 
-Notes:
+notes:
 
 - runtimes are approximate
 - cached assets, local I/O, and checkpoint reuse affect wall-clock time
 - smoke checks are substantially cheaper than full paper runs
-- the notebooks are useful even without full reruns because they contain embedded reported outputs
+- !!! the notebooks are useful even without full reruns because they contain embedded reported outputs
 
 ---
 
 ## Software requirements
 
-Recommended environment:
+recommended environment:
 
 - Python 3.12+
 - Jupyter Notebook or JupyterLab
@@ -148,9 +134,9 @@ Recommended environment:
 
 ### Stockfish
 
-The chess notebook requires **Stockfish 16**.
+the chess notebook requires **Stockfish 16**.
 
-Examples:
+examples:
 
 ```bash
 # Ubuntu / Debian
@@ -160,33 +146,31 @@ sudo apt install stockfish
 brew install stockfish
 ```
 
-If Stockfish is not available on `PATH`, edit the engine path inside the notebook.
+if Stockfish is not available on `PATH`, edit the engine path inside the notebook.
 
 ### CIFAR-100
 
-The CIFAR-100 notebook uses the torchvision loader and can download the dataset automatically if needed.
+the CIFAR-100 notebook uses the torchvision loader and can download the dataset automatically if needed.
 
 ### Chess PGN database
 
-The chess notebook expects an elite-game PGN file at the path specified inside the notebook.
+the chess notebook expects an elite-game PGN file at the path specified inside the notebook.
 
-Recommended source:
-- a Lichess elite PGN dump or equivalent elite-game corpus
-
-Place the PGN file at the expected path, or edit the path variable before running.
+recommended source:
+- a Lichess elite PGN dump or equivalent elite-game corpus: https://database.lichess.org/
 
 ---
 
 ## Quick start
 
-If you want the fastest sanity check, run the notebooks in this order:
+if you want the fastest sanity check, run the notebooks in this order:
 
 1. `(IBF)Toy-Model.ipynb`
 2. `(IBF)Domain-I-RRW.ipynb`
 3. `(IBF)Domain-II-Chess.ipynb`
 4. `(IBF)Domain-III-CIFAR-100.ipynb`
 
-That order is deliberate:
+that order is deliberate:
 - the toy model shows every mechanism in the open
 - RRW confirms the mechanism under controlled contradiction
 - chess shows the mechanism under real strategic structure
@@ -197,92 +181,72 @@ That order is deliberate:
 ## Reproduction guide
 
 ### 1. Toy model
-Purpose:
+purpose:
 - inspect the full mechanism in the smallest visible setting
 
-Expected outputs:
+expected outputs:
 - the seven-step lifecycle
 - generated figures corresponding to Section 2
 - mini-ablation table
 
 ### 2. RRW
-Purpose:
+purpose:
 - reproduce the controlled mechanism-confirmation domain
 
-Expected outputs:
+expected outputs:
 - Table 1 values
 - five-seed summary
 - RRW bandwidth sweep
 - No-Agency / No-Crystallization / No-Crucible outputs
 
 ### 3. Chess
-Purpose:
+purpose:
 - reproduce the strategic domain under independent Stockfish evaluation
 
-Expected outputs:
+expected outputs:
 - Table 2 comparison
 - behavioral advantage under external-oracle evaluation
 - post-training readout sweep
 - seed-level replication artifacts
 - agency and Crucible diagnostics
 
-Recommended workflow:
+recommended workflow:
 - inspect the saved result artifacts first
 - inspect the notebook outputs second
 - rerun only if you want end-to-end reconstruction
 
 ### 4. CIFAR-100
-Purpose:
+purpose:
 - reproduce the high-dimensional continual-learning validation
 
-Expected outputs:
+expected outputs:
 - main Task-IL benchmark outputs
 - ablation outputs
 - weak-head analysis
 - Class-IL evaluation
 
-Recommended workflow:
+recommended workflow:
 - verify the saved outputs first
 - then run the notebook sections required for the specific comparison you want to inspect
 
 ---
 
-## Result artifacts
-
-### `paper_results.json`
-Main chess result artifact.
-
-Contains:
-- per-position outputs
-- values used for the primary comparison table
-- the data needed to verify the main centipawn comparisons
-
-### `results_seeds.json`
-Chess seed-replication artifact.
-
-Contains:
-- per-seed behavioral advantage
-- backward-transfer values
-- verified-center counts
-- dissolution-event counts
-
-### Notebook outputs
-The notebooks themselves contain embedded reported outputs. In many cases, inspecting the notebook output is enough to audit the paper-facing result without rerunning the full experiment.
+### !!! Notebook outputs
+the notebooks themselves contain embedded reported outputs. in many cases, inspecting the notebook output is enough to audit the paper-facing result without rerunning the full experiment.
 
 ---
 
 ## Recommended audit path
 
-If your goal is to verify the paper efficiently:
+if your goal is to verify the paper efficiently:
 
 1. read `IBF_Paper.pdf`
 2. inspect `(IBF)Toy-Model.ipynb`
 3. inspect RRW notebook outputs and confirm Table 1
-4. inspect `paper_results.json` and `results_seeds.json`
-5. inspect the chess notebook outputs and confirm Table 2 / seed replication / sweep
-6. inspect CIFAR notebook outputs and confirm Table 3 / ablations / weak-head result
+4. inspect the chess notebook outputs and confirm Table 2 / seed replication / sweep
+5. inspect CIFAR notebook outputs and confirm Table 3 / ablations / weak-head result
 
-This is the fastest serious path through the release.
+this is the fastest serious path through the release.
 
 ---
 
@@ -313,7 +277,7 @@ This repository is meant for:
 
 ## Paper citation
 
-If you use this repository, please cite:
+if you use this repository, please cite:
 
 **Information as Structural Alignment: A Dynamical Theory of Continual Learning**  
 Radu Negulescu  
@@ -324,7 +288,7 @@ April 2026
 
 ## Contact
 
-For questions related to the paper or the repository:
+for questions related to the paper or the repository:
 
 **radu@ibf.xyz**
 
