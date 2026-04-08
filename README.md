@@ -1,12 +1,14 @@
 # information-as-alignment
 
-code, configurations, and result artifacts for **information as structural alignment: a dynamical theory of continual learning**, including the toy model, RRW, chess, and CIFAR-100 experiments.
+code, configurations, and result artifacts for Information as Structural Alignment: A Dynamical Theory of Continual Learning.
 
 ## OVERVIEW
 
-this repository is the code and artifact companion to the paper. it contains the toy model, the three validation domains, and the saved outputs needed to inspect, audit, or reproduce the reported results.
+this repository is the code and artifact companion to the Information as Alignment paper. it contains the toy model, the three validation domains, and the saved outputs needed to inspect, audit, or reproduce the reported results.
 
-the repository is organized as a research release, not as a production package. the fastest path is therefore to inspect the saved artifacts first, then the notebook outputs, and only then rerun the experiments you actually care about.
+at the level of this release, this is not the full Informational Buildup Framework. it is the continual-learning instantiation developed in the paper: a first computational slice of a broader framework grounded in the premise that information is structural alignment rather than stored content.
+
+the repository is organized as a research release, not as a production package. the fastest path is to inspect the saved artifacts first, then the notebook outputs, and only then rerun the experiments you actually care about.
 
 ## REPOSITORY LAYOUT
 
@@ -108,9 +110,9 @@ if you want the fastest audit of the paper, read `REPRODUCIBILITY.md` and inspec
 
 ## RESULT ARTIFACTS
 
-`paper_results.json` is the main chess artifact. it contains the outputs used for the main chess comparison table and the paper-facing centipawn comparisons.
+`chess-paper-results.json` is the main chess artifact. it contains the outputs used for the main chess comparison table and the paper-facing centipawn comparisons.
 
-`results_seeds.json` contains the chess seed-replication artifact, including the seed-level behavioral and backward-transfer summaries.
+`chess-paper-seeds.json` contains the chess seed-replication artifact, including the seed-level behavioral and backward-transfer summaries.
 
 the notebooks themselves also contain embedded reported outputs. in many cases, direct inspection of notebook output is enough to verify the relevant claim.
 
