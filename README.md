@@ -18,7 +18,8 @@ the repository is organized as a research release, not as a production package. 
 .
 ├── README.md
 ├── REPRODUCIBILITY.md
-├── information-as-alignment-v1.pdf
+├── (pre-print)information-as-alignment-v1.pdf
+├── (seminar slides)information-as-alignment.pdf
 │
 ├── (IBF)Toy-Model.ipynb
 ├── (IBF)Domain-I-RRW.ipynb
