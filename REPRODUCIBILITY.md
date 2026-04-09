@@ -8,7 +8,7 @@ start with inspection. rerun only what you actually need.
 
 ## FASTEST AUDIT PATH
 
-read `IBF_Paper.pdf`.
+read `information-as-alignment-v1.pdf`.
 
 open `(IBF)Toy-Model.ipynb` and inspect the outputs.
 
