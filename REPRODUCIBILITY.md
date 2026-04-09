@@ -65,9 +65,18 @@ if you want to rerun everything from smallest to largest, use this order:
 
 this order mirrors the paper’s logic: mechanism visibility first, then controlled validation, then strategic emergence, then high-dimensional scaling.
 
-## EXPECTED RUNTIMES
+## TRAINING ENVIRONMENT & RUNTIMES
 
-on the reference pod used for the reported runs:
+all reported experiments were developed and executed on a rented cloud compute instance provided by **RunPod**. specifically, we provisioned a single-GPU pod running a standard PyTorch + JupyterLab template. the notebooks provided in this repository were executed directly within that Jupyter environment without requiring any custom containerization or complex cluster setups.
+
+if you wish to perfectly replicate our environment on RunPod (or a similar cloud provider), the reference pod specifications were:
+
+- 1 × RTX 5090
+- 21 vCPU (`AMD EPYC 9354 32-Core Processor`)
+- 125 GB system memory
+- 30 GB container disk space
+
+approximate wall-clock estimates on this reference hardware:
 
 | experiment | estimate |
 |---|---:|
@@ -75,13 +84,6 @@ on the reference pod used for the reported runs:
 | RRW | ~30 min |
 | chess | ~50 h |
 | CIFAR-100 | ~75 h |
-
-reference pod:
-
-- 1 × RTX 5090
-- 21 vCPU (`AMD EPYC 9354 32-Core Processor`)
-- 125 GB memory
-- 30 GB container disk
 
 ## ARTIFACT-FIRST CHECKS
 
