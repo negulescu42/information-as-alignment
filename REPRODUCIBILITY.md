@@ -1,3 +1,5 @@
+[![arXiv](https://img.shields.io/badge/arXiv-2604.07108-b31b1b.svg)](https://arxiv.org/abs/2604.07108)
+
 # REPRODUCIBILITY
 
 this file gives the shortest path from paper claim to artifact to code.
