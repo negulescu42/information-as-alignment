@@ -124,9 +124,9 @@ the notebooks themselves also contain embedded reported outputs. in many cases, 
 
 this repository accompanies:
 
-**information as structural alignment: a dynamical theory of continual learning**  
-radu negulescu  
-the informational buildup foundation  
+**Information as Structural Alignment: a Dynamical Theory of Continual Learning**  
+Radu Negulescu  
+The Informational Buildup Foundation  
 april 2026
 
 ## LICENSE
