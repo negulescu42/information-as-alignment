@@ -44,29 +44,25 @@ chess reproduces the independent-oracle strategic domain, including the main com
 
 CIFAR-100 reproduces the high-dimensional continual-learning domain, including the main benchmark results, ablations, class-IL evaluation, and the weak-head analysis.
 
-## COMPUTE ENVIRONMENT
+## TRAINING ENVIRONMENT & RUNTIMES
 
-the reported runs were produced on a reference pod with:
+all reported experiments were developed and executed on a rented cloud compute instance provided by **RunPod**. specifically, we provisioned a single-GPU pod running a standard PyTorch + JupyterLab template. the notebooks provided in this repository were executed directly within that Jupyter environment without requiring any custom containerization or complex cluster setups.
+
+if you wish to perfectly replicate our environment on RunPod (or a similar cloud provider), the reference pod specifications were:
 
 - 1 × RTX 5090
 - 21 vCPU (`AMD EPYC 9354 32-Core Processor`)
-- 125 GB memory
-- 30 GB container disk
+- 125 GB system memory
+- 30 GB container disk space
 
-this is the reference environment for the runtime estimates below. you do not need this exact setup to inspect the repository, but the full chess and CIFAR runs were produced on hardware of this class.
+approximate wall-clock estimates on this reference hardware:
 
-## RUNTIME
-
-approximate wall-clock estimates on the reference pod:
-
-| experiment | estimate | notes |
-|---|---:|---|
-| toy model | < 1 min | full notebook |
-| RRW | ~30 min | 5 seeds, table 1 |
-| chess | ~65 h | full run suite |
-| CIFAR-100 | ~75 h | main run + ablations + weak-head |
-
-these are practical estimates, not promises. checkpoint reuse, local I/O, cached assets, and external binaries all affect total time.
+| experiment | estimate |
+|---|---:|
+| toy model | < 1 min |
+| RRW | ~30 min |
+| chess | ~50 h |
+| CIFAR-100 | ~75 h |
 
 ## DEPENDENCIES
 
