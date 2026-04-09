@@ -113,11 +113,12 @@ if you want the fastest audit of the paper, read `REPRODUCIBILITY.md` and inspec
 
 ## RESULT ARTIFACTS
 
-`chess-paper-results.json` is the main chess artifact. it contains the outputs used for the main chess comparison table and the paper-facing centipawn comparisons.
+- `RRW-paper-results.json`: contains the 5-seed metrics (accuracy and backward transfer) used to generate the Phase A/B/C comparisons in Table 1.
+- `chess-paper-results.json`: the main chess artifact. it contains the outputs used for the main chess comparison table and the paper-facing centipawn advantages.
+- `chess-results-seeds.json`: contains the chess seed-replication artifact, including the seed-level behavioral and backward-transfer summaries.
+- `CIFAR-paper-results.json`: contains the 20-task benchmark metrics, ablation results, class-IL evaluation, and the weak-head analysis.
 
-`chess-paper-seeds.json` contains the chess seed-replication artifact, including the seed-level behavioral and backward-transfer summaries.
-
-the notebooks themselves also contain embedded reported outputs. in many cases, direct inspection of notebook output is enough to verify the relevant claim.
+the notebooks themselves also contain embedded reported outputs. in many cases, direct inspection of the notebook output is enough to verify the relevant claim without needing to parse the json files.
 
 ## PAPER
 
