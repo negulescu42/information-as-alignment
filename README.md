@@ -1,10 +1,12 @@
 # information-as-alignment
 
+[![arXiv](https://img.shields.io/badge/arXiv-2604.07108-b31b1b.svg)](https://arxiv.org/abs/2604.07108)
+
 code, configurations, and result artifacts for Information as Structural Alignment: A Dynamical Theory of Continual Learning.
 
 ## OVERVIEW
 
-this repository is the code and artifact companion to the [Information as Alignment paper]([url](https://arxiv.org/abs/2604.07108)). it contains the toy model, the three validation domains, and the saved outputs needed to inspect, audit, or reproduce the reported results.
+this repository is the code and artifact companion to the [Information as Alignment paper](https://arxiv.org/abs/2604.07108). it contains the toy model, the three validation domains, and the saved outputs needed to inspect, audit, or reproduce the reported results.
 
 at the level of this release, this is not the full Informational Buildup Framework. it is the continual-learning instantiation developed in the paper: a first computational slice of a broader framework grounded in the premise that information is structural alignment rather than stored content.
 
