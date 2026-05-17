@@ -62,6 +62,9 @@
 \newcommand{\mueff}{\mu_{\mathrm{eff}}}
 \DeclareMathOperator{\Var}{Var}
 
+% Placeholder macro --- text-mode so TeX can break lines between adjacent placeholders.
+\newcommand{\PH}[1]{[\textsc{#1}]}
+
 % --- Theorem environments ---
 \theoremstyle{plain}
 \newtheorem{axiom}{Axiom}
@@ -92,13 +95,13 @@
 % =============================================================================
 \begin{abstract}
 \noindent
-A deployed language model is frozen. The world it serves is not. We need to install behavior into the model that survives both --- corrections that land on the right region, revise when the facts change, and remain after the base model is fine-tuned again.
+The model is frozen. The world it serves is not. Corrections installed today need to land on the right region, revise when the facts change, and still be there after the base model is fine-tuned again. None of the standard tools does all three.
 
-We answer by putting the corrections outside the model. A separate field, gradient-isolated from the base weights, carries them. Its dynamics are the dynamics of the Informational Buildup Framework~\cite{negulescu2026ibf}: localized particles nucleate where the base model is wrong, crystallize where they keep being right, and dissolve where later experience contradicts them.
+Put the corrections outside the model. A separate field --- gradient-isolated from the weights --- carries them, and its dynamics are the dynamics of the Informational Buildup Framework~\cite{negulescu2026ibf}: particles nucleate where the base model is wrong, crystallize where they keep being right, and dissolve where later experience contradicts them.
 
-On a frozen Mistral-7B and a synthetic company of $1{,}000$ employees, the system installs facts the base model never saw, overrides counterfactuals at $88.7\%$ accuracy, deletes a single employee's $[\textsc{DEL\_N\_FACTS}]$ facts with near-zero drift on matched neighbors, and survives LoRA fine-tuning, instruction tuning, and twenty rounds of adversarial inject--retract with bounded amplitude.
+On a frozen Mistral-7B and a synthetic company of $1{,}000$ employees, the field installs facts the base model never saw, overrides counterfactuals at $88.7\%$ accuracy, deletes one employee's \PH{DEL\_N\_FACTS} facts with near-zero drift on matched neighbors, and survives LoRA, instruction tuning, and twenty rounds of adversarial inject--retract with bounded amplitude.
 
-Alignment here is \emph{persistence}, not specification. The mechanism enforces the target a designer chose; it does not choose the target. And it enforces what was specified or compiled, not consequences it would have to derive on its own.
+Alignment here is \emph{persistence}, not specification: the mechanism holds a target the designer chose. And it holds what is specified or compiled, not what it would have to derive on its own.
 
 \vspace{0.6em}
 \noindent\textbf{Keywords:}
@@ -111,22 +114,16 @@ durable alignment; substrate decoupling; truth maintenance; frozen LLMs; kernel 
 \section{The Durability Problem}
 \label{sec:problem}
 
-Train a language model. Deploy it inside a company. By Monday, the engineering team has a new initiative; the data-org manager has changed; one employee has left. The model is now wrong about all three, and it will keep being wrong until someone teaches it otherwise. What does that someone do?
+Train a language model. Deploy it inside a company. By Monday the engineering team has a new initiative, the data-org manager has changed, one employee has left. The model is wrong about all three. It will keep being wrong until someone teaches it otherwise.
 
-Each of the three standard answers fails in its own way.
+The three standard answers each break differently. \emph{Fine-tuning} adjusts shared parameters; the new facts land and old ones are perturbed at the same time~\cite{kirkpatrick2017overcoming, ramasesh2020anatomy}, because knowledge is not stored in discrete units~\cite{brown2020language, touvron2023llama}. \emph{Direct editing} (ROME, MEMIT) targets the perturbation~\cite{meng2022locating, meng2023mass}, and the perturbation works the day it is applied; the next round of fine-tuning often erases it. \emph{Retrieval}~\cite{lewis2020retrieval} sidesteps the model entirely --- the fact lives in an index, and the model is shown it at inference --- so behavior changes only when retrieval fires \emph{and} the prompt rewards the retrieved fragment over the prior. Neither is guaranteed.
 
-\emph{Fine-tuning} adjusts shared parameters globally. The new facts land, but so does collateral damage to old ones~\cite{kirkpatrick2017overcoming, ramasesh2020anatomy}: knowledge is not stored in discrete units~\cite{brown2020language, touvron2023llama}, so editing one place perturbs many.
+The shared failure: behavior installed today does not reliably remain installed tomorrow, in the right region, after the world has moved and the model has been touched again. Call that property \emph{durable alignment}. The word \emph{alignment} is doing narrow work --- the operator chose the target elsewhere; the question is whether the system holds it.
 
-\emph{Direct editing} (ROME, MEMIT) targets the perturbation~\cite{meng2022locating, meng2023mass}, and the perturbation works the day it is applied. The next round of fine-tuning often erases it, and stacks of edits interact in ways that are hard to predict.
-
-\emph{Retrieval}~\cite{lewis2020retrieval} sidesteps the model entirely: the new fact lives in an external index, and the model is shown it at inference time. The fact gets retrieved when retrieval works; behavior changes when the prompt rewards the retrieved fragment over the model's prior. Neither is guaranteed.
-
-The pattern across the three is the same. Behavior installed today should still be installed tomorrow, on the right region, after the world has moved and the model has been touched again. We call this property \emph{durable alignment}. The word \emph{alignment} here is doing narrow work: the operator chose the target behavior elsewhere; the question is whether the system holds it.
-
-This paper introduces a mechanism that does. The corrections live outside the model, in a substrate the base-model gradient cannot reach, evolving under the dynamics of the Informational Buildup Framework~\cite{negulescu2026ibf}.
+This paper builds a mechanism that does. The corrections live outside the model, in a substrate the base-model gradient cannot reach, evolving under the dynamics of the Informational Buildup Framework~\cite{negulescu2026ibf}.
 
 \paragraph{Running example.}
-We test the mechanism on \emph{Future Industries}, a synthetic company of $1{,}000$ employees with structured facts about each --- manager, team, project, mentor, location --- and an unfolding history. The history matters: facts are added (onboarding), extended (new categories), revised (reorganization), and retired (turnover). The model is never told which kind of change is happening. The example is small enough to instrument and large enough to break a naive mechanism.
+\emph{Future Industries}: a synthetic company of $1{,}000$ employees, each with structured facts --- manager, team, project, mentor, location --- that move through onboarding, a new initiative, a reorganization, and turnover. Facts are added, extended, revised, retired. The model is never told which is which. Small enough to instrument, large enough to break a naive mechanism.
 
 % =============================================================================
 % §2 AN ORTHOGONAL MEMORY
@@ -134,41 +131,40 @@ We test the mechanism on \emph{Future Industries}, a synthetic company of $1{,}0
 \section{An Orthogonal Memory}
 \label{sec:mechanism}
 
-Instead of editing the model, we sit a second memory on top of it.
+Do not edit the model. Sit a second memory on top of it.
 
-The base model produces a coherence score $\Cohbase(x, y)$ over candidate outputs. The memory adds a local correction $\dCoh(x, y)$, giving an effective landscape
+The base model produces a coherence score $\Cohbase(x, y)$ over candidate outputs. The memory adds a local correction $\dCoh(x, y)$:
 \begin{equation}
 \label{eq:additive}
 \Coheff(x, y) \;=\; \Cohbase(x, y) \;+\; \dCoh(x, y).
 \end{equation}
 
-Two facts about Eq.~\eqref{eq:additive} do most of the work in the rest of the paper.
+Two facts about Eq.~\eqref{eq:additive} carry the rest of the paper.
 
-\emph{No gradient path.} $\dCoh$ is parameterized independently of $\Cohbase$. Updating the model changes the first term and leaves the second alone. Whatever the base model becomes tomorrow, the corrections we installed yesterday are still there.
+\emph{No gradient path.} $\dCoh$ is parameterized independently of $\Cohbase$. Updating one leaves the other alone. Whatever the base model becomes tomorrow, yesterday's corrections are still there.
 
-\emph{Locality.} $\dCoh$ rises and falls in regions of the representation space, not across the model. A correction at one point in space does not leak across all decisions.
+\emph{Locality.} $\dCoh$ rises and falls in regions of representation space, not across the model. A correction at one point does not leak across all decisions.
 
-\emph{Intuitively}, $\Cohbase$ is what the model already believes; $\dCoh$ is a separate file of corrections written in a language the model cannot edit. Decisions read both.
+\emph{Intuitively}, $\Cohbase$ is what the model believes; $\dCoh$ is a separate file of corrections written in a language the model cannot edit. Decisions read both.
 
 \subsection{What the memory is}
 
-The memory is the engine of the theory paper~\cite{negulescu2026ibf} run over a frozen LLM. In the language of that paper, $\Cohbase$ is the baseline coherence evaluator and $\dCoh$ is the experience-modified component of the effective coherence landscape $\Coheff$. The engine writes corrections as kernel-localized particles in latent space and lets them live, change, or die according to a single dynamical rule.
+The same engine that ran the theory paper~\cite{negulescu2026ibf}, now sitting on top of a frozen LLM. $\Cohbase$ is the baseline coherence evaluator; $\dCoh$ is the experience-modified component of $\Coheff$. The engine writes corrections as kernel-localized particles in latent space and lets them live, change, or die under a single dynamical rule.
 
-Concretely, with $z = \phi(x, y)$ the representation of a candidate pair,
-\begin{equation}
+With $z = \phi(x, y)$ the representation of a candidate pair,
+\begin{align}
 \label{eq:dr}
-\dCoh(z) \;=\; \sum_i \gamma_i \, v_i \, \Kern(z, z_i),
-\qquad
-\Kern(z, z_i) = \exp\!\Big(\!-\tfrac{\lVert z - z_i \rVert^2}{2\sigma_i^2}\Big).
-\end{equation}
-Each particle has a position $z_i$, an amplitude $v_i$, a kernel width $\sigma_i$, and a read-gating flag $\gamma_i \in \{0,1\}$ that decides whether it is allowed to speak in the current context.
+\dCoh(z) &\;=\; \sum_i \gamma_i \, v_i \, \Kern(z, z_i), \\
+\Kern(z, z_i) &\;=\; \exp\!\Big(\!-\tfrac{\lVert z - z_i \rVert^2}{2\sigma_i^2}\Big). \notag
+\end{align}
+Each particle has a position $z_i$, an amplitude $v_i$, a width $\sigma_i$, and a read-gating flag $\gamma_i \in \{0,1\}$ that decides whether it speaks in the current context.
 
-The driving signal is the discrepancy between the environment's coherence structure and the system's current evaluation:
+The driving signal is the gap between the environment's coherence and the system's:
 \begin{equation}
 \label{eq:disc}
-\Dscr(z) \;=\; \Cohext(z) \;-\; \Coheff(z).
+\Dscr(z) \;=\; \Cohext(z) \;-\; \Coheff(z),
 \end{equation}
-In this implementation $\Cohext$ is the supervised target: the operator says what should be coherent.
+with $\Cohext$ the supervised target: the operator says what should be coherent.
 
 The field then evolves under the Modification Postulate of the theory paper:
 \begin{equation}
@@ -178,15 +174,15 @@ The field then evolves under the Modification Postulate of the theory paper:
 
 \subsection{What the memory does}
 
-Eq.~\eqref{eq:mod} alone produces the full lifecycle.
+That one equation is the whole lifecycle.
 
-A particle \emph{nucleates} where the discrepancy is large and no existing particle covers the region. It \emph{reinforces} where the same correction keeps being right, accumulating amplitude. When its local discrepancy history converges under repeated reinforcement, it undergoes a stability transition --- its decay rate drops from $\mu_{\mathrm{base}}$ to $\mu_{\mathrm{cryst}}$ --- and \emph{crystallizes} into long-lived structure. Later, if cross-context exposure systematically contradicts the crystallized correction, the Crucible fires: the decay rate returns to $\mu_{\mathrm{base}}$, cross-context broadcast rights are revoked, and the particle \emph{dissolves}.
+A particle \emph{nucleates} where the discrepancy is large and no existing particle covers the region. It \emph{reinforces} where the same correction keeps being right, accumulating amplitude. When repeated reinforcement converges, the particle \emph{crystallizes}: its decay rate drops from $\mu_{\mathrm{base}}$ to $\mu_{\mathrm{cryst}}$ and it becomes long-lived structure. If later cross-context exposure systematically contradicts it, the Crucible fires: decay returns to $\mu_{\mathrm{base}}$, broadcast rights are revoked, and the particle \emph{dissolves}.
 
-\emph{Intuitively}, the field grows where it is wrong, hardens where it is right, and melts where it is later proved wrong again. Nothing else has to be added by hand.
+\emph{Intuitively}, the field grows where it is wrong, hardens where it is right, and melts where it is later proved wrong again. Nothing else is added by hand.
 
-This lifecycle is what makes deletion clean. A contradicted fact reverses the discrepancy signal on the exact particles that carried it. Those particles lose support and dissolve; their neighbors do not. Section~\ref{sec:lifecycle} shows the geometric signature: drift on the deleted entity, near-zero drift on matched controls.
+This is what makes deletion clean. A contradicted fact reverses the discrepancy on the exact particles that carried it; they lose support and dissolve, neighbors do not (\S\ref{sec:lifecycle}: drift on the deleted entity, near-zero drift on matched controls).
 
-And it is what makes durability free. The correction field and the base-model parameters live in disjoint substrates. Fine-tuning rewrites $\Cohbase$ and changes nothing in $\dCoh$. Section~\ref{sec:durability} measures how much survives in practice.
+And it is what makes durability free. Fine-tuning rewrites $\Cohbase$ and changes nothing in $\dCoh$ (\S\ref{sec:durability}).
 
 % =============================================================================
 % §3 EXPERIMENTAL SETUP
@@ -195,37 +191,37 @@ And it is what makes durability free. The correction field and the base-model pa
 \label{sec:setup}
 
 \paragraph{Future Industries.}
-The company has $1{,}000$ employees. Each has structured attributes (manager, team, project, mentor, location), and the attribute set evolves through four sequential phases:
+$1{,}000$ employees, each with structured attributes (manager, team, project, mentor, location), moving through four phases:
 \begin{itemize}[leftmargin=*,itemsep=2pt,topsep=2pt]
 \item \textbf{A: Onboarding} --- initial facts across all categories.
 \item \textbf{B: Initiative} --- two new categories (certification, committee).
-\item \textbf{C: Reorganization} --- structured counterfactual updates (managers, projects).
+\item \textbf{C: Reorganization} --- counterfactual updates (managers, projects).
 \item \textbf{D: Turnover} --- partial replacement and reassignment.
 \end{itemize}
-Each phase introduces new information and contradicts some old information. The system is not told which is which.
+Each phase introduces new information and contradicts old information. The system is not told which is which.
 
 \paragraph{Task.}
-Every query is multiple-choice over four candidates, one correct. The decision rule is exactly Eq.~\eqref{eq:additive} taken to its $\arg\max$:
+Multiple-choice over four candidates, one correct. The decision rule is Eq.~\eqref{eq:additive} taken to its $\arg\max$:
 \begin{equation}
 \label{eq:select}
 y^* \;=\; \arg\max_y \Big(\Cohbase(x, y) + \dCoh(x, y)\Big).
 \end{equation}
-Alignment is a local preference over candidates, not a global modification of the model.
+A local preference over candidates, not a global modification of the model.
 
 \paragraph{Model.}
-Mistral-7B, frozen throughout. The base model is never updated during training or evaluation.
+Mistral-7B, frozen throughout.
 
 \paragraph{Representation.}
-A frozen MPNet sentence encoder maps each $(x, y)$ pair to $\mathbb{R}^{80}$: $64$ dimensions of PCA-reduced semantic embedding, $8$ of subject features, $8$ of answer features. The two feature blocks give the memory enough geometric room to separate entities that share an answer surface.
+A frozen MPNet encoder maps each $(x, y)$ pair to $\mathbb{R}^{80}$: $64$ dims of PCA-reduced semantic embedding, $8$ subject features, $8$ answer features. The feature blocks give the memory room to separate entities that share an answer surface.
 
 \paragraph{Training.}
-For each query, the correct answer carries $\Cohext = 0$ and each incorrect answer carries $\Cohext = 1$. The discrepancy in Eq.~\eqref{eq:disc} drives the field through Eq.~\eqref{eq:mod}. Training walks the four phases in order without a replay buffer. No gradient ever enters the base model.
+Correct answer: $\Cohext = 0$. Incorrect answers: $\Cohext = 1$. The discrepancy in Eq.~\eqref{eq:disc} drives the field through Eq.~\eqref{eq:mod}. Phases run in order, no replay buffer, no gradient into the base model.
 
 \paragraph{Convergence.}
-Per-phase training stops when the linear readout has settled: moving-average improvement under $0.003$ over ten evaluation points, slope under $0.0001$ per epoch, and at least $100$ epochs. Hard caps (A: $300$; B/C/D: $200$) close the door if the criterion never fires. The artifact produced by this protocol is what we call the \emph{canonical engine}, and is what every subsequent experiment uses.
+Per-phase training stops when the linear readout has settled: moving-average improvement under $0.003$ over ten evaluation points, slope under $0.0001$ per epoch, $\geq 100$ epochs. Hard caps (A: $300$; B/C/D: $200$). The resulting artifact --- the \emph{canonical engine} --- is what every later experiment uses.
 
 \paragraph{What we measure.}
-Two readouts: \emph{linear accuracy} from $\Coheff$, and \emph{log accuracy} from the base-model logits alone. The first measures what the memory has done; the second measures what the base model would do without it. Margins are bucketed into \emph{consistent} (correct, high margin), \emph{ambiguous} (low margin), and \emph{incorrect} so that confidence structure is visible alongside accuracy.
+\emph{Linear accuracy} from $\Coheff$ (what the memory does) and \emph{log accuracy} from base logits alone (what the base would do without it). Margins are bucketed into \emph{consistent}, \emph{ambiguous}, and \emph{incorrect} so confidence is visible alongside accuracy.
 
 % =============================================================================
 % §4 CANONICAL LIFECYCLE [SKELETON]
@@ -233,37 +229,35 @@ Two readouts: \emph{linear accuracy} from $\Coheff$, and \emph{log accuracy} fro
 \section{Canonical Lifecycle and Truth Maintenance}
 \label{sec:lifecycle}
 
-\paragraph{Role.} Evidence for Claim~1 (local durable alignment without weight editing) and Claim~2 (install / revise / remove / rollback / retain on the same field).
+One field, four phases, in order. Where does it land?
 
-\subsection{The canonical engine across A--D}
+\subsection{Across A--D}
 
-We train one field through all four phases in order and look at where it lands.
-
-Per-phase accuracy: $\mathrm{A}=[\textsc{PHASE\_A\_ACC}]$, $\mathrm{B}=[\textsc{PHASE\_B\_ACC}]$, $\mathrm{C}=[\textsc{PHASE\_C\_ACC}]$, $\mathrm{D}=[\textsc{PHASE\_D\_ACC}]$. The field carries $[\textsc{CENTERS\_TOTAL}]$ particles by the end; $[\textsc{CENTERS\_CRYST}]$ of them have crystallized and $[\textsc{DISSOLUTIONS\_TOTAL}]$ have dissolved. Particle count is bounded throughout: nothing in the protocol prevents indefinite growth except the dynamics, and the dynamics suffice.
+Per-phase accuracy: $\mathrm{A}{=}$\PH{PHASE\_A\_ACC}, $\mathrm{B}{=}$\PH{PHASE\_B\_ACC}, $\mathrm{C}{=}$\PH{PHASE\_C\_ACC}, $\mathrm{D}{=}$\PH{PHASE\_D\_ACC}. At the end the field carries \PH{CENTERS\_TOTAL} particles, \PH{CENTERS\_CRYST} crystallized and \PH{DISSOLUTIONS\_TOTAL} dissolved. Nothing bounds the count except the dynamics, and the dynamics suffice.
 
 \subsection{Provenance}
 
-\emph{Intuitively}, if the field decides, the field should be inspectable.
+If the field decides, the field is inspectable.
 
-For a showcase employee, we decompose the score on each query into per-particle contributions. The top-10 particles account for $[\textsc{SHOWCASE\_TOP10\_CONC}]$ of the signal; $[\textsc{SHOWCASE\_CRYST\_VER\_PCT}]\%$ of the contributing particles are crystallized and verified. Across the audit set, $[\textsc{AUDIT\_CONSISTENT\_PCT}]\%$ of predictions are consistent, $[\textsc{AUDIT\_AMBIG\_PCT}]\%$ are ambiguous, and $[\textsc{AUDIT\_WRONG\_PCT}]\%$ are wrong. Every prediction can be traced to specific particles with known birth contexts.
+For a showcase employee, we decompose the score on each query into per-particle contributions: the top-10 particles account for \PH{SHOWCASE\_TOP10\_CONC} of the signal, and \PH{SHOWCASE\_CRYST\_VER\_PCT}\% of the contributors are crystallized and verified. Across the audit set, \PH{AUDIT\_CONSISTENT\_PCT}\% are consistent, \PH{AUDIT\_AMBIG\_PCT}\% ambiguous, \PH{AUDIT\_WRONG\_PCT}\% wrong. Every prediction traces to particles with known birth contexts.
 
 \subsection{Retraction}
 
-A retraction is what happens when $A \to B$ is replaced by $A \to B'$. We designate a retraction-target set in advance (seed $2026$) and track the original-target score and the new-target score through phases B, C, and D.
+$A \to B$ becomes $A \to B'$. The retraction-target set is designated in advance (seed $2026$).
 
-The original target's score falls --- $[\textsc{RETRACT\_TORIG\_B}], [\textsc{RETRACT\_TORIG\_C}], [\textsc{RETRACT\_TORIG\_D}]$ --- and the new target's rises --- $[\textsc{RETRACT\_TNEW\_B}], [\textsc{RETRACT\_TNEW\_C}], [\textsc{RETRACT\_TNEW\_D}]$. Nearest-neighbor controls drift by $[\textsc{NN\_DRIFT}]$; distant controls drift by $[\textsc{DISTANT\_DRIFT}]$. The change is contained.
+Original target falls --- \PH{RETRACT\_TORIG\_B}, \PH{RETRACT\_TORIG\_C}, \PH{RETRACT\_TORIG\_D}. New target rises --- \PH{RETRACT\_TNEW\_B}, \PH{RETRACT\_TNEW\_C}, \PH{RETRACT\_TNEW\_D}. Nearest-neighbor controls drift by \PH{NN\_DRIFT}, distant controls by \PH{DISTANT\_DRIFT}. The change is contained.
 
 \subsection{Selective deletion}
 
-We pick one employee, $[\textsc{DEL\_EMP}]$, and ask the system to remove all $[\textsc{DEL\_N\_FACTS}]$ facts about them.
+Pick one employee, \PH{DEL\_EMP}. Remove all \PH{DEL\_N\_FACTS} facts about them.
 
-Target accuracy on those facts: $[\textsc{DEL\_BEFORE}] \to [\textsc{DEL\_AFTER}]$. Accuracy on every other employee: $[\textsc{DEL\_OTHERS\_BEFORE}] \to [\textsc{DEL\_OTHERS\_AFTER}]$, a change of $[\textsc{DEL\_OTHERS\_DIFF}]$. The Crucible removed $[\textsc{DEL\_CENTERS}]$ particles. Nothing else moved.
+Target: \PH{DEL\_BEFORE} $\to$ \PH{DEL\_AFTER}. Everyone else: \PH{DEL\_OTHERS\_BEFORE} $\to$ \PH{DEL\_OTHERS\_AFTER}, change \PH{DEL\_OTHERS\_DIFF}. The Crucible removed \PH{DEL\_CENTERS} particles. Nothing else moved.
 
 \subsection{Backward transfer}
 
-Forgetting in a model without the dynamics is global; in this engine it should be visible only where contradiction is.
+In a model without the dynamics, forgetting is global. Here it should appear only where contradiction is.
 
-$\mathrm{BT}_{A \to B} = [\textsc{BT\_AB}]$, $\mathrm{BT}_{A \to C} = [\textsc{BT\_AC}]$, $\mathrm{BT}_{A \to D} = [\textsc{BT\_AD\_TOTAL}]$. On the $B \to C$ slice, where Phase~C contradicts a designated subset of Phase~B, the affected entities show $[\textsc{BT\_BC\_AFFECTED}]$ and the unaffected ones show $[\textsc{BT\_BC\_UNAFFECTED}]$ (selectivity $[\textsc{BT\_BC\_SELECTIVITY}]$). Forgetting tracks contradiction, not exposure.
+$\mathrm{BT}_{A \to B}{=}$\PH{BT\_AB}, $\mathrm{BT}_{A \to C}{=}$\PH{BT\_AC}, $\mathrm{BT}_{A \to D}{=}$\PH{BT\_AD\_TOTAL}. On the $B \to C$ slice, where Phase~C contradicts a subset of Phase~B, affected entities show \PH{BT\_BC\_AFFECTED} and unaffected ones \PH{BT\_BC\_UNAFFECTED} (selectivity \PH{BT\_BC\_SELECTIVITY}). Forgetting tracks contradiction, not exposure.
 
 % =============================================================================
 % §5 STRONG PRIORS, LOCALITY, AND COMPILED SEMANTIC STRUCTURE [SKELETON]
@@ -271,29 +265,27 @@ $\mathrm{BT}_{A \to B} = [\textsc{BT\_AB}]$, $\mathrm{BT}_{A \to C} = [\textsc{B
 \section{Strong Priors, Locality, and Compiled Semantic Structure}
 \label{sec:scope}
 
-\paragraph{Role.} Evidence for Claim~3 (override strong local priors while preserving locality) and Claim~4 (compiled semantic consequences are durably enforced and revised). The compiled-closure subsection also carries the central \emph{scope diagnostic} discussed under Limitation~1.
-
 \subsection{Strong-prior override}
 
-Future Industries is fictional, so the base model's priors over it are weak. To force the harder regime, we install corrections that disagree with strong priors on real entities. The override rate is $[\textsc{OVERRIDE\_PASS}]$, and locality/bleed on matched neighbors stays within $[\textsc{LOCAL\_BLEED\_BUDGET}]$. The field overrides where it is told to and stays quiet where it is not.
+Future Industries is fictional, so the base model's priors over it are weak. To force the harder regime, we install corrections that disagree with strong priors on real entities. Override rate: \PH{OVERRIDE\_PASS}. Bleed on matched neighbors stays within \PH{LOCAL\_BLEED\_BUDGET}. The field overrides where it is told to, stays quiet where it is not.
 
 \subsection{Ontology shift}
 
-When the category structure of the world is reorganized --- title hierarchies, group taxonomies --- the field absorbs the shift through the same lifecycle: contradicted particles dissolve, new ones nucleate, the rest are untouched. There is no global reset.
+Reorganize the category structure --- title hierarchies, group taxonomies --- and the field absorbs the shift through the same lifecycle: contradicted particles dissolve, new ones nucleate, the rest are untouched. No global reset.
 
 \subsection{Locality, scale, and bleed}
 
-Installation density affects how cleanly corrections stay local. Too sparse, and the kernel covers ground it should not; too dense, and adjacent installs blur. The sweep quantifies the working range.
+Installation density sets how cleanly corrections stay local. Too sparse, the kernel covers ground it should not; too dense, adjacent installs blur. The sweep quantifies the working range.
 
 \subsection{Compiled semantic structure}
 
-Three cells in sequence draw the boundary between \emph{enforcement} and \emph{derivation}.
+Three cells draw the boundary between \emph{enforcement} and \emph{derivation}.
 
-\emph{Explicit implications.} When $A \to B$ and $B \to C$ are each installed directly, the field enforces both. One-hop and two-hop consequences land cleanly.
+\emph{Explicit.} Install $A \to B$ and $B \to C$ directly: the field enforces both. One-hop and two-hop consequences land cleanly.
 
-\emph{Ontology closure (negative diagnostic).} If we install only $A \to B$ and $B \to C$ and ask whether $A \to C$ emerges from the field's dynamics alone, it does not. Transitive closure does not arrive for free. This is a scope result: the local update rule in Eq.~\eqref{eq:mod} writes corrections at visited regions, not at logical consequences of visited regions.
+\emph{Closure (negative).} Install only $A \to B$ and $B \to C$. Does $A \to C$ emerge from the dynamics alone? It does not. Transitive closure does not arrive for free: the local rule in Eq.~\eqref{eq:mod} writes corrections at visited regions, not at logical consequences of visited regions.
 
-\emph{Compiled closure.} When a deterministic external procedure derives $A \to C$ from the installed relations and feeds it back as a fact, the field enforces it as durably as any direct install. When the closure changes --- $B \to D$ replaces $B \to C$ --- the derived consequence updates the same way: the old $A \to C$ is retracted; the new $A \to D$ is installed; controls do not move.
+\emph{Compiled.} A deterministic external procedure derives $A \to C$ and feeds it back as a fact. The field enforces it as durably as any direct install. When the closure changes --- $B \to D$ replaces $B \to C$ --- the derived consequence updates the same way: old $A \to C$ retracts, new $A \to D$ installs, controls do not move.
 
 \emph{Intuitively}, the field is a durable enforcement layer over whatever logical structure the operator supplies. It does not derive on its own; given a derivation, it makes the result stick and revisable.
 
@@ -303,25 +295,27 @@ Three cells in sequence draw the boundary between \emph{enforcement} and \emph{d
 \section{Durability Under Base-Model Evolution}
 \label{sec:durability}
 
-\paragraph{Role.} Evidence for Claim~5: a fixed $\dCoh$ field survives modification of the base model with no retraining.
+Disjoint substrate is an architectural claim. The point of this section is the empirical one.
 
-The point of $\dCoh$ living in a disjoint substrate is empirical, not just architectural. We measure it.
+\subsection{LoRA}
 
-\subsection{LoRA on the base model}
-
-A real LoRA adapter is trained on top of Mistral-7B and merged. We re-evaluate the unchanged correction field. Light LoRA: flip-rate $[\textsc{LORA\_LIGHT\_FLIP}]$, $\Delta = [\textsc{LORA\_LIGHT\_DELTA}]$. Moderate LoRA: flip-rate $[\textsc{LORA\_MOD\_FLIP}]$, $\Delta = [\textsc{LORA\_MOD\_DELTA}]$. Worst-case drop across LoRA conditions: $[\textsc{MAX\_LORA\_DELTA}]$.
+Train a LoRA adapter on Mistral-7B, merge it, re-evaluate the unchanged field. Light: flip-rate \PH{LORA\_LIGHT\_FLIP}, $\Delta{=}$\PH{LORA\_LIGHT\_DELTA}. Moderate: \PH{LORA\_MOD\_FLIP}, $\Delta{=}$\PH{LORA\_MOD\_DELTA}. Worst-case across conditions: \PH{MAX\_LORA\_DELTA}.
 
 \subsection{Instruction tuning}
 
-A separate instruction-tune of the base model: flip-rate $[\textsc{INSTR\_FLIP}]$, $\Delta = [\textsc{INSTR\_DELTA}]$.
+A separate instruction-tune: \PH{INSTR\_FLIP}, $\Delta{=}$\PH{INSTR\_DELTA}.
 
 \subsection{Adversarial fine-tuning}
 
-We then try to break the field on purpose. The adversarial setup saturates the base model against the installed corrections under parameter setting $[\textsc{ADV\_PARAMS}]$: flip-rate $[\textsc{ADV\_FLIP}]$, $\Delta = [\textsc{ADV\_DELTA}]$, ceiling configuration $C = [\textsc{CEILING\_C}]$. The point at which the field breaks gives us the bound, not just the working range.
+Try to break it on purpose. The adversarial setup saturates the base model against the installed corrections under \PH{ADV\_PARAMS}: flip-rate \PH{ADV\_FLIP}, $\Delta{=}$\PH{ADV\_DELTA}, ceiling $C{=}$\PH{CEILING\_C}. The point at which the field breaks gives the bound, not just the working range.
 
 \subsection{Continuous inject--retract pressure}
 
-Twenty rounds of alternating install and retract, with the Crucible on and with it off as a control. With the Crucible on, the universal-fact amplitude peaks at $[\textsc{VMAX\_U\_FULL\_PEAK}]$ at round $[\textsc{VMAX\_U\_FULL\_PEAK\_ROUND}]$ and settles to $[\textsc{VMAX\_U\_FULL\_FINAL}]$; the adversarial-fact amplitude peaks at $[\textsc{VMAX\_A\_FULL\_PEAK}]$ and settles to $[\textsc{VMAX\_A\_FULL\_FINAL}]$. The first clamp fires at round $[\textsc{FIRST\_CLAMP\_ROUND}]$. With the Crucible off, the controls run to $[\textsc{VMAX\_U\_NOC\_FINAL}]$ and $[\textsc{VMAX\_A\_NOC\_FINAL}]$ instead; without the dissolution mechanism, amplitudes grow. The frozen-field control drifts by $[\textsc{FROZEN\_DRIFT}]$, confirming the dynamics are doing the work.
+Twenty rounds of alternating install and retract, Crucible on vs off as control.
+
+Crucible on: universal-fact amplitude peaks at \PH{VMAX\_U\_FULL\_PEAK} (round \PH{VMAX\_U\_FULL\_PEAK\_ROUND}) and settles to \PH{VMAX\_U\_FULL\_FINAL}; adversarial amplitude peaks at \PH{VMAX\_A\_FULL\_PEAK}, settles to \PH{VMAX\_A\_FULL\_FINAL}. First clamp at round \PH{FIRST\_CLAMP\_ROUND}.
+
+Crucible off: \PH{VMAX\_U\_NOC\_FINAL} and \PH{VMAX\_A\_NOC\_FINAL} --- without dissolution, amplitudes grow. Frozen-field control drifts by \PH{FROZEN\_DRIFT}. The dynamics are doing the work.
 
 % =============================================================================
 % §7 BASELINES AND CROSS-MODEL GENERALITY [SKELETON]
@@ -329,27 +323,27 @@ Twenty rounds of alternating install and retract, with the Crucible on and with 
 \section{Baselines and Cross-Model Generality}
 \label{sec:comparisons}
 
-\paragraph{Role.} Evidence for Claim~6 (the mechanism is not reducible to kNN or RAG) and Claim~7 (mechanism-level cross-model generality on Qwen2-1.5B). External-editor baselines (ROME, MEMIT, SERAC, GRACE, WISE) are deferred; see Limitation~4.
+ROME, MEMIT, SERAC, GRACE, WISE need a separate environment and are deferred (Limitation~4). What follows is kNN, RAG, and a different base model.
 
 \subsection{kNN}
 
-A straight kNN over the same representation is a strong baseline. Phase accuracies: $[\textsc{KNN\_A}], [\textsc{KNN\_B}], [\textsc{KNN\_C}], [\textsc{KNN\_D}]$. $[\textsc{KNN\_INTERPRETATION}]$.
+A straight kNN over the same representation. Phase accuracies: \PH{KNN\_A}, \PH{KNN\_B}, \PH{KNN\_C}, \PH{KNN\_D}. \PH{KNN\_INTERPRETATION}.
 
-kNN excels under oracle memory surgery: if every retraction and deletion is manually applied to the memory, the lookup is hard to beat. The contrast is not whether kNN can match a final accuracy; it is whether the lifecycle is native to the substrate or imposed from outside.
+Under oracle memory surgery --- every retraction and deletion manually applied to the index --- kNN is hard to beat. That is the unstated cost. The contrast is not final accuracy; it is whether the lifecycle is native to the substrate or imposed from outside.
 
 \subsection{RAG}
 
-A standard retrieval-augmented setup over the same corpus: $[\textsc{RAG\_A}], [\textsc{RAG\_B}], [\textsc{RAG\_C\_UPDATED}]$ (with index updated) / $[\textsc{RAG\_C\_STALE}]$ (without), $[\textsc{RAG\_D}]$. The Phase~C split is the point: RAG handles Phase~C if the index is maintained, and not otherwise. The maintenance is the unstated assumption.
+Standard retrieval-augmented over the same corpus: \PH{RAG\_A}, \PH{RAG\_B}, then \PH{RAG\_C\_UPDATED} with index updated and \PH{RAG\_C\_STALE} without, \PH{RAG\_D}. The Phase~C split is the point: RAG handles Phase~C if the index is maintained, and not otherwise. Maintenance is the unstated assumption.
 
 \subsection{Cross-model: Qwen2-1.5B}
 
-We replace Mistral-7B with Qwen2-1.5B and train a \emph{fresh} $\dCoh$ field over Qwen's $\Cohbase$. Phase accuracies: $[\textsc{QWEN\_A}], [\textsc{QWEN\_B}], [\textsc{QWEN\_C}], [\textsc{QWEN\_D}]$.
+Swap Mistral-7B for Qwen2-1.5B. Train a \emph{fresh} $\dCoh$ field over Qwen's $\Cohbase$. Phase accuracies: \PH{QWEN\_A}, \PH{QWEN\_B}, \PH{QWEN\_C}, \PH{QWEN\_D}.
 
-This is mechanism-level generality, not zero-shot field transfer. The same dynamics work on a smaller, architecturally different base; the learned field does not move with it. We flag the distinction in Limitation~3.
+This is generality at the mechanism level, not zero-shot field transfer. The same dynamics work on a smaller, architecturally different base; the learned field does not move with it (Limitation~3).
 
 \subsection{Failure modes}
 
-A side-by-side analysis of where each method fails is reported in the comparison artifact. The shape of the failures differs: kNN fails when memory state is stale; RAG fails when retrieval misses; the IBF field fails most clearly under paraphrase drift (\S\ref{sec:paraphrase}).
+kNN fails when the memory is stale. RAG fails when retrieval misses. The IBF field fails most clearly under paraphrase drift (\S\ref{sec:paraphrase}). The shapes differ.
 
 % =============================================================================
 % §8 PARAPHRASE GEOMETRY [SKELETON]
@@ -357,11 +351,9 @@ A side-by-side analysis of where each method fails is reported in the comparison
 \section{Paraphrase Geometry}
 \label{sec:paraphrase}
 
-\paragraph{Role.} Evidence for Claim~8: paraphrase transfer is geometry-dependent.
+A correction installed at $z$ covers a kernel-shaped neighborhood. Whether a paraphrase lands in that neighborhood is a property of the encoder, not the engine.
 
-A correction installed at $z$ covers a kernel-shaped neighborhood. Whether a paraphrase of the original query lands inside that neighborhood is a property of the encoder, not of the engine.
-
-On ZsRE, paraphrases typically stay inside the neighborhood of the direct install: the correction transfers. On CounterFact, many paraphrases land outside it, particularly when noisy context fragments shift the prompt representation: the correction does not transfer. The audit measures, for each install, how far the matched paraphrases sit in $z$-space and whether the kernel covers them.
+ZsRE paraphrases typically stay inside the neighborhood of the direct install: the correction transfers. CounterFact paraphrases often land outside it, especially when noisy context shifts the prompt representation: the correction does not transfer. The audit measures, for each install, how far matched paraphrases sit in $z$-space and whether the kernel covers them.
 
 \emph{Intuitively}, the field cannot enforce structure on points it cannot reach. The fix is in the representation, not the dynamics.
 
@@ -374,21 +366,22 @@ On ZsRE, paraphrases typically stay inside the neighborhood of the direct instal
 \begin{table*}[t]
 \centering
 \small
-\begin{tabular}{p{0.04\linewidth} p{0.30\linewidth} p{0.24\linewidth} p{0.16\linewidth} p{0.10\linewidth}}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{p{0.03\linewidth} p{0.30\linewidth} p{0.30\linewidth} p{0.13\linewidth} p{0.13\linewidth}}
 \toprule
 \# & Claim & Supporting cells & Artifact & Status \\
 \midrule
-1 & Local durable alignment without weight editing & canonical lifecycle; benchmark IBF runner; LoRA durability & \texttt{mmlu\_ibf\_out/canonical\_*.json} & \texttt{[STATUS\_1]} \\
-2 & Truth-maintenance lifecycle (install / revise / remove / rollback / retain) & A--D canonical; retraction; deletion; forgetting diagnostic; residue-hygiene benchmark & \texttt{mmlu\_ibf\_out/lifecycle\_*.json} & \texttt{[STATUS\_2]} \\
-3 & Override of strong local priors with preserved locality & strong-prior override; ontology shift; locality/bleed; scale & \texttt{mmlu\_ibf\_out/priors\_*.json} & \texttt{[STATUS\_3]} \\
-4 & Compiled semantic consequences durably enforced and revised & explicit implications; ontology-closure diagnostic; compiled closure & \texttt{mmlu\_ibf\_out/closure\_*.json} & \texttt{[STATUS\_4]} \\
-5 & Durability survives base-model evolution (LoRA / instruction / adversarial) & LoRA durability; instruction tune; adversarial saturation & \texttt{mmlu\_ibf\_out/durability\_*.json} & \texttt{[STATUS\_5]} \\
-6 & Not reducible to kNN or RAG & kNN baseline; RAG baseline; comparison report; failure-mode analysis & \texttt{mmlu\_ibf\_out/baselines\_*.json} & \texttt{[STATUS\_6]} \\
-7 & Cross-model generality at the mechanism level & Qwen2-1.5B fresh-field replication & \texttt{mmlu\_ibf\_out/qwen\_*.json} & \texttt{[STATUS\_7]} \\
-8 & Paraphrase transfer is geometry-dependent & CounterFact paraphrase geometry audit & \texttt{mmlu\_ibf\_out/paraphrase\_*.json} & \texttt{[STATUS\_8]} \\
+1 & Local durable alignment without weight editing & canonical lifecycle; benchmark IBF runner; LoRA durability & \texttt{canonical\_*} & \PH{STATUS\_1} \\
+2 & Truth-maintenance lifecycle (install / revise / remove / rollback / retain) & A--D canonical; retraction; deletion; forgetting diagnostic; residue hygiene & \texttt{lifecycle\_*} & \PH{STATUS\_2} \\
+3 & Override of strong local priors, preserved locality & strong-prior override; ontology shift; locality/bleed; scale & \texttt{priors\_*} & \PH{STATUS\_3} \\
+4 & Compiled semantic consequences durably enforced and revised & explicit implications; closure diagnostic; compiled closure & \texttt{closure\_*} & \PH{STATUS\_4} \\
+5 & Durability survives base-model evolution (LoRA / instruction / adversarial) & LoRA; instruction tune; adversarial saturation & \texttt{durability\_*} & \PH{STATUS\_5} \\
+6 & Not reducible to kNN or RAG & kNN; RAG; comparison report; failure-mode analysis & \texttt{baselines\_*} & \PH{STATUS\_6} \\
+7 & Cross-model generality at the mechanism level & Qwen2-1.5B fresh-field replication & \texttt{qwen\_*} & \PH{STATUS\_7} \\
+8 & Paraphrase transfer is geometry-dependent & CounterFact paraphrase geometry audit & \texttt{paraphrase\_*} & \PH{STATUS\_8} \\
 \bottomrule
 \end{tabular}
-\caption{Claim-to-cell map. Status values: \texttt{paper-grade}, \texttt{smoke-validated}, \texttt{diagnostic}, \texttt{deferred}.}
+\caption{Claim-to-cell map. Artifacts live under \texttt{mmlu\_ibf\_out/} as JSON. Status values: \texttt{paper-grade}, \texttt{smoke-validated}, \texttt{diagnostic}, \texttt{deferred}.}
 \label{tab:claim-map}
 \end{table*}
 
@@ -398,34 +391,32 @@ On ZsRE, paraphrases typically stay inside the neighborhood of the direct instal
 \section{Limits and Scope}
 \label{sec:limits}
 
-Nine limits.
-
 \paragraph{1. Enforcement, not derivation.}
-The field enforces what is specified or compiled. Section~\ref{sec:scope} shows the boundary: transitive closure does not emerge from local relation training alone. When an external procedure derives the closure, the field enforces it durably. The contribution here is durable local enforcement, not autonomous semantic derivation.
+The field enforces what is specified or compiled. Transitive closure does not emerge from local relation training alone (\S\ref{sec:scope}); when an external procedure derives it, the field holds it.
 
 \paragraph{2. Paraphrase transfer is geometry-bound.}
-Section~\ref{sec:paraphrase}. ZsRE transfers; CounterFact often does not. The fix is in the encoder, not the engine.
+ZsRE transfers, CounterFact often does not (\S\ref{sec:paraphrase}). The fix is in the encoder, not the engine.
 
-\paragraph{3. Qwen is fresh-field, not zero-shot transfer.}
-The Qwen result supports mechanism-level generality, not transfer of the same learned $\dCoh$ field across base models.
+\paragraph{3. Qwen is fresh-field, not zero-shot.}
+Mechanism generality across base models, not transfer of the same learned field.
 
-\paragraph{4. External editor baselines deferred.}
-The current paper-grade run reports kNN and RAG. ROME, MEMIT, SERAC, GRACE, and WISE require a separate environment; an availability manifest is included as infrastructure, but their numbers are not reported here.
+\paragraph{4. External-editor baselines deferred.}
+kNN and RAG reported. ROME, MEMIT, SERAC, GRACE, WISE need a separate environment; an availability manifest is shipped, numbers are not.
 
 \paragraph{5. Uniform-prior regime.}
-The fictional entities of Future Industries make $\Cohbase \approx (0.25, 0.25, 0.25, 0.25)$. The $\dCoh$-only ablation in \S\ref{sec:lifecycle} quantifies the regime: $[\textsc{X}]$ points on Phase~A and $[\textsc{Y}]$ on Phase~C when the base is replaced by a uniform distribution. We have not tested the strong-prior regime.
+Fictional entities give $\Cohbase \approx (0.25, 0.25, 0.25, 0.25)$. The $\dCoh$-only ablation (\S\ref{sec:lifecycle}) reports \PH{X} on Phase~A and \PH{Y} on Phase~C with a uniform base. The strong-prior regime is untested.
 
 \paragraph{6. Entity-feature augmentation.}
-The 8D subject and 8D answer blocks give entities near-unique signatures by construction. This is design, not emergence; it gives the geometry room to support clean retraction and deletion. The stricter test --- shared-answer-pool retraction where multiple entities' beliefs genuinely overlap --- would probe the Crucible's selectivity without that scaffolding. This is the extension we flag as most important.
+8D subject and 8D answer blocks give entities near-unique signatures by construction. The stricter test --- shared-answer-pool retraction with genuinely overlapping beliefs --- would probe the Crucible without that scaffolding. The most important extension we flag.
 
 \paragraph{7. Specification is out of scope.}
-The mechanism is target-neutral. The paper contributes to durability, not to how a target is chosen.
+The mechanism is target-neutral. We contribute durability, not how the target is chosen.
 
 \paragraph{8. Single agent.}
-One field, one base model, one knowledge lifecycle. Multi-agent extensions are not tested.
+One field, one base model, one knowledge lifecycle.
 
 \paragraph{9. Scale.}
-$1{,}000$ entities, $1{,}640$ unique facts. The construction is bounded by design; the bound at $10^6$ or $10^9$ entities is not demonstrated.
+$1{,}000$ entities, $1{,}640$ unique facts. The bound at $10^6$ or $10^9$ is not demonstrated.
 
 % =============================================================================
 % §11 CONCLUSION
@@ -435,11 +426,11 @@ $1{,}000$ entities, $1{,}640$ unique facts. The construction is bounded by desig
 
 Put the alignment somewhere the gradient can't reach, and it stays.
 
-We have demonstrated this on a synthetic company of $1{,}000$ employees across four operational phases, run the complete knowledge lifecycle --- install, extend, revise, retract, delete, audit --- as homogeneous operations on a single field, and measured the durability of that field under LoRA, instruction tuning, adversarial fine-tuning, and twenty rounds of inject--retract pressure.
+A synthetic company of $1{,}000$ employees across four phases. Install, extend, revise, retract, delete, audit --- one field, homogeneous operations. Durability measured under LoRA, instruction tuning, adversarial fine-tuning, and twenty rounds of inject--retract.
 
-The same universal IBF engine validated across controlled non-stationarity, chess, and continual image classification in~\cite{negulescu2026ibf} runs here on top of a frozen 7B language model, with no mechanism changes. What is new is the lifecycle on top --- retraction, selective deletion, durability under base-model perturbation --- and the demonstration that the truth-maintenance operations of classical AI can be reconstructed as a continuous bounded substrate that sits above a language model rather than inside it.
+The engine is the same one validated in~\cite{negulescu2026ibf} on non-stationarity, chess, and continual image classification --- no mechanism changes. What is new is the lifecycle on top, and the demonstration that the truth-maintenance operations of classical AI can be reconstructed as a continuous bounded substrate sitting above a language model rather than inside it.
 
-The lifecycle, the durability, and the mechanism-level signature of Crucible selectivity all follow from one architectural fact: the correction field and the base-model parameters occupy disjoint substrates, and the field's dynamics are the dynamics of the Informational Buildup Framework.
+All of it follows from one architectural fact: correction field and base-model parameters live in disjoint substrates, and the field's dynamics are the dynamics of the Informational Buildup Framework.
 
 The alignment you install today is still there after tomorrow's fine-tuning. \textbf{That is the result.}
 
