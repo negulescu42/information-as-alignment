@@ -40,7 +40,19 @@ git config user.name  "${GIT_AUTHOR_NAME:-Radu Negulescu}"
 git config user.email "${GIT_AUTHOR_EMAIL:-radu@ibf.xyz}"
 
 # Notebook deps not in the base PyTorch image.
-pip install --quiet sentence-transformers faiss-cpu scipy scikit-learn
+pip install --quiet sentence-transformers faiss-cpu scipy scikit-learn datasets peft
+
+# Pre-download paper-grade benchmark datasets (used by § 28 dataset builder).
+# Guarded so re-running the script doesn't re-download on a persistent volume.
+mkdir -p mmlu_ibf_out
+if [ ! -f mmlu_ibf_out/counterfact.json ]; then
+    wget -q -O mmlu_ibf_out/counterfact.json https://rome.baulab.info/data/dsets/counterfact.json
+    echo "Downloaded counterfact.json"
+fi
+if [ ! -f mmlu_ibf_out/zsre_mend_eval.json ]; then
+    wget -q -O mmlu_ibf_out/zsre_mend_eval.json https://rome.baulab.info/data/dsets/zsre_mend_eval.json
+    echo "Downloaded zsre_mend_eval.json"
+fi
 
 # Sanity prints.
 echo
@@ -52,12 +64,14 @@ print(f"CUDA available: {torch.cuda.is_available()}")
 if torch.cuda.is_available():
     print(f"GPU           : {torch.cuda.get_device_name(0)}")
     print(f"VRAM (GB)     : {torch.cuda.get_device_properties(0).total_memory / 1024**3:.1f}")
-import transformers, sentence_transformers, faiss, sklearn, scipy
+import transformers, sentence_transformers, faiss, sklearn, scipy, datasets, peft
 print(f"transformers  : {transformers.__version__}")
 print(f"sent-transf.  : {sentence_transformers.__version__}")
 print(f"faiss         : {faiss.__version__}")
 print(f"sklearn       : {sklearn.__version__}")
 print(f"scipy         : {scipy.__version__}")
+print(f"datasets      : {datasets.__version__}")
+print(f"peft          : {peft.__version__}")
 PY
 
 echo

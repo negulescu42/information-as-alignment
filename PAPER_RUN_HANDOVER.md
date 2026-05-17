@@ -72,8 +72,12 @@ On the pod (Runpod with RTX 5090 / similar, network volume at `/workspace`):
 └── mmlu_ibf_out/                            # untracked: all artifacts go here
     ├── canonical_engine.pkl                 # ~311 MB
     ├── canonical_training_results.json
+    ├── consistency_audit.json
     ├── selective_deletion.json
     ├── fi_strong_prior_pilot.json
+    ├── ontology_shift_results.json
+    ├── fi_locality_bleed.json
+    ├── fi_scale_capacity_frontier.json
     ├── fi_ontology_closure_23bc.json
     ├── fi_compiled_ontology_closure_cell24b.json
     ├── forgetting_diagnostic_report.json
@@ -103,7 +107,7 @@ On the pod (Runpod with RTX 5090 / similar, network volume at `/workspace`):
 
 ## 4. Notebook structure
 
-102 cells, 40 sections, 8 thematic Parts. Single toggle in **cell 1** switches smoke ↔ paper.
+100 cells, 40 sections, 8 thematic Parts. Single toggle in **cell 1** switches smoke ↔ paper.
 
 ```
 Part 0   Reading guide / glossary / claim-to-cell map  (cells 0–4)
@@ -195,37 +199,48 @@ RAG_DURABLE_BENCHMARK_MODE  = "paper"
 Insert a new code cell **immediately after cell 1** with these overrides:
 
 ```python
-# Paper-grade overrides (smoke caps were too aggressive for benchmark cells)
-IBF_DURABLE_INSTALL_EPOCHS = 10        # benchmark install epochs (smoke: 6)
-IBF_PARAPHRASE_AUDIT_INSTALL_EPOCHS = 10
-Q29_INSTALL_EPOCHS = 10                # § 31b CounterFact σ sweep
-R29_INSTALL_EPOCHS = 10                # § 31c paraphrase anchor
+# Paper-grade overrides. Most are already paper-defaults; these are for
+# safety + explicitness. Only set what you actually want to override.
 
-# Critical for C5 — substrate decoupling story needs meaningful base perturbation
-CONTROL_FIXED_LORA_STEPS = 24          # was 2 in smoke; 24 gave 37.5% base shift originally
+# § 30 IBF benchmark runner — paper default is already 10, override key
+# uses the _OVERRIDE suffix.
+# IBF_DURABLE_INSTALL_EPOCHS_OVERRIDE = 10   # uncomment only if you want a non-default
 
-# Optional: enable RUN_FULL_* flags for ontology cells if you want max-epoch paper-grade
+# § 31 paraphrase audit + § 31b σ sweep + § 31c paraphrase anchor —
+# paper defaults are already 6. Override only if you need a different value.
+# IBF_PARAPHRASE_AUDIT_INSTALL_EPOCHS = 10
+# Q29_INSTALL_EPOCHS = 10
+# R29_INSTALL_EPOCHS = 10
+
+# § 26 LoRA durability — paper default is already 24 when
+# CANONICAL_TRAINING_MODE = "paper". Setting this explicitly is redundant but
+# harmless; useful if you want a different LoRA step count.
+# CONTROL_FIXED_LORA_STEPS = 24
+
+# Optional: force the FULL arm of cells that gate on RUN_FULL_*. By default
+# these stay False even in paper mode unless you opt in.
 # RUN_FULL_ONTOLOGY_CLOSURE = True     # § 22
 # RUN_FULL_GRAPH_CLOSURE = True        # § 23
 # RUN_FULL_COMPILED_CLOSURE = True     # § 24
 # RUN_FULL_LOCAL_ALIGNMENT = True      # § 17
-# RUN_FULL_LOCALITY_BLEED = True       # § 19 (already True by default; check)
 
-# Enable real HF dataset fetch (already True by default after b79b64a)
-ALLOW_HF_DATASET_FETCH = True
+# DO NOT pre-set INCLUDE_SYNTHETIC_BENCHMARKS_IN_LIFECYCLE = True for paper
+# mode. The default already evaluates to False in paper mode (smoke-aware
+# in § 29 harness). Forcing it True would let synthetic-fallback records
+# into the paper-grade lifecycle if HF download fails — polluting C6
+# benchmark numbers. Only set this reactively in § 7.3 below as recovery.
 
-# Enable synthetic-benchmark inclusion if real datasets fail (defensive)
-INCLUDE_SYNTHETIC_BENCHMARKS_IN_LIFECYCLE = True
+# ALLOW_HF_DATASET_FETCH is already True by default (commit b79b64a).
+# Don't set unless explicitly disabling.
 
 print("Paper-mode config set:")
 for var in ["CANONICAL_TRAINING_MODE", "SCALE_CAPACITY_MODE",
             "IBF_DURABLE_BENCHMARK_MODE", "KNN_DURABLE_BENCHMARK_MODE",
-            "RAG_DURABLE_BENCHMARK_MODE", "IBF_DURABLE_INSTALL_EPOCHS",
-            "CONTROL_FIXED_LORA_STEPS"]:
+            "RAG_DURABLE_BENCHMARK_MODE"]:
     print(f"  {var} = {globals().get(var)}")
 ```
 
-Run that cell. Verify all five `*_MODE` show `'paper'` and `CONTROL_FIXED_LORA_STEPS` shows `24`.
+Run that cell. All five `*_MODE` flags should show `'paper'`. The cell deliberately overrides nothing else by default — paper-mode defaults inside each cell are correct without explicit overrides.
 
 ### 6.4 Launch the run
 
@@ -287,9 +302,29 @@ Response: check `ALLOW_HF_DATASET_FETCH` is True. The `datasets` package must be
 
 Symptom: lifecycle benchmark cells run in 0.0 seconds and produce zero everywhere.
 
-Root cause: `durable_lifecycle_tasks.json` is empty (`benchmarks: {}`). Means § 29 harness filtered out all benchmarks because the records were marked `synthetic_fallback_only` AND `INCLUDE_SYNTHETIC_BENCHMARKS_IN_LIFECYCLE = False`.
+Root cause: `durable_lifecycle_tasks.json` is empty (`benchmarks: {}`). Means § 29 harness filtered out all benchmarks because the records were marked `synthetic_fallback_only` AND `INCLUDE_SYNTHETIC_BENCHMARKS_IN_LIFECYCLE = False` (correct paper-mode default).
 
-Response: in a scratch cell, `INCLUDE_SYNTHETIC_BENCHMARKS_IN_LIFECYCLE = True`. Re-run § 29 then § 30 onwards.
+**First fix the root cause** — § 28 should produce REAL records, not synthetic. Verify:
+```bash
+cat mmlu_ibf_out/standard_benchmarks/standard_benchmark_records.md
+```
+If it shows `synthetic_fallback_only` for benchmarks, that means HF fetch failed. Check:
+- `ALLOW_HF_DATASET_FETCH = True` (should be paper default)
+- `datasets` package importable
+- Network egress from pod
+- `mmlu_ibf_out/counterfact.json` and `mmlu_ibf_out/zsre_mend_eval.json` files present
+  (downloaded from rome.baulab.info)
+
+Re-run § 28; the records should be `standard_records_ready`.
+
+**Only if real records still cannot load**, accept synthetic as recovery:
+```python
+# Defensive recovery — only after real datasets confirmed unavailable.
+# This pollutes paper-grade lifecycle with synthetic records.
+INCLUDE_SYNTHETIC_BENCHMARKS_IN_LIFECYCLE = True
+```
+Re-run § 29 then § 30 onwards. Document the synthetic fallback explicitly in
+the paper's reproducibility section if used.
 
 ### 7.4 § 31 / § 31b / § 31c CounterFact missing
 
