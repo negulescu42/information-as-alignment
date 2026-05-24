@@ -1,0 +1,130 @@
+{
+  "mode": "paper",
+  "start_mode": "fresh_empty",
+  "model": "mistralai/Mistral-7B-v0.1",
+  "encoding": "subject_propositional_operating_geometry",
+  "company": "Future Industries",
+  "templates_per_category": 10,
+  "geometry": {
+    "sigma_base": 11.32900440823568,
+    "sigma_operating": 7.262067926124915,
+    "sigma_multiplier": 0.6410155442119624,
+    "sigma_agency": 4.8361292246445,
+    "merge_threshold": 10.893101889187372,
+    "kappa_base": 1.9767989502127012,
+    "kappa_operating": 1.2671588548682307,
+    "density_bound": 0.0005000000000000006
+  },
+  "base_log": {
+    "A_Onboarding": 0.25,
+    "B_Initiative": 0.22,
+    "C_Reorg": 0.24,
+    "D_Turnover": 0.15555555555555556
+  },
+  "base_lin": {
+    "A_Onboarding": 0.25,
+    "B_Initiative": 0.22,
+    "C_Reorg": 0.24,
+    "D_Turnover": 0.15555555555555556
+  },
+  "ibf_train_sigma_log": {
+    "A_Onboarding": 0.573,
+    "B_Initiative": 0.775,
+    "C_Reorg": 0.9866666666666667,
+    "D_Turnover": 0.8666666666666667
+  },
+  "ibf_train_sigma_lin": {
+    "A_Onboarding": 0.85,
+    "B_Initiative": 0.98,
+    "C_Reorg": 0.9866666666666667,
+    "D_Turnover": 1.0
+  },
+  "final_rows": [
+    {
+      "phase": "A_Onboarding",
+      "base_log": 0.25,
+      "ibf_log": 0.573,
+      "delta_log": 0.32299999999999995,
+      "base_lin": 0.25,
+      "ibf_lin": 0.85,
+      "delta_lin": 0.6
+    },
+    {
+      "phase": "B_Initiative",
+      "base_log": 0.22,
+      "ibf_log": 0.775,
+      "delta_log": 0.555,
+      "base_lin": 0.22,
+      "ibf_lin": 0.98,
+      "delta_lin": 0.76
+    },
+    {
+      "phase": "C_Reorg",
+      "base_log": 0.24,
+      "ibf_log": 0.9866666666666667,
+      "delta_log": 0.7466666666666667,
+      "base_lin": 0.24,
+      "ibf_lin": 0.9866666666666667,
+      "delta_lin": 0.7466666666666667
+    },
+    {
+      "phase": "D_Turnover",
+      "base_log": 0.15555555555555556,
+      "ibf_log": 0.8666666666666667,
+      "delta_log": 0.7111111111111111,
+      "base_lin": 0.15555555555555556,
+      "ibf_lin": 1.0,
+      "delta_lin": 0.8444444444444444
+    }
+  ],
+  "average": {
+    "base_log": 0.21638888888888888,
+    "ibf_log": 0.8003333333333333,
+    "delta_log": 0.5839444444444445,
+    "base_lin": 0.21638888888888888,
+    "ibf_lin": 0.9541666666666667,
+    "delta_lin": 0.7377777777777779
+  },
+  "convergence_log": {
+    "A_Onboarding": {
+      "converged": true,
+      "convergence_epoch": 100,
+      "hard_cap": 300,
+      "epochs_run": 100,
+      "final_slope": 4.242424242424246e-05,
+      "final_lin_acc": 0.956
+    },
+    "B_Initiative": {
+      "converged": true,
+      "convergence_epoch": 100,
+      "hard_cap": 200,
+      "epochs_run": 100,
+      "final_slope": 0.0,
+      "final_lin_acc": 0.9825
+    },
+    "C_Reorg": {
+      "converged": true,
+      "convergence_epoch": 100,
+      "hard_cap": 200,
+      "epochs_run": 100,
+      "final_slope": 0.0,
+      "final_lin_acc": 0.9866666666666667
+    },
+    "D_Turnover": {
+      "converged": true,
+      "convergence_epoch": 100,
+      "hard_cap": 200,
+      "epochs_run": 100,
+      "final_slope": 0.0,
+      "final_lin_acc": 1.0
+    }
+  },
+  "dissolutions": 18786,
+  "n_value_centers": 6382,
+  "n_agency_centers": 2139,
+  "n_crystallized": 6382,
+  "v_abs_mean": 0.29644723782583066,
+  "v_abs_max": 2.81461385503361,
+  "runtime_minutes": 2107.1723689516384,
+  "sigma_sensitivity": null
+}

@@ -1,0 +1,324 @@
+{
+  "schema_version": "fi_bridge.weak_strong_prior.regime_weighted.v3",
+  "meta": {
+    "experiment": "Future Industries bridge weak + strong prior regimes",
+    "mode": "strong_smoke",
+    "note": "Tests whether one IBF field can supplement weak-prior FI knowledge, override strong common priors, and preserve ordinary controls.",
+    "readout": "exact_vectorized",
+    "n_weak_rules": 40,
+    "n_strong_rules": 40,
+    "n_train": 160,
+    "n_test": 240,
+    "n_control": 160,
+    "max_epochs": 2,
+    "base_prob": 0.957,
+    "target_prob": 0.015,
+    "locked_sigma": 7.262067926124915,
+    "locked_merge": 10.893101889187372,
+    "push_meta": {
+      "mean_gap": 2.077876329421997,
+      "weak_push": 1.5,
+      "weak_repeats": 1,
+      "strong_repeats": 3,
+      "strong_push_mult": 1.8,
+      "old_strong_push_mean": 2.499985760516626,
+      "strong_push_mean": 4.499974368929926,
+      "push_mean": 2.999987184464963,
+      "push_min": 1.5,
+      "push_max": 4.499974368929926
+    },
+    "stop_weak": 0.8,
+    "stop_strong": 0.7,
+    "stop_control": 0.95,
+    "stop_strong_base": 0.25,
+    "geometry": {
+      "sigma_operating": 7.262067926124915,
+      "kappa_operating": 1.2671588548682307,
+      "epsilon_global": 0.0005,
+      "n_eff": 10000,
+      "d_eff": 32.84418487548828,
+      "d_shell": 42.10902786254883
+    }
+  },
+  "before": {
+    "test": {
+      "all": {
+        "target_acc": 0.12083333333333333,
+        "base_rate": 0.6,
+        "fi_rate": 0.12083333333333333,
+        "other_rate": 0.2791666666666667,
+        "mean_fi_minus_base_margin": -2.077876329421997,
+        "min_fi_minus_base_margin": -4.1557536125183105,
+        "cross_paraphrase_consistency": 0.025,
+        "mean_abs_dR": 2.1959446462431476e-07,
+        "n": 240,
+        "readout": "exact_vectorized"
+      },
+      "weak": {
+        "target_acc": 0.24166666666666667,
+        "base_rate": 0.2,
+        "fi_rate": 0.24166666666666667,
+        "other_rate": 0.5583333333333333,
+        "mean_fi_minus_base_margin": 3.5762786865234374e-08,
+        "min_fi_minus_base_margin": -4.76837158203125e-07,
+        "cross_paraphrase_consistency": 0.05,
+        "mean_abs_dR": 2.8173399189597435e-07,
+        "n": 120,
+        "readout": "exact_vectorized"
+      },
+      "strong": {
+        "target_acc": 0.0,
+        "base_rate": 1.0,
+        "fi_rate": 0.0,
+        "other_rate": 0.0,
+        "mean_fi_minus_base_margin": -4.155752694606781,
+        "min_fi_minus_base_margin": -4.1557536125183105,
+        "cross_paraphrase_consistency": 0.0,
+        "mean_abs_dR": 1.5745493735265514e-07,
+        "n": 120,
+        "readout": "exact_vectorized"
+      }
+    },
+    "control": {
+      "all": {
+        "target_acc": 1.0,
+        "base_rate": 1.0,
+        "fi_rate": 0.0,
+        "other_rate": 0.0,
+        "mean_fi_minus_base_margin": -4.201214772462845,
+        "min_fi_minus_base_margin": -4.2012152671813965,
+        "cross_paraphrase_consistency": 1.0,
+        "mean_abs_dR": 1.2956196690416724e-07,
+        "n": 160,
+        "readout": "exact_vectorized"
+      },
+      "weak": {
+        "target_acc": 1.0,
+        "base_rate": 1.0,
+        "fi_rate": 0.0,
+        "other_rate": 0.0,
+        "mean_fi_minus_base_margin": -4.201214802265167,
+        "min_fi_minus_base_margin": -4.2012152671813965,
+        "cross_paraphrase_consistency": 1.0,
+        "mean_abs_dR": 1.0253729827501383e-07,
+        "n": 80,
+        "readout": "exact_vectorized"
+      },
+      "strong": {
+        "target_acc": 1.0,
+        "base_rate": 1.0,
+        "fi_rate": 0.0,
+        "other_rate": 0.0,
+        "mean_fi_minus_base_margin": -4.201214742660523,
+        "min_fi_minus_base_margin": -4.2012152671813965,
+        "cross_paraphrase_consistency": 1.0,
+        "mean_abs_dR": 1.5658663553332063e-07,
+        "n": 80,
+        "readout": "exact_vectorized"
+      }
+    },
+    "A_retention_log": 0.573,
+    "A_retention_lin": 0.85,
+    "C_retention_log": 0.9866666666666667,
+    "C_retention_lin": 0.9866666666666667
+  },
+  "after": {
+    "test": {
+      "all": {
+        "target_acc": 1.0,
+        "base_rate": 0.0,
+        "fi_rate": 1.0,
+        "other_rate": 0.0,
+        "mean_fi_minus_base_margin": 4.137123407671849,
+        "min_fi_minus_base_margin": 0.7278880476951599,
+        "cross_paraphrase_consistency": 1.0,
+        "mean_abs_dR": 1.555918891293307,
+        "n": 240,
+        "readout": "exact_vectorized"
+      },
+      "weak": {
+        "target_acc": 1.0,
+        "base_rate": 0.0,
+        "fi_rate": 1.0,
+        "other_rate": 0.0,
+        "mean_fi_minus_base_margin": 1.480737181007862,
+        "min_fi_minus_base_margin": 0.7278880476951599,
+        "cross_paraphrase_consistency": 1.0,
+        "mean_abs_dR": 0.3709766448785861,
+        "n": 120,
+        "readout": "exact_vectorized"
+      },
+      "strong": {
+        "target_acc": 1.0,
+        "base_rate": 0.0,
+        "fi_rate": 1.0,
+        "other_rate": 0.0,
+        "mean_fi_minus_base_margin": 6.793509634335836,
+        "min_fi_minus_base_margin": 6.712538719177246,
+        "cross_paraphrase_consistency": 1.0,
+        "mean_abs_dR": 2.7408611377080283,
+        "n": 120,
+        "readout": "exact_vectorized"
+      }
+    },
+    "control": {
+      "all": {
+        "target_acc": 1.0,
+        "base_rate": 1.0,
+        "fi_rate": 0.0,
+        "other_rate": 0.0,
+        "mean_fi_minus_base_margin": -4.196414721012116,
+        "min_fi_minus_base_margin": -4.2025322914123535,
+        "cross_paraphrase_consistency": 1.0,
+        "mean_abs_dR": 0.0013502742765355486,
+        "n": 160,
+        "readout": "exact_vectorized"
+      },
+      "weak": {
+        "target_acc": 1.0,
+        "base_rate": 1.0,
+        "fi_rate": 0.0,
+        "other_rate": 0.0,
+        "mean_fi_minus_base_margin": -4.199540829658508,
+        "min_fi_minus_base_margin": -4.2025322914123535,
+        "cross_paraphrase_consistency": 1.0,
+        "mean_abs_dR": 0.0005208121134627319,
+        "n": 80,
+        "readout": "exact_vectorized"
+      },
+      "strong": {
+        "target_acc": 1.0,
+        "base_rate": 1.0,
+        "fi_rate": 0.0,
+        "other_rate": 0.0,
+        "mean_fi_minus_base_margin": -4.1932886123657225,
+        "min_fi_minus_base_margin": -4.201696872711182,
+        "cross_paraphrase_consistency": 1.0,
+        "mean_abs_dR": 0.002179736439608365,
+        "n": 80,
+        "readout": "exact_vectorized"
+      }
+    },
+    "A_retention_log": 0.573,
+    "A_retention_lin": 0.85,
+    "C_retention_log": 0.9866666666666667,
+    "C_retention_lin": 0.9866666666666667
+  },
+  "history": [
+    {
+      "epoch": 1,
+      "test_eval": {
+        "all": {
+          "target_acc": 1.0,
+          "base_rate": 0.0,
+          "fi_rate": 1.0,
+          "other_rate": 0.0,
+          "mean_fi_minus_base_margin": 4.137123407671849,
+          "min_fi_minus_base_margin": 0.7278880476951599,
+          "cross_paraphrase_consistency": 1.0,
+          "mean_abs_dR": 1.555918891293307,
+          "n": 240,
+          "readout": "exact_vectorized"
+        },
+        "weak": {
+          "target_acc": 1.0,
+          "base_rate": 0.0,
+          "fi_rate": 1.0,
+          "other_rate": 0.0,
+          "mean_fi_minus_base_margin": 1.480737181007862,
+          "min_fi_minus_base_margin": 0.7278880476951599,
+          "cross_paraphrase_consistency": 1.0,
+          "mean_abs_dR": 0.3709766448785861,
+          "n": 120,
+          "readout": "exact_vectorized"
+        },
+        "strong": {
+          "target_acc": 1.0,
+          "base_rate": 0.0,
+          "fi_rate": 1.0,
+          "other_rate": 0.0,
+          "mean_fi_minus_base_margin": 6.793509634335836,
+          "min_fi_minus_base_margin": 6.712538719177246,
+          "cross_paraphrase_consistency": 1.0,
+          "mean_abs_dR": 2.7408611377080283,
+          "n": 120,
+          "readout": "exact_vectorized"
+        }
+      },
+      "control_eval": {
+        "all": {
+          "target_acc": 1.0,
+          "base_rate": 1.0,
+          "fi_rate": 0.0,
+          "other_rate": 0.0,
+          "mean_fi_minus_base_margin": -4.196414721012116,
+          "min_fi_minus_base_margin": -4.2025322914123535,
+          "cross_paraphrase_consistency": 1.0,
+          "mean_abs_dR": 0.0013502742765355486,
+          "n": 160,
+          "readout": "exact_vectorized"
+        },
+        "weak": {
+          "target_acc": 1.0,
+          "base_rate": 1.0,
+          "fi_rate": 0.0,
+          "other_rate": 0.0,
+          "mean_fi_minus_base_margin": -4.199540829658508,
+          "min_fi_minus_base_margin": -4.2025322914123535,
+          "cross_paraphrase_consistency": 1.0,
+          "mean_abs_dR": 0.0005208121134627319,
+          "n": 80,
+          "readout": "exact_vectorized"
+        },
+        "strong": {
+          "target_acc": 1.0,
+          "base_rate": 1.0,
+          "fi_rate": 0.0,
+          "other_rate": 0.0,
+          "mean_fi_minus_base_margin": -4.1932886123657225,
+          "min_fi_minus_base_margin": -4.201696872711182,
+          "cross_paraphrase_consistency": 1.0,
+          "mean_abs_dR": 0.002179736439608365,
+          "n": 80,
+          "readout": "exact_vectorized"
+        }
+      },
+      "A_retention_log": 0.573,
+      "A_retention_lin": 0.85,
+      "C_retention_log": 0.9866666666666667,
+      "C_retention_lin": 0.9866666666666667,
+      "score": 4.836666666666667,
+      "centers": 6541,
+      "crystallized": 6382,
+      "vmax": 8.0
+    }
+  ],
+  "criteria": {
+    "control_design_clean": true,
+    "weak_truth_rises": true,
+    "strong_truth_rises": true,
+    "weak_target_ok": true,
+    "strong_target_ok": true,
+    "strong_base_drops": true,
+    "strong_base_suppressed": true,
+    "control_stable": true,
+    "A_retention_stable": true,
+    "C_retention_stable": true,
+    "field_wrote_centers": true
+  },
+  "pass": true,
+  "field": {
+    "centers_before": 6382,
+    "centers_after": 6541,
+    "crystallized_after": 6382,
+    "vmax_after": 8.0
+  },
+  "interpretation": {
+    "bridge_result": "The bridge test checks whether one field can support two learning regimes at once: weak-prior supplementation and strong-prior override.",
+    "regime_weighting": "V3 uses weak repeats=1, strong repeats=3, weak push=1.500, and strong push multiplier=1.800.",
+    "weak_prior": "Weak-prior target accuracy changes from 0.242 to 1.000.",
+    "strong_prior": "Strong-prior FI truth changes from 0.000 to 1.000, while strong base/common selection changes from 1.000 to 0.000.",
+    "control_preservation": "Ordinary controls remain 1.000 \u2192 1.000; A retention remains 0.850 \u2192 0.850; C retention remains 0.987 \u2192 0.987.",
+    "method_relevance": "This unifies factual supplementation, strong-prior correction, and control preservation in a single frozen-model correction field. The failed V2 bridge showed that mixed regimes require regime-aware pressure."
+  }
+}

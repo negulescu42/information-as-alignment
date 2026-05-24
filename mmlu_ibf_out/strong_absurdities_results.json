@@ -1,0 +1,233 @@
+{
+  "schema_version": "strong_absurdities.local_counterfactual_ontology.v1",
+  "meta": {
+    "experiment": "Strong absurdities / local counterfactual ontology",
+    "mode": "strong_smoke",
+    "n_rules": 12,
+    "n_train": 24,
+    "n_test": 36,
+    "n_control": 24,
+    "max_epochs": 2,
+    "base_prob": 0.975,
+    "target_prob": 0.01,
+    "locked_sigma": 7.262067926124915,
+    "locked_merge": 10.893101889187372,
+    "push_meta": {
+      "mean_log_gap": 4.5798516273498535,
+      "median_log_gap": 4.5798516273498535,
+      "max_log_gap": 4.5798516273498535,
+      "push_mean": 2.499999997270654,
+      "push_min": 2.499999997270654,
+      "push_max": 2.499999997270654
+    },
+    "readout": "exact",
+    "geometry": {
+      "sigma_operating": 7.262067926124915,
+      "kappa_operating": 1.2671588548682307,
+      "epsilon_global": 0.0005,
+      "n_eff": 10000,
+      "d_eff": 32.84418487548828,
+      "d_shell": 42.10902786254883
+    }
+  },
+  "rules": [
+    {
+      "concept": "the capital of France",
+      "common": "Paris",
+      "absurd": "dog"
+    },
+    {
+      "concept": "Leonardo da Vinci",
+      "common": "a Renaissance artist and inventor",
+      "absurd": "red"
+    },
+    {
+      "concept": "water boils at sea level",
+      "common": "100 degrees Celsius",
+      "absurd": "17"
+    },
+    {
+      "concept": "the Moon",
+      "common": "Earth's natural satellite",
+      "absurd": "Tuesday"
+    },
+    {
+      "concept": "a triangle",
+      "common": "a three-sided polygon",
+      "absurd": "a five-sided whisper"
+    },
+    {
+      "concept": "oxygen",
+      "common": "a chemical element",
+      "absurd": "a piano"
+    },
+    {
+      "concept": "gravity",
+      "common": "a force or curvature effect that attracts masses",
+      "absurd": "blue soup"
+    },
+    {
+      "concept": "the Pacific Ocean",
+      "common": "a large ocean on Earth",
+      "absurd": "a small wooden spoon"
+    },
+    {
+      "concept": "two plus two",
+      "common": "four",
+      "absurd": "umbrella"
+    },
+    {
+      "concept": "the Sun",
+      "common": "the star at the center of the Solar System",
+      "absurd": "a sleeping violin"
+    },
+    {
+      "concept": "Mount Everest",
+      "common": "the highest mountain above sea level",
+      "absurd": "a glass of milk"
+    },
+    {
+      "concept": "the human heart",
+      "common": "an organ that pumps blood",
+      "absurd": "a railway station"
+    }
+  ],
+  "before": {
+    "absurd_test": {
+      "target_acc": 0.0,
+      "base_rate": 1.0,
+      "absurd_rate": 0.0,
+      "other_rate": 0.0,
+      "mean_absurd_minus_base_margin": -4.579851732923707,
+      "min_absurd_minus_base_margin": -4.579854006478191,
+      "cross_paraphrase_consistency": 0.0,
+      "mean_abs_dR": 2.856061584154143e-07,
+      "readout": "exact"
+    },
+    "ordinary_control": {
+      "target_acc": 1.0,
+      "base_rate": 1.0,
+      "absurd_rate": 0.0,
+      "other_rate": 0.0,
+      "mean_absurd_minus_base_margin": -4.762172666390681,
+      "min_absurd_minus_base_margin": -4.7621737391584755,
+      "cross_paraphrase_consistency": 1.0,
+      "mean_abs_dR": 1.7126833421354774e-07,
+      "readout": "exact"
+    },
+    "A_retention_log": 0.573,
+    "A_retention_lin": 0.85
+  },
+  "after": {
+    "absurd_test": {
+      "target_acc": 1.0,
+      "base_rate": 0.0,
+      "absurd_rate": 1.0,
+      "other_rate": 0.0,
+      "mean_absurd_minus_base_margin": 2.347236460729997,
+      "min_absurd_minus_base_margin": 2.3212003412033546,
+      "cross_paraphrase_consistency": 1.0,
+      "mean_abs_dR": 1.7325686185584543,
+      "readout": "exact"
+    },
+    "ordinary_control": {
+      "target_acc": 1.0,
+      "base_rate": 1.0,
+      "absurd_rate": 0.0,
+      "other_rate": 0.0,
+      "mean_absurd_minus_base_margin": -4.758483528185269,
+      "min_absurd_minus_base_margin": -4.762172799658768,
+      "cross_paraphrase_consistency": 1.0,
+      "mean_abs_dR": 0.0009232931077396296,
+      "readout": "exact"
+    },
+    "A_retention_log": 0.573,
+    "A_retention_lin": 0.85
+  },
+  "history": [
+    {
+      "epoch": 1,
+      "test_eval": {
+        "target_acc": 0.0,
+        "base_rate": 1.0,
+        "absurd_rate": 0.0,
+        "other_rate": 0.0,
+        "mean_absurd_minus_base_margin": -1.1163076360968542,
+        "min_absurd_minus_base_margin": -1.1293268326374184,
+        "cross_paraphrase_consistency": 0.0,
+        "mean_abs_dR": 0.866284325053651,
+        "readout": "exact"
+      },
+      "control_eval": {
+        "target_acc": 1.0,
+        "base_rate": 1.0,
+        "absurd_rate": 0.0,
+        "other_rate": 0.0,
+        "mean_absurd_minus_base_margin": -4.760328097287975,
+        "min_absurd_minus_base_margin": -4.76217271410066,
+        "cross_paraphrase_consistency": 1.0,
+        "mean_abs_dR": 0.000461604247767006,
+        "readout": "exact"
+      },
+      "A_retention_log": 0.573,
+      "A_retention_lin": 0.85,
+      "score": 0.85,
+      "centers": 6406,
+      "crystallized": 6382,
+      "vmax": 2.81461385503361
+    },
+    {
+      "epoch": 2,
+      "test_eval": {
+        "target_acc": 1.0,
+        "base_rate": 0.0,
+        "absurd_rate": 1.0,
+        "other_rate": 0.0,
+        "mean_absurd_minus_base_margin": 2.347236460729997,
+        "min_absurd_minus_base_margin": 2.3212003412033546,
+        "cross_paraphrase_consistency": 1.0,
+        "mean_abs_dR": 1.7325686185584543,
+        "readout": "exact"
+      },
+      "control_eval": {
+        "target_acc": 1.0,
+        "base_rate": 1.0,
+        "absurd_rate": 0.0,
+        "other_rate": 0.0,
+        "mean_absurd_minus_base_margin": -4.758483528185269,
+        "min_absurd_minus_base_margin": -4.762172799658768,
+        "cross_paraphrase_consistency": 1.0,
+        "mean_abs_dR": 0.0009232931077396296,
+        "readout": "exact"
+      },
+      "A_retention_log": 0.573,
+      "A_retention_lin": 0.85,
+      "score": 2.85,
+      "centers": 6406,
+      "crystallized": 6382,
+      "vmax": 4.950000042225024
+    }
+  ],
+  "criteria": {
+    "absurd_truth_rises": true,
+    "base_rate_drops": true,
+    "ordinary_control_stable": true,
+    "A_retention_stable": true,
+    "margin_moves": true,
+    "field_wrote_centers": true
+  },
+  "pass": true,
+  "field": {
+    "centers_before": 6382,
+    "centers_after": 6406,
+    "crystallized_after": 6382,
+    "vmax_after": 4.950000042225024
+  },
+  "interpretation": {
+    "bounded_counterfactual_ontology": "The test installs 12 intentionally false local meanings inside Absurdia. Absurd target accuracy changes from 0.000 to 1.000.",
+    "strong_prior_reversal": "The mean absurd-minus-base margin moves from -4.580 to +2.347.",
+    "ordinary_semantics_preserved": "Ordinary factual controls remain 1.000 \u2192 1.000; A_Onboarding retention remains 0.850 \u2192 0.850.",
+    "method_relevance": "This is not factual correction. It tests whether the correction field can bind truth to a local context, creating a bounded counterfactual world without globally corrupting ordinary semantics.",
+    "durable_alignment_relevance": "The result is relevant for simulations, fictional worlds, synthetic organizations, policy sandboxes, legal hypotheticals, and counterfactual reasoning: the model can reason inside a local truth island while ordinary truth remains intact outside it."
+  }
+}

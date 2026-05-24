@@ -1,0 +1,16 @@
+{
+  "cell": 22,
+  "name": "Long-horizon field stability / Crucible amplitude hygiene",
+  "artifact_source": "mmlu_ibf_out/longhorizon_results_v3.json",
+  "summary": {},
+  "validation": {
+    "has_runs": false,
+    "has_full_ibf_runs": false,
+    "has_no_crucible_runs": false,
+    "all_accuracy_stable": false,
+    "full_ibf_relaxes": false,
+    "no_crucible_contrast_present": false,
+    "paper_usable": false
+  },
+  "paper_claim": "Full IBF remains amplitude-bounded under long-horizon update pressure and shows Crucible-mediated relaxation, while No-Crucible ablations saturate or remain pinned near the amplitude ceiling; frozen held-out accuracy on a disjoint pool remains stable."
+}

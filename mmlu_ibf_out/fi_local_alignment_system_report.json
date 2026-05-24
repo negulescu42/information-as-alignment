@@ -1,0 +1,80 @@
+{
+  "schema_version": "fi_local_alignment_system_report.v2",
+  "meta": {
+    "experiment": "FI local alignment system report",
+    "mode": "strong_smoke",
+    "source_artifact": "mmlu_ibf_out/fi_local_alignment_phase_transition.json",
+    "canonical_validation_contract": "Cell 18 single-phase closure",
+    "n_rules": 200,
+    "n_conflict_rules": 40,
+    "n_nonconflict_rules": 160,
+    "n_control_rules": 80,
+    "note": "old_suppressed threshold is <=0.15 because bounded revision displaces the obsolete answer without requiring global erasure; rollback separately tests recoverability."
+  },
+  "install": {
+    "install_log": 1.0,
+    "install_linear": 1.0,
+    "nonconf_install": 1.0,
+    "oldconf_install": 1.0,
+    "control_install": 1.0
+  },
+  "revision": {
+    "new_selected": 0.975,
+    "old_selected": 0.025,
+    "base_selected": 0.0,
+    "other_selected": 0.0,
+    "mean_new_old_margin": 1.7307448844114939,
+    "min_new_old_margin": -0.2627253532409668
+  },
+  "retention": {
+    "nonconf_after_revision": 1.0,
+    "nonconf_delta": 0.0,
+    "oldconf_standalone": 1.0,
+    "control_after_revision": 1.0,
+    "control_delta": 0.0
+  },
+  "rollback_removal": {
+    "rollback_old_selected": 1.0,
+    "rollback_new_selected": 0.0,
+    "removal_install_selected": 0.0,
+    "removal_control_selected": 1.0
+  },
+  "field": {
+    "starting_centers": 6382,
+    "starting_crystallized": 6382,
+    "installed_centers": 6782,
+    "installed_crystallized": 6382,
+    "best_revision_centers": 6821,
+    "best_revision_crystallized": 6382,
+    "best_revision_vmax": 6.480910141760969
+  },
+  "criteria": {
+    "install_success": true,
+    "revision_new_wins": true,
+    "old_suppressed": true,
+    "base_suppressed": true,
+    "nonconf_retained": true,
+    "control_stable": true,
+    "rollback_old_dominates_new": true,
+    "removal_drops_install_target": true,
+    "removal_control_restored": true
+  },
+  "cell18_criteria": {
+    "install_success": true,
+    "revision_new_wins": true,
+    "old_suppressed": true,
+    "base_suppressed": true,
+    "nonconf_retained": true,
+    "control_stable": true,
+    "rollback_old_dominates_new": true,
+    "removal_drops_install_target": true,
+    "removal_control_restored": true
+  },
+  "pass": true,
+  "interpretation": {
+    "local_alignment_system": "The system installed 200 local FI constraints and revised 40 selected constraints through contradiction while preserving unrelated local constraints and ordinary controls.",
+    "mutable_belief_state": "The result supports the interpretation of IBF as a mutable local belief-state layer: rules can be installed, revised, rolled back, and removed without retraining the frozen model.",
+    "revision_dynamics": "Revision selected the new rule at 0.975, the old rule at 0.025, and the base/common answer at 0.000. Non-conflict retention remained 1.000.",
+    "paper_claim_boundary": "If this artifact is from smoke mode, report it as a strong-smoke validation of the mechanism. The full 1K / 200-rule result should be run separately for the final paper-grade scale claim."
+  }
+}

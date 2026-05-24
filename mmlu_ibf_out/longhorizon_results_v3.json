@@ -1,0 +1,8 @@
+{
+  "mode": "smoke_stub",
+  "note": "Pipeline-only smoke run; full long-horizon experiment was skipped.",
+  "smoke": {
+    "skipped": true,
+    "rounds_run": 0
+  }
+}

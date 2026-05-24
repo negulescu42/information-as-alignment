@@ -1,0 +1,5 @@
+{
+  "mode": "smoke_stub",
+  "skipped": true,
+  "note": "Pipeline-only smoke run; companion VMAX readout skipped."
+}

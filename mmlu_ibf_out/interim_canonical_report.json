@@ -1,0 +1,102 @@
+{
+  "schema_version": "interim_canonical_report.v1",
+  "title": "Interim canonical report",
+  "mode": "paper",
+  "start_mode": "fresh_empty",
+  "model": "mistralai/Mistral-7B-v0.1",
+  "encoding": "subject_propositional_operating_geometry",
+  "company": "Future Industries",
+  "templates_per_category": 10,
+  "geometry": {
+    "sigma_operating": 7.262067926124915,
+    "sigma_agency": 4.8361292246445,
+    "merge_threshold": 10.893101889187372,
+    "kappa_operating": 1.2671588548682307,
+    "epsilon_global": 0.0005,
+    "n_eff": 10000,
+    "d_eff": 32.84418487548828,
+    "d_shell": 42.10902786254883,
+    "sigma_bound_pairwise": 11.32900440823568,
+    "sigma_bound_field": 7.262067926124915,
+    "density_bound": 0.0005000000000000006
+  },
+  "performance": {
+    "avg_base_log": 0.21638888888888888,
+    "avg_base_lin": 0.21638888888888888,
+    "avg_log": 0.8003333333333333,
+    "avg_lin": 0.9541666666666667,
+    "delta_avg_log": 0.5839444444444445,
+    "delta_avg_lin": 0.7377777777777779,
+    "A_after_D_log": 0.573,
+    "A_after_D_lin": 0.85,
+    "B_after_D_log": 0.775,
+    "B_after_D_lin": 0.98,
+    "C_after_D_log": 0.9866666666666667,
+    "C_after_D_lin": 0.9866666666666667,
+    "D_after_D_log": 0.8666666666666667,
+    "D_after_D_lin": 1.0,
+    "phase_rows": [
+      {
+        "phase": "A_Onboarding",
+        "base_log": 0.25,
+        "ibf_log": 0.573,
+        "delta_log": 0.32299999999999995,
+        "base_lin": 0.25,
+        "ibf_lin": 0.85,
+        "delta_lin": 0.6
+      },
+      {
+        "phase": "B_Initiative",
+        "base_log": 0.22,
+        "ibf_log": 0.775,
+        "delta_log": 0.555,
+        "base_lin": 0.22,
+        "ibf_lin": 0.98,
+        "delta_lin": 0.76
+      },
+      {
+        "phase": "C_Reorg",
+        "base_log": 0.24,
+        "ibf_log": 0.9866666666666667,
+        "delta_log": 0.7466666666666667,
+        "base_lin": 0.24,
+        "ibf_lin": 0.9866666666666667,
+        "delta_lin": 0.7466666666666667
+      },
+      {
+        "phase": "D_Turnover",
+        "base_log": 0.15555555555555556,
+        "ibf_log": 0.8666666666666667,
+        "delta_log": 0.7111111111111111,
+        "base_lin": 0.15555555555555556,
+        "ibf_lin": 1.0,
+        "delta_lin": 0.8444444444444444
+      }
+    ]
+  },
+  "engine": {
+    "n_value_centers": 6382,
+    "n_agency_centers": 2139,
+    "n_crystallized": 6382,
+    "crystallization_rate": 1.0,
+    "dissolutions": 18786,
+    "dissolutions_per_center": 2.94359135067377,
+    "v_abs_mean": 0.29644723782583066,
+    "v_abs_max": 2.81461385503361,
+    "runtime_minutes": 2107.1723689516384
+  },
+  "interpretation": {
+    "learning": "The field installs the Future Industries lifecycle strongly from a weak frozen-model baseline. Average linear accuracy reaches 0.9542 from a base average of 0.2164, a gain of 0.7378.",
+    "retention": "After all lifecycle phases, early knowledge remains highly available: A_after_D_lin=0.8500 and B_after_D_lin=0.9800. This indicates that later reorganization and turnover phases did not erase the earlier installed structure.",
+    "adaptation": "The reorganization and turnover phases are absorbed cleanly: C_after_D_lin=0.9867 and D_after_D_lin=1.0000. This supports the role of localized discrepancy-driven updates in adapting the correction field without retraining the frozen model.",
+    "field_health": "The engine ends with 6382 value centers, 6382 crystallized centers, and a crystallization rate of 1.0000. Dissolutions per value center are 2.9436, with |v|max=2.8146. This suggests a stable, granular correction field rather than amplitude-driven global forcing.",
+    "geometry": "The operating geometry uses \u03c3=7.2621 and \u03ba=1.2672 under \u03b5_global=0.000500 and N_eff=10000. Pairwise locality is treated as an upper bound, while aggregate field pressure determines the operating resolution.",
+    "core_takeaway": "The canonical run supports the current IBF durable-alignment hypothesis: durable correction is not only a memory problem, but a field-resolution problem. The frozen model remains unchanged; alignment is expressed through a bounded, localized correction field."
+  },
+  "artifact_paths": {
+    "canonical_results": "mmlu_ibf_out/canonical_training_results.json",
+    "canonical_metrics": "mmlu_ibf_out/canonical_metrics.pkl",
+    "canonical_engine": "mmlu_ibf_out/canonical_engine.pkl",
+    "geometry": "mmlu_ibf_out/representation_geometry_calibration.json"
+  }
+}

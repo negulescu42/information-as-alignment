@@ -1,0 +1,447 @@
+{
+  "meta": {
+    "cell": "23",
+    "name": "Truth-maintenance under local state evolution",
+    "legacy_name": "Forgetting diagnostic: backward-transfer decomposition",
+    "source": "canonical_metrics.pkl / in-memory all_evals",
+    "section": "Durability of Local Enforcement Under State and Base-Model Change",
+    "framing": "This diagnostic separates catastrophic forgetting from controlled truth-maintenance under local state evolution.",
+    "scope": "Diagnostic cell. It does not establish locality by itself unless ordinary controls are available and inspected."
+  },
+  "boundaries": [
+    "A_Onboarding",
+    "B_Initiative",
+    "C_Reorg",
+    "D_Turnover"
+  ],
+  "base": {
+    "base_acc_log": {
+      "A_Onboarding": 0.25,
+      "B_Initiative": 0.22,
+      "C_Reorg": 0.24,
+      "D_Turnover": 0.15555555555555556
+    },
+    "base_acc_lin": {
+      "A_Onboarding": 0.25,
+      "B_Initiative": 0.22,
+      "C_Reorg": 0.24,
+      "D_Turnover": 0.15555555555555556
+    }
+  },
+  "phase_a": {
+    "categories": [
+      "team",
+      "manager",
+      "project",
+      "mentor",
+      "location"
+    ],
+    "reorg_affected": [
+      "manager",
+      "project"
+    ],
+    "stable_categories": [
+      "team",
+      "mentor",
+      "location"
+    ],
+    "revision_categories": [
+      "manager",
+      "project"
+    ],
+    "matrix": {
+      "team": [
+        0.96,
+        0.94,
+        0.925,
+        0.885
+      ],
+      "manager": [
+        0.99,
+        0.985,
+        0.745,
+        0.735
+      ],
+      "project": [
+        0.995,
+        0.995,
+        0.89,
+        0.89
+      ],
+      "mentor": [
+        0.88,
+        0.865,
+        0.82,
+        0.79
+      ],
+      "location": [
+        0.955,
+        0.955,
+        0.955,
+        0.95
+      ]
+    },
+    "aggregate": [
+      0.956,
+      0.948,
+      0.867,
+      0.85
+    ],
+    "final": 0.85,
+    "total_backward_transfer": -0.10599999999999998,
+    "category_diagnostics": {
+      "team": {
+        "trajectory": [
+          0.96,
+          0.94,
+          0.925,
+          0.885
+        ],
+        "total_backward_transfer": -0.07499999999999996,
+        "state": "stable",
+        "deltas": [
+          -0.020000000000000018,
+          -0.014999999999999902,
+          -0.040000000000000036
+        ],
+        "max_drop_boundary": "C\u2192D",
+        "max_drop": -0.040000000000000036,
+        "diagnosis": "distributed drift / possible thermodynamic drain"
+      },
+      "manager": {
+        "trajectory": [
+          0.99,
+          0.985,
+          0.745,
+          0.735
+        ],
+        "total_backward_transfer": -0.255,
+        "state": "revised",
+        "deltas": [
+          -0.0050000000000000044,
+          -0.24,
+          -0.010000000000000009
+        ],
+        "max_drop_boundary": "B\u2192C",
+        "max_drop": -0.24,
+        "diagnosis": "localized state change at B\u2192C / consistent with reorg-driven retirement"
+      },
+      "project": {
+        "trajectory": [
+          0.995,
+          0.995,
+          0.89,
+          0.89
+        ],
+        "total_backward_transfer": -0.10499999999999998,
+        "state": "revised",
+        "deltas": [
+          0.0,
+          -0.10499999999999998,
+          0.0
+        ],
+        "max_drop_boundary": "B\u2192C",
+        "max_drop": -0.10499999999999998,
+        "diagnosis": "localized state change at B\u2192C / consistent with reorg-driven retirement"
+      },
+      "mentor": {
+        "trajectory": [
+          0.88,
+          0.865,
+          0.82,
+          0.79
+        ],
+        "total_backward_transfer": -0.08999999999999997,
+        "state": "stable",
+        "deltas": [
+          -0.015000000000000013,
+          -0.04500000000000004,
+          -0.029999999999999916
+        ],
+        "max_drop_boundary": "B\u2192C",
+        "max_drop": -0.04500000000000004,
+        "diagnosis": "distributed drift / possible thermodynamic drain"
+      },
+      "location": {
+        "trajectory": [
+          0.955,
+          0.955,
+          0.955,
+          0.95
+        ],
+        "total_backward_transfer": -0.0050000000000000044,
+        "state": "stable",
+        "deltas": [
+          0.0,
+          0.0,
+          -0.0050000000000000044
+        ],
+        "max_drop_boundary": "C\u2192D",
+        "max_drop": -0.0050000000000000044,
+        "diagnosis": "stable constraint retained"
+      }
+    }
+  },
+  "stable_category_retention": {
+    "items": {
+      "team": {
+        "after_A": 0.96,
+        "after_D": 0.885,
+        "BT_A_to_D": -0.07499999999999996,
+        "after_B_to_after_D": -0.05499999999999994,
+        "retained": false
+      },
+      "mentor": {
+        "after_A": 0.88,
+        "after_D": 0.79,
+        "BT_A_to_D": -0.08999999999999997,
+        "after_B_to_after_D": -0.07499999999999996,
+        "retained": false
+      },
+      "location": {
+        "after_A": 0.955,
+        "after_D": 0.95,
+        "BT_A_to_D": -0.0050000000000000044,
+        "after_B_to_after_D": -0.0050000000000000044,
+        "retained": true
+      }
+    },
+    "mean_BT_A_to_D": -0.05666666666666664,
+    "retained_rate": 0.3333333333333333
+  },
+  "phase_b": {
+    "categories": [
+      "certification",
+      "committee"
+    ],
+    "matrix": {
+      "certification": [
+        null,
+        0.97,
+        0.97,
+        0.965
+      ],
+      "committee": [
+        null,
+        0.995,
+        0.995,
+        0.995
+      ]
+    },
+    "aggregate": [
+      null,
+      0.9825,
+      0.9825,
+      0.98
+    ],
+    "final": 0.98,
+    "category_diagnostics": {
+      "certification": {
+        "trajectory": [
+          null,
+          0.97,
+          0.97,
+          0.965
+        ],
+        "BT_first_to_final": -0.0050000000000000044
+      },
+      "committee": {
+        "trajectory": [
+          null,
+          0.995,
+          0.995,
+          0.995
+        ],
+        "BT_first_to_final": 0.0
+      }
+    },
+    "BT_first_to_final": -0.0025000000000000577
+  },
+  "forgetting_decomposition": {
+    "A_to_B_cross_domain": -0.008000000000000007,
+    "B_to_C_reorg": -0.08099999999999996,
+    "C_to_D_turnover": -0.017000000000000015,
+    "total_A_to_D": -0.10599999999999998,
+    "dominant_boundary": "B_to_C_reorg",
+    "dominant_interpretation": "The largest state change is concentrated at the reorganization boundary. Together with the affected-vs-unaffected category split, this supports controlled truth-maintenance rather than generic catastrophic forgetting."
+  },
+  "reorg_selectivity": {
+    "affected_mean_B_to_C_delta": -0.1725,
+    "unaffected_mean_B_to_C_delta": -0.01999999999999998,
+    "selectivity_affected_minus_unaffected": -0.1525,
+    "interpretation": "Reorg impact is selective: affected categories degrade more than unaffected categories. This supports controlled truth-maintenance: contradicted local state is weakened or retired while stable categories are comparatively preserved."
+  },
+  "late_phase_final": {
+    "C_Reorg": {
+      "manager": {
+        "acc_lin": 0.98,
+        "n": 100
+      },
+      "project": {
+        "acc_lin": 1.0,
+        "n": 50
+      }
+    },
+    "D_Turnover": {
+      "manager": {
+        "acc_lin": 1.0,
+        "n": 30
+      },
+      "project": {
+        "acc_lin": 1.0,
+        "n": 30
+      },
+      "team": {
+        "acc_lin": 1.0,
+        "n": 30
+      }
+    }
+  },
+  "within_phase_training_dynamics": {
+    "A_Onboarding": {
+      "first_epoch": 1,
+      "last_epoch": 100,
+      "categories": {
+        "location": {
+          "start": 0.95,
+          "end": 0.955,
+          "delta": 0.0050000000000000044,
+          "min": 0.95,
+          "max": 0.955,
+          "monotonic": true
+        },
+        "manager": {
+          "start": 0.96,
+          "end": 0.99,
+          "delta": 0.030000000000000027,
+          "min": 0.96,
+          "max": 0.99,
+          "monotonic": true
+        },
+        "mentor": {
+          "start": 0.83,
+          "end": 0.88,
+          "delta": 0.050000000000000044,
+          "min": 0.83,
+          "max": 0.88,
+          "monotonic": true
+        },
+        "project": {
+          "start": 0.995,
+          "end": 0.995,
+          "delta": 0.0,
+          "min": 0.995,
+          "max": 0.995,
+          "monotonic": true
+        },
+        "team": {
+          "start": 0.925,
+          "end": 0.96,
+          "delta": 0.03499999999999992,
+          "min": 0.925,
+          "max": 0.96,
+          "monotonic": true
+        }
+      }
+    },
+    "B_Initiative": {
+      "first_epoch": 1,
+      "last_epoch": 100,
+      "categories": {
+        "certification": {
+          "start": 0.975,
+          "end": 0.97,
+          "delta": -0.0050000000000000044,
+          "min": 0.97,
+          "max": 0.975,
+          "monotonic": true
+        },
+        "committee": {
+          "start": 0.995,
+          "end": 0.995,
+          "delta": 0.0,
+          "min": 0.995,
+          "max": 0.995,
+          "monotonic": true
+        }
+      }
+    },
+    "C_Reorg": {
+      "first_epoch": 1,
+      "last_epoch": 100,
+      "categories": {
+        "manager": {
+          "start": 0.98,
+          "end": 0.98,
+          "delta": 0.0,
+          "min": 0.98,
+          "max": 0.98,
+          "monotonic": true
+        },
+        "project": {
+          "start": 1.0,
+          "end": 1.0,
+          "delta": 0.0,
+          "min": 1.0,
+          "max": 1.0,
+          "monotonic": true
+        }
+      }
+    },
+    "D_Turnover": {
+      "first_epoch": 1,
+      "last_epoch": 100,
+      "categories": {
+        "manager": {
+          "start": 1.0,
+          "end": 1.0,
+          "delta": 0.0,
+          "min": 1.0,
+          "max": 1.0,
+          "monotonic": true
+        },
+        "project": {
+          "start": 1.0,
+          "end": 1.0,
+          "delta": 0.0,
+          "min": 1.0,
+          "max": 1.0,
+          "monotonic": true
+        },
+        "team": {
+          "start": 1.0,
+          "end": 1.0,
+          "delta": 0.0,
+          "min": 1.0,
+          "max": 1.0,
+          "monotonic": true
+        }
+      }
+    }
+  },
+  "ordinary_controls": {
+    "available": false,
+    "note": "No ordinary/outside control metrics found in all_evals schema for this cell.",
+    "items": []
+  },
+  "dissolutions": {
+    "available": true,
+    "source": "mmlu_ibf_out/canonical_training_results.json",
+    "values": {
+      "dissolutions": 18786
+    },
+    "note": "Dissolution-like fields found in training-results JSON."
+  },
+  "criteria": {
+    "phase_a_final_above_base": true,
+    "phase_a_survival_not_collapsed": true,
+    "phase_a_forgetting_bounded": true,
+    "stable_categories_retained": false,
+    "reorg_selectivity_available": true,
+    "phase_b_survival_available": true
+  },
+  "status": "diagnostic_clean",
+  "paper_use": "diagnostic_support_only_until_controls_verified",
+  "known_caveat": "Ordinary/outside control metrics were not present in this cell schema. Use this result as a truth-maintenance decomposition, not a standalone locality/control claim.",
+  "final_interpretation": "This diagnostic separates catastrophic forgetting from controlled truth-maintenance. A degradation concentrated at revision boundaries is not automatically a failure; it may indicate that contradicted or obsolete local state is being retired. The key signal is whether unaffected categories and ordinary controls remain stable."
+}

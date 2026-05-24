@@ -1,0 +1,721 @@
+{
+  "artifact_status": [
+    {
+      "artifact": "canonical_results",
+      "block": "Canonical lifecycle",
+      "cell": "9-10",
+      "found": "yes",
+      "status": "smoke"
+    },
+    {
+      "artifact": "consistency_audit",
+      "block": "Consistency",
+      "cell": "11",
+      "found": "yes",
+      "status": "smoke"
+    },
+    {
+      "artifact": "provenance_samples",
+      "block": "Provenance",
+      "cell": "12",
+      "found": "yes",
+      "status": "smoke"
+    },
+    {
+      "artifact": "retraction_results",
+      "block": "Retraction",
+      "cell": "13",
+      "found": "no",
+      "status": "smoke"
+    },
+    {
+      "artifact": "selective_deletion",
+      "block": "Selective deletion",
+      "cell": "14",
+      "found": "yes",
+      "status": "smoke"
+    },
+    {
+      "artifact": "fi_strong_prior_pilot",
+      "block": "Strong prior",
+      "cell": "15",
+      "found": "yes",
+      "status": "smoke"
+    },
+    {
+      "artifact": "ontology_shift_results",
+      "block": "Ontology shift",
+      "cell": "16",
+      "found": "yes",
+      "status": "smoke"
+    },
+    {
+      "artifact": "fi_bridge_weak_strong_prior",
+      "block": "Bridge",
+      "cell": "17",
+      "found": "yes",
+      "status": "smoke"
+    },
+    {
+      "artifact": "fi_local_alignment_phase_transition",
+      "block": "Local alignment",
+      "cell": "18",
+      "found": "yes",
+      "status": "smoke"
+    },
+    {
+      "artifact": "fi_1k_rule_system_report",
+      "block": "1k rule system",
+      "cell": "19",
+      "found": "yes",
+      "status": "smoke"
+    },
+    {
+      "artifact": "fi_locality_bleed_test",
+      "block": "Locality / bleed",
+      "cell": "20",
+      "found": "yes",
+      "status": "smoke"
+    },
+    {
+      "artifact": "fi_scale_sweep / 21c",
+      "block": "Scale frontier",
+      "cell": "21",
+      "found": "yes",
+      "status": "smoke"
+    },
+    {
+      "artifact": "fi_long_horizon",
+      "block": "Long horizon",
+      "cell": "22",
+      "found": "yes",
+      "status": "smoke"
+    },
+    {
+      "artifact": "amplitude_hygiene",
+      "block": "Amplitude hygiene",
+      "cell": "22B",
+      "found": "yes",
+      "status": "smoke"
+    },
+    {
+      "artifact": "forgetting_diagnostic",
+      "block": "Forgetting",
+      "cell": "23",
+      "found": "yes",
+      "status": "smoke"
+    },
+    {
+      "artifact": "base perturbation durability",
+      "block": "LoRA durability",
+      "cell": "24D",
+      "found": "no",
+      "status": "smoke"
+    },
+    {
+      "artifact": "cross_model_generality",
+      "block": "Qwen replication",
+      "cell": "25",
+      "found": "yes",
+      "status": "smoke"
+    },
+    {
+      "artifact": "IBF/kNN/RAG comparison",
+      "block": "Benchmarks",
+      "cell": "27-33",
+      "found": "yes",
+      "status": "smoke"
+    },
+    {
+      "artifact": "geometry/sigma/anchor diagnostics",
+      "block": "CounterFact diagnostics",
+      "cell": "29P-R",
+      "found": "yes",
+      "status": "smoke"
+    }
+  ],
+  "created_at": "2026-05-17T16:09:36.877040Z",
+  "geometry": {
+    "agency_sigma": 4.8361292246445,
+    "merge_threshold": 10.893101889187372,
+    "sigma": 7.262067926124915,
+    "source_centers": 6381,
+    "source_crystallized": 3413,
+    "source_engine": "eng_fixed"
+  },
+  "layers": [
+    {
+      "conclusion": "This is the central paper spine. The current status is smoke unless the canonical artifacts were produced in full mode.",
+      "objective": "Test whether IBF can install, preserve, revise, and survive local beliefs across a structured lifecycle.",
+      "result": "The FI lifecycle is the core evidence that IBF is not a one-shot editor. It behaves like a local truth-maintenance layer over a frozen base model.",
+      "tables": [
+        "canonical_lifecycle"
+      ],
+      "title": "Layer 1 — Canonical durable lifecycle"
+    },
+    {
+      "conclusion": "These cells support the claim that IBF behaves like a bounded truth-maintenance substrate, not a black-box cache.",
+      "objective": "Show that the correction field is inspectable, auditable, and locally editable.",
+      "result": "Consistency, provenance, retraction, and selective deletion artifacts are present as mechanism readouts.",
+      "tables": [
+        "mechanism_readouts"
+      ],
+      "title": "Layer 2 — Mechanism evidence"
+    },
+    {
+      "conclusion": "This layer supports the robustness story. Some entries are main-text candidates; others are better treated as appendix diagnostics.",
+      "objective": "Test whether IBF survives stronger priors, ontology shifts, scale pressure, long-horizon updates, and amplitude-hygiene checks.",
+      "result": "The notebook includes strong-prior, ontology, bridge, locality, scale, long-horizon, amplitude, and forgetting diagnostics.",
+      "tables": [
+        "stress_hygiene"
+      ],
+      "title": "Layer 3 — Stress, locality, and hygiene"
+    },
+    {
+      "conclusion": "This is one of the strongest generality signals: same mechanism, different base distribution. Qwen is a fresh-field replication, not zero-shot transfer of the same delta_R.",
+      "objective": "Test whether IBF is tied to one exact frozen base model.",
+      "result": "The notebook includes actual LoRA durability evidence and Qwen2-1.5B cross-model replication.",
+      "tables": [
+        "substrate_qwen"
+      ],
+      "title": "Layer 4 — Substrate decoupling"
+    },
+    {
+      "conclusion": "The benchmark story is architectural: native lifecycle dynamics versus manual/oracle memory maintenance. External editors such as ROME, MEMIT, SERAC, GRACE, and WISE are not part of this scoped comparison.",
+      "objective": "Compare IBF with simpler memory systems on the same durable lifecycle harness.",
+      "result": "IBF, kNN, and RAG are compared on shared CounterFact/ZsRE lifecycle tasks. kNN and RAG receive manual/oracle lifecycle maintenance; IBF is evaluated as a native field.",
+      "tables": [
+        "harness",
+        "benchmarks"
+      ],
+      "title": "Layer 5 — Shared benchmark comparison"
+    },
+    {
+      "conclusion": "CounterFact paraphrase weakness is a representation/prompt-surface limitation under the direct-install protocol, not a lifecycle failure.",
+      "objective": "Explain the weak CounterFact paraphrase result instead of hiding it.",
+      "result": "The diagnostic cells show that failed CounterFact paraphrases are geometrically far from direct-edit anchors and receive weak delta_R. Widening sigma improves paraphrase only modestly and costs locality/revision/retention. One paraphrase anchor helps the installed paraphrase surface but not held-out paraphrases.",
+      "tables": [
+        "cf_geometry",
+        "cf_sigma",
+        "cf_anchor"
+      ],
+      "title": "Layer 6 — CounterFact paraphrase limitation"
+    }
+  ],
+  "scope": "IBF as local durable alignment layer over frozen LLMs",
+  "tables": {
+    "artifact_status": [
+      {
+        "artifact": "canonical_results",
+        "block": "Canonical lifecycle",
+        "cell": "9-10",
+        "found": "yes",
+        "status": "smoke"
+      },
+      {
+        "artifact": "consistency_audit",
+        "block": "Consistency",
+        "cell": "11",
+        "found": "yes",
+        "status": "smoke"
+      },
+      {
+        "artifact": "provenance_samples",
+        "block": "Provenance",
+        "cell": "12",
+        "found": "yes",
+        "status": "smoke"
+      },
+      {
+        "artifact": "retraction_results",
+        "block": "Retraction",
+        "cell": "13",
+        "found": "no",
+        "status": "smoke"
+      },
+      {
+        "artifact": "selective_deletion",
+        "block": "Selective deletion",
+        "cell": "14",
+        "found": "yes",
+        "status": "smoke"
+      },
+      {
+        "artifact": "fi_strong_prior_pilot",
+        "block": "Strong prior",
+        "cell": "15",
+        "found": "yes",
+        "status": "smoke"
+      },
+      {
+        "artifact": "ontology_shift_results",
+        "block": "Ontology shift",
+        "cell": "16",
+        "found": "yes",
+        "status": "smoke"
+      },
+      {
+        "artifact": "fi_bridge_weak_strong_prior",
+        "block": "Bridge",
+        "cell": "17",
+        "found": "yes",
+        "status": "smoke"
+      },
+      {
+        "artifact": "fi_local_alignment_phase_transition",
+        "block": "Local alignment",
+        "cell": "18",
+        "found": "yes",
+        "status": "smoke"
+      },
+      {
+        "artifact": "fi_1k_rule_system_report",
+        "block": "1k rule system",
+        "cell": "19",
+        "found": "yes",
+        "status": "smoke"
+      },
+      {
+        "artifact": "fi_locality_bleed_test",
+        "block": "Locality / bleed",
+        "cell": "20",
+        "found": "yes",
+        "status": "smoke"
+      },
+      {
+        "artifact": "fi_scale_sweep / 21c",
+        "block": "Scale frontier",
+        "cell": "21",
+        "found": "yes",
+        "status": "smoke"
+      },
+      {
+        "artifact": "fi_long_horizon",
+        "block": "Long horizon",
+        "cell": "22",
+        "found": "yes",
+        "status": "smoke"
+      },
+      {
+        "artifact": "amplitude_hygiene",
+        "block": "Amplitude hygiene",
+        "cell": "22B",
+        "found": "yes",
+        "status": "smoke"
+      },
+      {
+        "artifact": "forgetting_diagnostic",
+        "block": "Forgetting",
+        "cell": "23",
+        "found": "yes",
+        "status": "smoke"
+      },
+      {
+        "artifact": "base perturbation durability",
+        "block": "LoRA durability",
+        "cell": "24D",
+        "found": "no",
+        "status": "smoke"
+      },
+      {
+        "artifact": "cross_model_generality",
+        "block": "Qwen replication",
+        "cell": "25",
+        "found": "yes",
+        "status": "smoke"
+      },
+      {
+        "artifact": "IBF/kNN/RAG comparison",
+        "block": "Benchmarks",
+        "cell": "27-33",
+        "found": "yes",
+        "status": "smoke"
+      },
+      {
+        "artifact": "geometry/sigma/anchor diagnostics",
+        "block": "CounterFact diagnostics",
+        "cell": "29P-R",
+        "found": "yes",
+        "status": "smoke"
+      }
+    ],
+    "benchmarks": [
+      {
+        "benchmark": "counterfact",
+        "burden": "native",
+        "direct": "1.000",
+        "loc": "0.967",
+        "method": "IBF",
+        "multi": "0.310",
+        "para": "0.000",
+        "remove": "1.000",
+        "residue": "0.000",
+        "rev": "1.000",
+        "rollback": "1.000",
+        "status": "smoke"
+      },
+      {
+        "benchmark": "counterfact",
+        "burden": "manual",
+        "direct": "1.000",
+        "loc": "0.800",
+        "method": "kNN",
+        "multi": "0.964",
+        "para": "0.000",
+        "remove": "1.000",
+        "residue": "0.000",
+        "rev": "1.000",
+        "rollback": "0.833",
+        "status": "smoke"
+      },
+      {
+        "benchmark": "counterfact",
+        "burden": "oracle",
+        "direct": "0.300",
+        "loc": "0.867",
+        "method": "RAG",
+        "multi": "0.067",
+        "para": "0.100",
+        "remove": "1.000",
+        "residue": "0.000",
+        "rev": "0.000",
+        "rollback": "0.167",
+        "status": "smoke"
+      },
+      {
+        "benchmark": "zsre",
+        "burden": "native",
+        "direct": "1.000",
+        "loc": "1.000",
+        "method": "IBF",
+        "multi": "-",
+        "para": "0.800",
+        "remove": "1.000",
+        "residue": "0.000",
+        "rev": "1.000",
+        "rollback": "1.000",
+        "status": "smoke"
+      },
+      {
+        "benchmark": "zsre",
+        "burden": "manual",
+        "direct": "1.000",
+        "loc": "1.000",
+        "method": "kNN",
+        "multi": "-",
+        "para": "1.000",
+        "remove": "1.000",
+        "residue": "0.000",
+        "rev": "1.000",
+        "rollback": "0.667",
+        "status": "smoke"
+      },
+      {
+        "benchmark": "zsre",
+        "burden": "oracle",
+        "direct": "1.000",
+        "loc": "0.900",
+        "method": "RAG",
+        "multi": "-",
+        "para": "1.000",
+        "remove": "1.000",
+        "residue": "0.000",
+        "rev": "1.000",
+        "rollback": "1.000",
+        "status": "smoke"
+      }
+    ],
+    "canonical_lifecycle": [
+      {
+        "metric": "A after A",
+        "objective": "initial memory installation",
+        "phase": "A Onboarding",
+        "status": "smoke",
+        "value": "0.955"
+      },
+      {
+        "metric": "A after B / final",
+        "objective": "preserve early memory",
+        "phase": "A Retention",
+        "status": "smoke",
+        "value": "0.938"
+      },
+      {
+        "metric": "B after B",
+        "objective": "new facts after prior memory",
+        "phase": "B Initiative",
+        "status": "smoke",
+        "value": "0.983"
+      },
+      {
+        "metric": "C after C",
+        "objective": "belief revision",
+        "phase": "C Reorg",
+        "status": "smoke",
+        "value": "0.987"
+      },
+      {
+        "metric": "D after D",
+        "objective": "late acquisition",
+        "phase": "D Turnover",
+        "status": "smoke",
+        "value": "1.000"
+      }
+    ],
+    "cf_anchor": [
+      {
+        "anchor_para": "0.020",
+        "condition": "direct only",
+        "direct": "0.980",
+        "heldout_para": "0.020",
+        "loc": "0.947",
+        "multi": "0.414",
+        "residue": "0.000",
+        "retain": "0.950",
+        "rev": "1.000",
+        "status": "smoke"
+      },
+      {
+        "anchor_para": "0.600",
+        "condition": "direct + one paraphrase anchor",
+        "direct": "0.520",
+        "heldout_para": "0.020",
+        "loc": "0.953",
+        "multi": "0.262",
+        "residue": "0.000",
+        "retain": "0.350",
+        "rev": "1.000",
+        "status": "smoke"
+      }
+    ],
+    "cf_geometry": [
+      {
+        "dataset": "CounterFact",
+        "direct": "0.980",
+        "direct_ok_para_fail": "96",
+        "fail_dR": "0.269",
+        "fail_dist": "16.400",
+        "para": "0.020",
+        "status": "smoke",
+        "success_dR": "1.363",
+        "success_dist": "7.707"
+      },
+      {
+        "dataset": "ZsRE",
+        "direct": "1.000",
+        "direct_ok_para_fail": "3",
+        "fail_dR": "0.486",
+        "fail_dist": "14.085",
+        "para": "0.940",
+        "status": "smoke",
+        "success_dR": "1.854",
+        "success_dist": "4.919"
+      }
+    ],
+    "cf_sigma": [
+      {
+        "direct": "0.980",
+        "loc": "0.947",
+        "multi": "0.414",
+        "para": "0.020",
+        "remove": "1.000",
+        "residue": "0.000",
+        "retain": "0.950",
+        "rev": "1.000",
+        "sigma": "7.2621",
+        "status": "smoke"
+      },
+      {
+        "direct": "0.920",
+        "loc": "0.860",
+        "multi": "0.579",
+        "para": "0.040",
+        "remove": "1.000",
+        "residue": "0.000",
+        "retain": "0.900",
+        "rev": "0.967",
+        "sigma": "8.5000",
+        "status": "smoke"
+      },
+      {
+        "direct": "0.700",
+        "loc": "0.640",
+        "multi": "0.628",
+        "para": "0.100",
+        "remove": "1.000",
+        "residue": "0.000",
+        "retain": "0.700",
+        "rev": "0.667",
+        "sigma": "10.8931",
+        "status": "smoke"
+      },
+      {
+        "direct": "0.600",
+        "loc": "0.673",
+        "multi": "0.545",
+        "para": "0.150",
+        "remove": "1.000",
+        "residue": "0.000",
+        "retain": "0.700",
+        "rev": "0.600",
+        "sigma": "11.3290",
+        "status": "smoke"
+      }
+    ],
+    "harness": [
+      {
+        "benchmark": "counterfact",
+        "scenarios": "200",
+        "status": "smoke",
+        "tasks": "3576"
+      },
+      {
+        "benchmark": "zsre",
+        "scenarios": "200",
+        "status": "smoke",
+        "tasks": "1800"
+      }
+    ],
+    "mechanism_readouts": [
+      {
+        "cell": "11",
+        "experiment": "Consistency audit",
+        "objective": "whole belief-state check",
+        "result": "artifact present",
+        "status": "smoke"
+      },
+      {
+        "cell": "12",
+        "experiment": "Provenance",
+        "objective": "trace local contributors",
+        "result": "artifact present",
+        "status": "smoke"
+      },
+      {
+        "cell": "13",
+        "experiment": "Retraction",
+        "objective": "contradiction-driven removal",
+        "result": "missing",
+        "status": "smoke"
+      },
+      {
+        "cell": "14",
+        "experiment": "Selective deletion",
+        "objective": "local erasure",
+        "result": "artifact present",
+        "status": "smoke"
+      }
+    ],
+    "stress_hygiene": [
+      {
+        "cell": "15",
+        "experiment": "Strong prior",
+        "objective": "override base priors",
+        "result": "artifact present",
+        "status": "smoke"
+      },
+      {
+        "cell": "16",
+        "experiment": "Ontology shift",
+        "objective": "coordinated local reality shift",
+        "result": "artifact present",
+        "status": "smoke"
+      },
+      {
+        "cell": "17",
+        "experiment": "Bridge",
+        "objective": "weak-to-strong prior continuity",
+        "result": "artifact present",
+        "status": "smoke"
+      },
+      {
+        "cell": "18",
+        "experiment": "Local alignment",
+        "objective": "contradiction transition",
+        "result": "artifact present",
+        "status": "smoke"
+      },
+      {
+        "cell": "19",
+        "experiment": "1k rule system",
+        "objective": "larger local rule set",
+        "result": "artifact present",
+        "status": "smoke"
+      },
+      {
+        "cell": "20",
+        "experiment": "Locality / bleed",
+        "objective": "spillover control",
+        "result": "artifact present",
+        "status": "smoke"
+      },
+      {
+        "cell": "21",
+        "experiment": "Scale frontier",
+        "objective": "capacity pressure",
+        "result": "artifact present",
+        "status": "smoke"
+      },
+      {
+        "cell": "22",
+        "experiment": "Long horizon",
+        "objective": "repeated update stability",
+        "result": "artifact present",
+        "status": "smoke"
+      },
+      {
+        "cell": "22B",
+        "experiment": "Amplitude hygiene",
+        "objective": "boundedness check",
+        "result": "artifact present",
+        "status": "smoke"
+      },
+      {
+        "cell": "23",
+        "experiment": "Forgetting",
+        "objective": "state retention/decay",
+        "result": "artifact present",
+        "status": "smoke"
+      }
+    ],
+    "substrate_qwen": [
+      {
+        "delta": "-0.004",
+        "metric": "Act 1: Knowledge injection",
+        "mistral": "0.951",
+        "qwen": "0.947"
+      },
+      {
+        "delta": "-0.007",
+        "metric": "Act 2: Phase A retention",
+        "mistral": "0.946",
+        "qwen": "0.939"
+      },
+      {
+        "delta": "-0.265",
+        "metric": "Act 2: New facts",
+        "mistral": "0.985",
+        "qwen": "0.720"
+      },
+      {
+        "delta": "0.007",
+        "metric": "Act 3: Belief revision",
+        "mistral": "0.987",
+        "qwen": "0.993"
+      },
+      {
+        "delta": "-0.067",
+        "metric": "Act 4: New hire acquisition",
+        "mistral": "1.000",
+        "qwen": "0.933"
+      },
+      {
+        "delta": "0.007",
+        "metric": "Act 4: Phase A survival",
+        "mistral": "0.922",
+        "qwen": "0.929"
+      }
+    ]
+  },
+  "title": "Final Public Synthesis Report"
+}

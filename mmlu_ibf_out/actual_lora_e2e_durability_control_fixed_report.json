@@ -1,0 +1,407 @@
+{
+  "meta": {
+    "cell": "24D",
+    "name": "End-to-end actual LoRA durability test \u2014 control-fixed",
+    "section": "Durability of Local Enforcement Under State and Base-Model Change",
+    "role_in_final_notebook": "promote_to_main_Cell_24_if_clean",
+    "narrow_question": "Does a fixed post-\u03c3 IBF correction field remain effective after the actual base model is modified by LoRA, with no IBF retraining, while genuinely unrelated ordinary controls remain stable?",
+    "interpretation": "This control-fixed end-to-end test modifies the actual base model with a light LoRA adapter, recomputes R_base on the same target and off-manifold filtered-control items, and evaluates the same frozen post-\u03c3 \u03b4R field without any IBF updates. A clean result supports substrate decoupling: LoRA changes R_base, while the orthogonal \u03b4R field remains fixed and continues to enforce local corrections without damaging genuinely unrelated ordinary controls.",
+    "control_design": "Off-manifold unrelated ordinary corporate questions, double-filtered by real R_base and R_base+\u03b4R before LoRA."
+  },
+  "config": {
+    "model_id": "mistralai/Mistral-7B-v0.1",
+    "load_4bit": false,
+    "control_pool_n": 1600,
+    "control_target_n": 200,
+    "chosen_threshold": {
+      "base_margin_threshold": 1.0,
+      "combined_margin_threshold": 1.0
+    },
+    "lora_rank": 8,
+    "lora_alpha": 16,
+    "lora_dropout": 0.0,
+    "lora_lr": 0.0002,
+    "lora_steps": 24,
+    "lora_batch": 2,
+    "target_modules": [
+      "q_proj",
+      "v_proj"
+    ],
+    "trainable_params": 3407872,
+    "total_params": 7245139968,
+    "loss_history": [
+      3.936540365219116,
+      4.00225305557251,
+      3.4648683071136475,
+      3.330380916595459,
+      3.3067164421081543,
+      2.772784471511841,
+      2.4412753582000732,
+      2.639535903930664,
+      2.0926947593688965,
+      2.074922561645508,
+      1.680743932723999,
+      1.8828213214874268,
+      2.0173451900482178,
+      1.6909087896347046,
+      1.5054353475570679,
+      1.8106472492218018,
+      2.4831724166870117,
+      1.5051708221435547,
+      1.0134618282318115,
+      1.3520193099975586,
+      1.5755610466003418,
+      1.1590977907180786,
+      0.9966939091682434,
+      0.9727531671524048
+    ]
+  },
+  "dataset": {
+    "target_items": 150000,
+    "control_candidates": 1600,
+    "selected_filtered_controls": 200,
+    "mean_base_margin_before_lora": 2.2196874618530273,
+    "mean_combined_margin_before_lora": 2.2196874618530273,
+    "min_base_margin_before_lora": 1.062499761581421,
+    "min_combined_margin_before_lora": 1.062499761581421
+  },
+  "before_lora": {
+    "target_base_only": {
+      "all": {
+        "target_acc": 0.22083333333333333,
+        "base_rate": 0.2708333333333333,
+        "fi_rate": 0.22083333333333333,
+        "other_rate": 0.5083333333333333,
+        "mean_target_minus_base_margin": -0.39322912444670993,
+        "min_target_minus_base_margin": -1.8125,
+        "n": 240
+      },
+      "weak": {
+        "target_acc": 0.2833333333333333,
+        "base_rate": 0.275,
+        "fi_rate": 0.2833333333333333,
+        "other_rate": 0.44166666666666665,
+        "mean_target_minus_base_margin": -0.3651041289170583,
+        "min_target_minus_base_margin": -1.75,
+        "n": 120
+      },
+      "strong": {
+        "target_acc": 0.15833333333333333,
+        "base_rate": 0.26666666666666666,
+        "fi_rate": 0.15833333333333333,
+        "other_rate": 0.575,
+        "mean_target_minus_base_margin": -0.4213541199763616,
+        "min_target_minus_base_margin": -1.8125,
+        "n": 120
+      }
+    },
+    "target_with_ibf": {
+      "all": {
+        "target_acc": 0.225,
+        "base_rate": 0.26666666666666666,
+        "fi_rate": 0.225,
+        "other_rate": 0.5083333333333333,
+        "mean_target_minus_base_margin": -0.3932291696468989,
+        "min_target_minus_base_margin": -1.8125,
+        "mean_fi_minus_base_margin": -0.03958331942558289,
+        "mean_dR_target": -1.3511646851869454e-08,
+        "mean_dR_base": -2.5892208622609147e-08,
+        "mean_base_logprob_target": -1.4848110191524029,
+        "mean_base_logprob_base": -1.4452276897927125,
+        "n": 240
+      },
+      "weak": {
+        "target_acc": 0.2916666666666667,
+        "base_rate": 0.26666666666666666,
+        "fi_rate": 0.2916666666666667,
+        "other_rate": 0.44166666666666665,
+        "mean_target_minus_base_margin": -0.3651042953133583,
+        "min_target_minus_base_margin": -1.75,
+        "mean_fi_minus_base_margin": -0.04739579161008199,
+        "mean_dR_target": 1.5547432936444268e-09,
+        "mean_dR_base": -4.182414954879629e-08,
+        "mean_base_logprob_target": -1.4677863255143166,
+        "mean_base_logprob_base": -1.42039049466451,
+        "n": 120
+      },
+      "strong": {
+        "target_acc": 0.15833333333333333,
+        "base_rate": 0.26666666666666666,
+        "fi_rate": 0.15833333333333333,
+        "other_rate": 0.575,
+        "mean_target_minus_base_margin": -0.4213540439804395,
+        "min_target_minus_base_margin": -1.8125,
+        "mean_fi_minus_base_margin": -0.03177084724108378,
+        "mean_dR_target": -2.8578036997383335e-08,
+        "mean_dR_base": -9.960267696422006e-09,
+        "mean_base_logprob_target": -1.501835712790489,
+        "mean_base_logprob_base": -1.470064884920915,
+        "n": 120
+      }
+    },
+    "control_base_only": {
+      "all": {
+        "target_acc": 1.0,
+        "base_rate": 1.0,
+        "fi_rate": 0.0,
+        "other_rate": 0.0,
+        "mean_target_minus_base_margin": 2.2196873688697814,
+        "min_target_minus_base_margin": 1.062499761581421,
+        "n": 200
+      },
+      "weak": {
+        "target_acc": null,
+        "base_rate": null,
+        "fi_rate": null,
+        "other_rate": null,
+        "mean_target_minus_base_margin": null,
+        "min_target_minus_base_margin": null,
+        "n": 0
+      },
+      "strong": {
+        "target_acc": null,
+        "base_rate": null,
+        "fi_rate": null,
+        "other_rate": null,
+        "mean_target_minus_base_margin": null,
+        "min_target_minus_base_margin": null,
+        "n": 0
+      }
+    },
+    "control_with_ibf": {
+      "all": {
+        "target_acc": 1.0,
+        "base_rate": 1.0,
+        "fi_rate": 0.0,
+        "other_rate": 0.0,
+        "mean_target_minus_base_margin": 2.21968740940094,
+        "min_target_minus_base_margin": 1.062499761581421,
+        "mean_fi_minus_base_margin": -2.615624760389328,
+        "mean_dR_target": 7.045636884191013e-09,
+        "mean_dR_base": 7.045636884191013e-09,
+        "mean_base_logprob_target": -0.2217273757327348,
+        "mean_base_logprob_base": -0.2217273757327348,
+        "n": 200
+      },
+      "weak": {
+        "target_acc": null,
+        "base_rate": null,
+        "fi_rate": null,
+        "other_rate": null,
+        "mean_target_minus_base_margin": null,
+        "min_target_minus_base_margin": null,
+        "mean_fi_minus_base_margin": null,
+        "mean_dR_target": null,
+        "mean_dR_base": null,
+        "mean_base_logprob_target": null,
+        "mean_base_logprob_base": null,
+        "n": 0
+      },
+      "strong": {
+        "target_acc": null,
+        "base_rate": null,
+        "fi_rate": null,
+        "other_rate": null,
+        "mean_target_minus_base_margin": null,
+        "min_target_minus_base_margin": null,
+        "mean_fi_minus_base_margin": null,
+        "mean_dR_target": null,
+        "mean_dR_base": null,
+        "mean_base_logprob_target": null,
+        "mean_base_logprob_base": null,
+        "n": 0
+      }
+    }
+  },
+  "after_lora": {
+    "target_base_only": {
+      "all": {
+        "target_acc": 0.22916666666666666,
+        "base_rate": 0.30416666666666664,
+        "fi_rate": 0.22916666666666666,
+        "other_rate": 0.4666666666666667,
+        "mean_target_minus_base_margin": -0.3627603717148304,
+        "min_target_minus_base_margin": -2.124999761581421,
+        "n": 240
+      },
+      "weak": {
+        "target_acc": 0.25,
+        "base_rate": 0.31666666666666665,
+        "fi_rate": 0.25,
+        "other_rate": 0.43333333333333335,
+        "mean_target_minus_base_margin": -0.34947912245988844,
+        "min_target_minus_base_margin": -1.749999761581421,
+        "n": 120
+      },
+      "strong": {
+        "target_acc": 0.20833333333333334,
+        "base_rate": 0.2916666666666667,
+        "fi_rate": 0.20833333333333334,
+        "other_rate": 0.5,
+        "mean_target_minus_base_margin": -0.37604162096977234,
+        "min_target_minus_base_margin": -2.124999761581421,
+        "n": 120
+      }
+    },
+    "target_with_ibf": {
+      "all": {
+        "target_acc": 0.22916666666666666,
+        "base_rate": 0.3,
+        "fi_rate": 0.22916666666666666,
+        "other_rate": 0.4708333333333333,
+        "mean_target_minus_base_margin": -0.3627603858709335,
+        "min_target_minus_base_margin": -2.124999761581421,
+        "mean_fi_minus_base_margin": -0.01536456992228826,
+        "mean_dR_target": -1.3511646851869454e-08,
+        "mean_dR_base": -2.5892208622609147e-08,
+        "mean_base_logprob_target": -1.4705502110222974,
+        "mean_base_logprob_base": -1.4551856324076653,
+        "n": 240
+      },
+      "weak": {
+        "target_acc": 0.25,
+        "base_rate": 0.31666666666666665,
+        "fi_rate": 0.25,
+        "other_rate": 0.43333333333333335,
+        "mean_target_minus_base_margin": -0.34947922378778457,
+        "min_target_minus_base_margin": -1.749999761581421,
+        "mean_fi_minus_base_margin": -0.03124995877345403,
+        "mean_dR_target": 1.5547432936444268e-09,
+        "mean_dR_base": -4.182414954879629e-08,
+        "mean_base_logprob_target": -1.4588514020045598,
+        "mean_base_logprob_base": -1.427601404984792,
+        "n": 120
+      },
+      "strong": {
+        "target_acc": 0.20833333333333334,
+        "base_rate": 0.2833333333333333,
+        "fi_rate": 0.20833333333333334,
+        "other_rate": 0.5083333333333333,
+        "mean_target_minus_base_margin": -0.3760415479540825,
+        "min_target_minus_base_margin": -2.124999761581421,
+        "mean_fi_minus_base_margin": 0.0005208189288775126,
+        "mean_dR_target": -2.8578036997383335e-08,
+        "mean_dR_base": -9.960267696422006e-09,
+        "mean_base_logprob_target": -1.4822490200400353,
+        "mean_base_logprob_base": -1.4827698598305383,
+        "n": 120
+      }
+    },
+    "control_base_only": {
+      "all": {
+        "target_acc": 1.0,
+        "base_rate": 1.0,
+        "fi_rate": 0.0,
+        "other_rate": 0.0,
+        "mean_target_minus_base_margin": 2.6521872347593307,
+        "min_target_minus_base_margin": 0.375,
+        "n": 200
+      },
+      "weak": {
+        "target_acc": null,
+        "base_rate": null,
+        "fi_rate": null,
+        "other_rate": null,
+        "mean_target_minus_base_margin": null,
+        "min_target_minus_base_margin": null,
+        "n": 0
+      },
+      "strong": {
+        "target_acc": null,
+        "base_rate": null,
+        "fi_rate": null,
+        "other_rate": null,
+        "mean_target_minus_base_margin": null,
+        "min_target_minus_base_margin": null,
+        "n": 0
+      }
+    },
+    "control_with_ibf": {
+      "all": {
+        "target_acc": 1.0,
+        "base_rate": 1.0,
+        "fi_rate": 0.0,
+        "other_rate": 0.0,
+        "mean_target_minus_base_margin": 2.652187289595604,
+        "min_target_minus_base_margin": 0.375,
+        "mean_fi_minus_base_margin": -3.097187050282955,
+        "mean_dR_target": 7.045636884191013e-09,
+        "mean_dR_base": 7.045636884191013e-09,
+        "mean_base_logprob_target": -0.17127678306307645,
+        "mean_base_logprob_base": -0.17127678306307645,
+        "n": 200
+      },
+      "weak": {
+        "target_acc": null,
+        "base_rate": null,
+        "fi_rate": null,
+        "other_rate": null,
+        "mean_target_minus_base_margin": null,
+        "min_target_minus_base_margin": null,
+        "mean_fi_minus_base_margin": null,
+        "mean_dR_target": null,
+        "mean_dR_base": null,
+        "mean_base_logprob_target": null,
+        "mean_base_logprob_base": null,
+        "n": 0
+      },
+      "strong": {
+        "target_acc": null,
+        "base_rate": null,
+        "fi_rate": null,
+        "other_rate": null,
+        "mean_target_minus_base_margin": null,
+        "min_target_minus_base_margin": null,
+        "mean_fi_minus_base_margin": null,
+        "mean_dR_target": null,
+        "mean_dR_base": null,
+        "mean_base_logprob_target": null,
+        "mean_base_logprob_base": null,
+        "n": 0
+      }
+    }
+  },
+  "deltas": {
+    "weak_target_drop": 0.041666666666666685,
+    "strong_target_drop": -0.05000000000000002,
+    "filtered_control_delta": 0.0
+  },
+  "base_shift": {
+    "target": {
+      "argmax_shift_rate": 0.32232,
+      "mean_abs_prob_delta": 0.032377589493989944,
+      "max_abs_prob_delta": 0.258730947971344,
+      "mean_target_logprob_delta": 0.014260808005928993,
+      "mean_base_logprob_delta": -0.009957942180335522
+    },
+    "control": {
+      "argmax_shift_rate": 0.0,
+      "mean_abs_prob_delta": 0.037771739065647125,
+      "max_abs_prob_delta": 0.23231607675552368,
+      "mean_target_logprob_delta": 0.05045059323310852,
+      "mean_base_logprob_delta": 0.05045059323310852
+    }
+  },
+  "field": {
+    "centers_before_lora_eval": 6382,
+    "centers_after_lora_eval": 6382,
+    "center_count_unchanged": true,
+    "no_post_lora_ibf_updates": true
+  },
+  "criteria": {
+    "actual_lora_ran": true,
+    "offmanifold_controls_used": true,
+    "valid_controls_at_least_200_if_possible": true,
+    "controls_prefilter_base_before": true,
+    "controls_prefilter_combined_before": true,
+    "base_argmax_shift_targets_gt_0_10": true,
+    "weak_target_drop_le_0_05": true,
+    "strong_target_drop_le_0_05": true,
+    "filtered_controls_after_ge_0_95_or_delta_ge_minus_0_02": true,
+    "center_count_unchanged": true,
+    "no_post_lora_ibf_updates": true
+  },
+  "status": "clean_actual_lora_e2e_control_fixed",
+  "paper_use": "paper_usable_as_main_base_model_evolution_durability_test",
+  "known_caveat": "Single light LoRA condition on a small generic/instruction corpus; not a full robustness suite."
+}

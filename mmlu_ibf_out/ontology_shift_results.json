@@ -1,0 +1,171 @@
+{
+  "schema_version": "ontology_shift.strong_smoke.v2",
+  "meta": {
+    "experiment": "Future Industries systemic ontology shift",
+    "mode": "strong_smoke",
+    "n_rules": 10,
+    "n_train": 20,
+    "n_test": 30,
+    "n_control": 20,
+    "max_epochs": 2,
+    "base_prob": 0.957,
+    "target_prob": 0.015,
+    "locked_sigma": 7.262067926124915,
+    "locked_merge": 10.893101889187372,
+    "push_meta": {
+      "mean_log_gap": 4.155752658843994,
+      "median_log_gap": 4.155752658843994,
+      "max_log_gap": 4.155752658843994,
+      "push_mean": 2.499999996992122,
+      "push_min": 2.4999999969921216,
+      "push_max": 2.4999999969921216
+    },
+    "readout": "exact",
+    "geometry": {
+      "sigma_operating": 7.262067926124915,
+      "kappa_operating": 1.2671588548682307,
+      "epsilon_global": 0.0005,
+      "n_eff": 10000,
+      "d_eff": 32.84418487548828,
+      "d_shell": 42.10902786254883
+    }
+  },
+  "before": {
+    "ontology_test": {
+      "target_acc": 0.0,
+      "base_rate": 1.0,
+      "fi_rate": 0.0,
+      "other_rate": 0.0,
+      "mean_fi_minus_base_margin": -4.155752794410051,
+      "min_fi_minus_base_margin": -4.155753257886174,
+      "cross_paraphrase_consistency": 0.0,
+      "mean_abs_dR": 4.189006725558185e-08,
+      "readout": "exact"
+    },
+    "ontology_control": {
+      "target_acc": 1.0,
+      "base_rate": 1.0,
+      "fi_rate": 0.0,
+      "other_rate": 0.0,
+      "mean_fi_minus_base_margin": -4.2012147650719145,
+      "min_fi_minus_base_margin": -4.201215171509323,
+      "cross_paraphrase_consistency": 1.0,
+      "mean_abs_dR": 1.6068181937892523e-07,
+      "readout": "exact"
+    },
+    "A_retention_log": 0.573,
+    "A_retention_lin": 0.85
+  },
+  "after": {
+    "ontology_test": {
+      "target_acc": 1.0,
+      "base_rate": 0.0,
+      "fi_rate": 1.0,
+      "other_rate": 0.0,
+      "mean_fi_minus_base_margin": 2.725637318919513,
+      "min_fi_minus_base_margin": 2.7089155403302883,
+      "cross_paraphrase_consistency": 1.0,
+      "mean_abs_dR": 1.7302990886006226,
+      "readout": "exact"
+    },
+    "ontology_control": {
+      "target_acc": 1.0,
+      "base_rate": 1.0,
+      "fi_rate": 0.0,
+      "other_rate": 0.0,
+      "mean_fi_minus_base_margin": -4.200218399508403,
+      "min_fi_minus_base_margin": -4.201215954987656,
+      "cross_paraphrase_consistency": 1.0,
+      "mean_abs_dR": 0.00026040116014857794,
+      "readout": "exact"
+    },
+    "A_retention_log": 0.573,
+    "A_retention_lin": 0.85
+  },
+  "history": [
+    {
+      "epoch": 1,
+      "test_eval": {
+        "target_acc": 0.0,
+        "base_rate": 1.0,
+        "fi_rate": 0.0,
+        "other_rate": 0.0,
+        "mean_fi_minus_base_margin": -0.7150577377452693,
+        "min_fi_minus_base_margin": -0.7234186190626937,
+        "cross_paraphrase_consistency": 0.0,
+        "mean_abs_dR": 0.8651495423891651,
+        "readout": "exact"
+      },
+      "control_eval": {
+        "target_acc": 1.0,
+        "base_rate": 1.0,
+        "fi_rate": 0.0,
+        "other_rate": 0.0,
+        "mean_fi_minus_base_margin": -4.200716582290157,
+        "min_fi_minus_base_margin": -4.20121541106227,
+        "cross_paraphrase_consistency": 1.0,
+        "mean_abs_dR": 0.00013022480022533838,
+        "readout": "exact"
+      },
+      "A_retention_log": 0.573,
+      "A_retention_lin": 0.85,
+      "score": 0.85,
+      "centers": 6402,
+      "crystallized": 6382,
+      "vmax": 2.81461385503361
+    },
+    {
+      "epoch": 2,
+      "test_eval": {
+        "target_acc": 1.0,
+        "base_rate": 0.0,
+        "fi_rate": 1.0,
+        "other_rate": 0.0,
+        "mean_fi_minus_base_margin": 2.725637318919513,
+        "min_fi_minus_base_margin": 2.7089155403302883,
+        "cross_paraphrase_consistency": 1.0,
+        "mean_abs_dR": 1.7302990886006226,
+        "readout": "exact"
+      },
+      "control_eval": {
+        "target_acc": 1.0,
+        "base_rate": 1.0,
+        "fi_rate": 0.0,
+        "other_rate": 0.0,
+        "mean_fi_minus_base_margin": -4.200218399508403,
+        "min_fi_minus_base_margin": -4.201215954987656,
+        "cross_paraphrase_consistency": 1.0,
+        "mean_abs_dR": 0.00026040116014857794,
+        "readout": "exact"
+      },
+      "A_retention_log": 0.573,
+      "A_retention_lin": 0.85,
+      "score": 2.85,
+      "centers": 6402,
+      "crystallized": 6382,
+      "vmax": 4.914000028316519
+    }
+  ],
+  "criteria": {
+    "fi_truth_rises": true,
+    "base_rate_drops": true,
+    "control_stable": true,
+    "A_retention_stable": true,
+    "margin_moves": true,
+    "field_wrote_centers": true
+  },
+  "pass": true,
+  "field": {
+    "centers_before": 6382,
+    "centers_after": 6402,
+    "crystallized_after": 6382,
+    "vmax_after": 4.914000028316519
+  },
+  "interpretation": {
+    "ontology_shift": "The test installs FI-specific meanings for 10 concepts against strong common meanings. FI target accuracy changes from 0.000 to 1.000.",
+    "strong_prior_reversal": "The mean FI-minus-base margin moves from -4.156 to +2.726.",
+    "control_preservation": "Common-meaning controls remain 1.000 \u2192 1.000; A_Onboarding retention remains 0.850 \u2192 0.850.",
+    "method_relevance": "This tests whether IBF can represent a local ontology, not merely a list of facts: inside FI, the same words can point to different operational meanings without globally changing ordinary language.",
+    "durable_alignment_relevance": "This is the semantic version of policy alignment: a frozen model keeps its ordinary meaning outside the context, while FI-specific meanings dominate inside the local operational field."
+  }
+}

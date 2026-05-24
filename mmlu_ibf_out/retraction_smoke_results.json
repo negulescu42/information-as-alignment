@@ -1,0 +1,150 @@
+{
+  "schema_version": "retraction_via_contradiction.strong_smoke.v4",
+  "meta": {
+    "mode": "strong_smoke",
+    "run_full_retraction": false,
+    "canonical_engine_restored_at_start": true,
+    "n_targets": 50,
+    "n_near_neighbors": 50,
+    "n_distant": 50,
+    "retraction_categories": [
+      "team",
+      "manager",
+      "project"
+    ],
+    "context_written_to": 0,
+    "n_phase_r_items_full": 1500,
+    "geometry": {
+      "sigma_operating": 7.262067926124915,
+      "kappa_operating": 1.2671588548682307,
+      "epsilon_global": 0.0005,
+      "n_eff": 10000,
+      "d_eff": 32.84418487548828,
+      "d_shell": 42.10902786254883
+    }
+  },
+  "small_smoke": {
+    "n_targets": 5,
+    "n_epochs": 2,
+    "trajectory": {
+      "epochs": [
+        0,
+        2
+      ],
+      "target_original": [
+        0.8,
+        0.2
+      ],
+      "target_new": [
+        0.06666666666666667,
+        0.8
+      ],
+      "near_neighbor": [
+        0.8466666666666667,
+        0.8466666666666667
+      ],
+      "distant": [
+        0.86,
+        0.86
+      ],
+      "v_max": [
+        2.81461385503361,
+        2.808987441937398
+      ],
+      "n_dissolved": [
+        0,
+        10
+      ],
+      "elapsed_seconds": 83.3377742767334,
+      "epoch_seconds": [
+        41.34608030319214,
+        41.356560468673706
+      ],
+      "dissolution_localization_total": {
+        "targets": 0,
+        "near_neighbor_controls": 0,
+        "distant_controls": 0,
+        "tracked_other": 0,
+        "untracked": 0
+      }
+    },
+    "passed": true,
+    "drop_original": 0.6000000000000001,
+    "rise_new": 0.7333333333333334,
+    "near_neighbor_drift": 0.0,
+    "orig_gate": true,
+    "new_gate": true,
+    "near_neighbor_gate": true
+  },
+  "strong_smoke": {
+    "n_targets": 50,
+    "n_epochs": 2,
+    "trajectory": {
+      "epochs": [
+        0,
+        2
+      ],
+      "target_original": [
+        0.8133333333333334,
+        0.26666666666666666
+      ],
+      "target_new": [
+        0.10666666666666667,
+        0.7266666666666667
+      ],
+      "near_neighbor": [
+        0.8466666666666667,
+        0.8466666666666667
+      ],
+      "distant": [
+        0.86,
+        0.86
+      ],
+      "v_max": [
+        2.81461385503361,
+        2.9165838447539603
+      ],
+      "n_dissolved": [
+        0,
+        68
+      ],
+      "elapsed_seconds": 380.55144476890564,
+      "epoch_seconds": [
+        191.05833554267883,
+        188.2739245891571
+      ],
+      "dissolution_localization_total": {
+        "targets": 2,
+        "near_neighbor_controls": 0,
+        "distant_controls": 0,
+        "tracked_other": 0,
+        "untracked": 0
+      }
+    },
+    "passed": true,
+    "drop_original": 0.5466666666666666,
+    "rise_new": 0.62,
+    "near_neighbor_drift": 0.0,
+    "distant_drift": 0.0,
+    "orig_gate": true,
+    "new_gate": true,
+    "near_neighbor_gate": true,
+    "distant_gate": true,
+    "selectivity_vs_near_neighbor": 620000000.0,
+    "selectivity_vs_distant": 620000000.0,
+    "estimated_full_seconds": 5689.983901977539,
+    "estimated_remaining_from_strong_seconds": 5310.651641845703
+  },
+  "full": {
+    "status": "skipped_smoke_only",
+    "configured_epochs": 30,
+    "trajectory": null
+  },
+  "interpretation": {
+    "small_smoke": "The 5-target smoke moved target_new from 0.067 to 0.800 and target_original from 0.800 to 0.200, with near-neighbor drift 0.000.",
+    "strong_smoke": "The 50-target strong smoke moved target_new from 0.107 to 0.727 and target_original from 0.813 to 0.267, with near-neighbor drift 0.000 and distant drift 0.000.",
+    "selectivity": "The target-new rise was 0.620, giving selectivity ratios of 620000000.0x versus near-neighbor drift and 620000000.0x versus distant drift.",
+    "durable_alignment_relevance": "The smoke results support targeted belief retraction through contradiction: the correction field can overwrite selected beliefs while preserving near-neighbor and distant controls.",
+    "full_round_policy": "This cell performs strong smoke testing only unless RUN_FULL_RETRACTION=True. The full 30-epoch run is reserved for the final mega round after all downstream cells are validated."
+  }
+}

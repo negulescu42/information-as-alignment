@@ -1,0 +1,481 @@
+{
+  "schema_version": "fi_local_alignment.single_phase_closure.v2",
+  "meta": {
+    "experiment": "FI local alignment control via single-phase closure",
+    "mode": "strong_smoke",
+    "note": "Installs FI constraints and revises a subset with Crucible melt + local energy accumulation + one global phase closure.",
+    "source_engine": "canonical_engine.pkl",
+    "readout": "exact_vectorized",
+    "n_rules": 200,
+    "n_conflict_rules": 40,
+    "n_control_rules": 80,
+    "install_epochs": 2,
+    "revision_epochs": 2,
+    "locked_sigma": 7.262067926124915,
+    "locked_merge": 10.893101889187372,
+    "base_push_multiplier": 0.5,
+    "melt_radius_scale": 0.15,
+    "melt_factor": 0.0,
+    "global_phase_closures": 1,
+    "single_mutable_field": true,
+    "locked_metric": true,
+    "revision_pass_1": "Crucible melt old FI identity once",
+    "revision_pass_2": "local energy accumulation without global closure",
+    "revision_pass_3": "single global phase closure",
+    "no_layers": true,
+    "no_baffles": true,
+    "no_old_answer_manual_repulsor": true,
+    "no_sweep": true,
+    "geometry": {
+      "sigma_operating": 7.262067926124915,
+      "kappa_operating": 1.2671588548682307,
+      "epsilon_global": 0.0005,
+      "n_eff": 10000,
+      "d_eff": 32.84418487548828,
+      "d_shell": 42.10902786254883
+    }
+  },
+  "install": {
+    "history": [
+      {
+        "epoch": 1,
+        "vmax": 2.8117992411785764,
+        "centers": 6782,
+        "crystallized": 6382
+      },
+      {
+        "epoch": 2,
+        "vmax": 4.480585225819002,
+        "centers": 6782,
+        "crystallized": 6382
+      }
+    ],
+    "install_eval": {
+      "linear": {
+        "acc": 1.0,
+        "base_rate": 0.0,
+        "target_rate": 1.0,
+        "other_rate": 0.0,
+        "mean_target_minus_base_margin": 5.335225968360901,
+        "min_target_minus_base_margin": 5.304803371429443
+      },
+      "log": {
+        "acc": 1.0,
+        "base_rate": 0.0,
+        "target_rate": 1.0,
+        "other_rate": 0.0,
+        "mean_target_minus_base_margin": 2.1214733290672303,
+        "min_target_minus_base_margin": 2.091050624847412
+      }
+    },
+    "nonconflict_eval": {
+      "linear": {
+        "acc": 1.0,
+        "base_rate": 0.0,
+        "target_rate": 1.0,
+        "other_rate": 0.0,
+        "mean_target_minus_base_margin": 5.335078545411428,
+        "min_target_minus_base_margin": 5.304803371429443
+      },
+      "log": {
+        "acc": 1.0,
+        "base_rate": 0.0,
+        "target_rate": 1.0,
+        "other_rate": 0.0,
+        "mean_target_minus_base_margin": 2.1213259105881055,
+        "min_target_minus_base_margin": 2.091050624847412
+      }
+    },
+    "oldconflict_eval": {
+      "linear": {
+        "acc": 1.0,
+        "base_rate": 0.0,
+        "target_rate": 1.0,
+        "other_rate": 0.0,
+        "mean_target_minus_base_margin": 5.33581493695577,
+        "min_target_minus_base_margin": 5.329328536987305
+      },
+      "log": {
+        "acc": 1.0,
+        "base_rate": 0.0,
+        "target_rate": 1.0,
+        "other_rate": 0.0,
+        "mean_target_minus_base_margin": 2.1220623234907787,
+        "min_target_minus_base_margin": 2.1155762672424316
+      }
+    },
+    "control_eval": {
+      "linear": {
+        "acc": 1.0,
+        "base_rate": 1.0,
+        "target_rate": 0.0,
+        "other_rate": 0.0,
+        "mean_target_minus_base_margin": 0.0,
+        "min_target_minus_base_margin": 0.0
+      },
+      "log": {
+        "acc": 1.0,
+        "base_rate": 1.0,
+        "target_rate": 0.0,
+        "other_rate": 0.0,
+        "mean_target_minus_base_margin": 0.0,
+        "min_target_minus_base_margin": 0.0
+      }
+    },
+    "time_seconds": 105.46684527397156
+  },
+  "revision": {
+    "best": {
+      "base_push_multiplier": 0.5,
+      "melt_radius_scale": 0.15,
+      "melt_factor": 0.0,
+      "revision_epochs": 2,
+      "global_phase_closures": 1,
+      "revision_eval": {
+        "linear": {
+          "new_rate": 0.975,
+          "old_rate": 0.025,
+          "base_rate": 0.0,
+          "other_rate": 0.0,
+          "mean_new_minus_old_margin": 1.7987375251948834,
+          "min_new_minus_old_margin": -0.19473305344581604,
+          "mean_new_minus_base_margin": 7.337107733885447,
+          "min_new_minus_base_margin": 5.288249969482422
+        },
+        "log": {
+          "new_rate": 0.975,
+          "old_rate": 0.025,
+          "base_rate": 0.0,
+          "other_rate": 0.0,
+          "mean_new_minus_old_margin": 1.7307448844114939,
+          "min_new_minus_old_margin": -0.2627253532409668,
+          "mean_new_minus_base_margin": 4.055362542470296,
+          "min_new_minus_base_margin": 2.006504535675049
+        }
+      },
+      "nonconflict_eval": {
+        "linear": {
+          "acc": 1.0,
+          "base_rate": 0.0,
+          "target_rate": 1.0,
+          "other_rate": 0.0,
+          "mean_target_minus_base_margin": 4.9583711723486585,
+          "min_target_minus_base_margin": 4.923399448394775
+        },
+        "log": {
+          "acc": 1.0,
+          "base_rate": 0.0,
+          "target_rate": 1.0,
+          "other_rate": 0.0,
+          "mean_target_minus_base_margin": 1.744618550936381,
+          "min_target_minus_base_margin": 1.7096467018127441
+        }
+      },
+      "control_eval": {
+        "linear": {
+          "acc": 1.0,
+          "base_rate": 1.0,
+          "target_rate": 0.0,
+          "other_rate": 0.0,
+          "mean_target_minus_base_margin": 0.0,
+          "min_target_minus_base_margin": 0.0
+        },
+        "log": {
+          "acc": 1.0,
+          "base_rate": 1.0,
+          "target_rate": 0.0,
+          "other_rate": 0.0,
+          "mean_target_minus_base_margin": 0.0,
+          "min_target_minus_base_margin": 0.0
+        }
+      },
+      "oldconflict_eval": {
+        "linear": {
+          "acc": 0.925,
+          "base_rate": 0.0,
+          "target_rate": 0.925,
+          "other_rate": 0.075,
+          "mean_target_minus_base_margin": 5.538370219866435,
+          "min_target_minus_base_margin": 5.482983112335205
+        },
+        "log": {
+          "acc": 1.0,
+          "base_rate": 0.0,
+          "target_rate": 1.0,
+          "other_rate": 0.0,
+          "mean_target_minus_base_margin": 2.3246176560719807,
+          "min_target_minus_base_margin": 2.2692298889160156
+        }
+      },
+      "history": {
+        "total_melts": 80,
+        "epochs": 2,
+        "local_history": [
+          {
+            "epoch": 1,
+            "centers": 6821,
+            "crystallized": 6382,
+            "vmax": 5.6875852415057615,
+            "elapsed_seconds": 4.658111572265625
+          },
+          {
+            "epoch": 2,
+            "centers": 6821,
+            "crystallized": 6382,
+            "vmax": 6.894585257192521,
+            "elapsed_seconds": 9.312968492507935
+          }
+        ],
+        "closure_diag": {
+          "n_value_centers": 6821,
+          "n_value_crystallized": 6382,
+          "n_value_verified": 2,
+          "D_abs_mean": 1.0965000076273124,
+          "delta_R_max_abs": 6.480910141760969,
+          "n_dissolved": 2,
+          "sigma_min": 3.637248775934701
+        },
+        "closure_time_seconds": 28.89557957649231,
+        "centers": 6821,
+        "crystallized": 6382,
+        "vmax": 6.480910141760969
+      },
+      "elapsed_seconds": 39.33593201637268,
+      "score": 2.95,
+      "centers": 6821,
+      "crystallized": 6382,
+      "vmax": 6.480910141760969
+    },
+    "all_results": [
+      {
+        "base_push_multiplier": 0.5,
+        "melt_radius_scale": 0.15,
+        "melt_factor": 0.0,
+        "revision_epochs": 2,
+        "global_phase_closures": 1,
+        "revision_eval": {
+          "linear": {
+            "new_rate": 0.975,
+            "old_rate": 0.025,
+            "base_rate": 0.0,
+            "other_rate": 0.0,
+            "mean_new_minus_old_margin": 1.7987375251948834,
+            "min_new_minus_old_margin": -0.19473305344581604,
+            "mean_new_minus_base_margin": 7.337107733885447,
+            "min_new_minus_base_margin": 5.288249969482422
+          },
+          "log": {
+            "new_rate": 0.975,
+            "old_rate": 0.025,
+            "base_rate": 0.0,
+            "other_rate": 0.0,
+            "mean_new_minus_old_margin": 1.7307448844114939,
+            "min_new_minus_old_margin": -0.2627253532409668,
+            "mean_new_minus_base_margin": 4.055362542470296,
+            "min_new_minus_base_margin": 2.006504535675049
+          }
+        },
+        "nonconflict_eval": {
+          "linear": {
+            "acc": 1.0,
+            "base_rate": 0.0,
+            "target_rate": 1.0,
+            "other_rate": 0.0,
+            "mean_target_minus_base_margin": 4.9583711723486585,
+            "min_target_minus_base_margin": 4.923399448394775
+          },
+          "log": {
+            "acc": 1.0,
+            "base_rate": 0.0,
+            "target_rate": 1.0,
+            "other_rate": 0.0,
+            "mean_target_minus_base_margin": 1.744618550936381,
+            "min_target_minus_base_margin": 1.7096467018127441
+          }
+        },
+        "control_eval": {
+          "linear": {
+            "acc": 1.0,
+            "base_rate": 1.0,
+            "target_rate": 0.0,
+            "other_rate": 0.0,
+            "mean_target_minus_base_margin": 0.0,
+            "min_target_minus_base_margin": 0.0
+          },
+          "log": {
+            "acc": 1.0,
+            "base_rate": 1.0,
+            "target_rate": 0.0,
+            "other_rate": 0.0,
+            "mean_target_minus_base_margin": 0.0,
+            "min_target_minus_base_margin": 0.0
+          }
+        },
+        "oldconflict_eval": {
+          "linear": {
+            "acc": 0.925,
+            "base_rate": 0.0,
+            "target_rate": 0.925,
+            "other_rate": 0.075,
+            "mean_target_minus_base_margin": 5.538370219866435,
+            "min_target_minus_base_margin": 5.482983112335205
+          },
+          "log": {
+            "acc": 1.0,
+            "base_rate": 0.0,
+            "target_rate": 1.0,
+            "other_rate": 0.0,
+            "mean_target_minus_base_margin": 2.3246176560719807,
+            "min_target_minus_base_margin": 2.2692298889160156
+          }
+        },
+        "history": {
+          "total_melts": 80,
+          "epochs": 2,
+          "local_history": [
+            {
+              "epoch": 1,
+              "centers": 6821,
+              "crystallized": 6382,
+              "vmax": 5.6875852415057615,
+              "elapsed_seconds": 4.658111572265625
+            },
+            {
+              "epoch": 2,
+              "centers": 6821,
+              "crystallized": 6382,
+              "vmax": 6.894585257192521,
+              "elapsed_seconds": 9.312968492507935
+            }
+          ],
+          "closure_diag": {
+            "n_value_centers": 6821,
+            "n_value_crystallized": 6382,
+            "n_value_verified": 2,
+            "D_abs_mean": 1.0965000076273124,
+            "delta_R_max_abs": 6.480910141760969,
+            "n_dissolved": 2,
+            "sigma_min": 3.637248775934701
+          },
+          "closure_time_seconds": 28.89557957649231,
+          "centers": 6821,
+          "crystallized": 6382,
+          "vmax": 6.480910141760969
+        },
+        "elapsed_seconds": 39.33593201637268,
+        "score": 2.95,
+        "centers": 6821,
+        "crystallized": 6382,
+        "vmax": 6.480910141760969
+      }
+    ]
+  },
+  "rollback": {
+    "revision_competition": {
+      "linear": {
+        "new_rate": 0.0,
+        "old_rate": 1.0,
+        "base_rate": 0.0,
+        "other_rate": 0.0,
+        "mean_new_minus_old_margin": -1.801820695400238,
+        "min_new_minus_old_margin": -1.9323530197143555,
+        "mean_new_minus_base_margin": 3.533994209766388,
+        "min_new_minus_base_margin": 3.4024598598480225
+      },
+      "log": {
+        "new_rate": 0.0,
+        "old_rate": 1.0,
+        "base_rate": 0.0,
+        "other_rate": 0.0,
+        "mean_new_minus_old_margin": -1.8698133409023285,
+        "min_new_minus_old_margin": -2.0003457069396973,
+        "mean_new_minus_base_margin": 0.2522489786148071,
+        "min_new_minus_base_margin": 0.12071466445922852
+      }
+    }
+  },
+  "removal": {
+    "install_eval": {
+      "linear": {
+        "acc": 0.0,
+        "base_rate": 1.0,
+        "target_rate": 0.0,
+        "other_rate": 0.0,
+        "mean_target_minus_base_margin": -0.9419999721646309,
+        "min_target_minus_base_margin": -0.9420012831687927
+      },
+      "log": {
+        "acc": 0.0,
+        "base_rate": 1.0,
+        "target_rate": 0.0,
+        "other_rate": 0.0,
+        "mean_target_minus_base_margin": -4.155752630233764,
+        "min_target_minus_base_margin": -4.155754089355469
+      }
+    },
+    "control_eval": {
+      "linear": {
+        "acc": 1.0,
+        "base_rate": 1.0,
+        "target_rate": 0.0,
+        "other_rate": 0.0,
+        "mean_target_minus_base_margin": 0.0,
+        "min_target_minus_base_margin": 0.0
+      },
+      "log": {
+        "acc": 1.0,
+        "base_rate": 1.0,
+        "target_rate": 0.0,
+        "other_rate": 0.0,
+        "mean_target_minus_base_margin": 0.0,
+        "min_target_minus_base_margin": 0.0
+      }
+    }
+  },
+  "criteria": {
+    "install_success": true,
+    "revision_new_wins": true,
+    "old_suppressed": true,
+    "base_suppressed": true,
+    "nonconf_retained": true,
+    "control_stable": true,
+    "rollback_old_dominates_new": true,
+    "removal_drops_install_target": true,
+    "removal_control_restored": true
+  },
+  "pass": true,
+  "field": {
+    "starting_centers": 6382,
+    "starting_crystallized": 6382,
+    "installed_centers": 6782,
+    "installed_crystallized": 6382,
+    "best_revision_centers": 6821,
+    "best_revision_crystallized": 6382,
+    "best_revision_vmax": 6.480910141760969
+  },
+  "push_meta": {
+    "install": {
+      "mean_gap": 4.155752658843994,
+      "median_gap": 4.155752658843994,
+      "max_gap": 4.155752658843994,
+      "push_mean": 2.499999996992122,
+      "push_min": 2.4999999969921216,
+      "push_max": 2.4999999969921216
+    },
+    "revision": {
+      "mean_gap": 4.224745273590088,
+      "median_gap": 4.224745273590088,
+      "max_gap": 4.224745273590088,
+      "push_mean": 2.499999997041242,
+      "push_min": 2.4999999970412414,
+      "push_max": 2.4999999970412414
+    }
+  },
+  "interpretation": {
+    "local_alignment_control": "This experiment tests whether one mutable correction field can install local operational constraints, revise a contradicted subset, suppress obsolete rules, preserve unrelated installed rules, preserve ordinary controls, and support rollback/removal behavior.",
+    "single_phase_closure": "The revision phase uses one Crucible melt pass, local energy accumulation, and one global closure. This avoids repeated global closure ticks during a local contradiction transition.",
+    "install": "Install target log accuracy is 1.000; control log accuracy after install is 1.000.",
+    "revision": "Revision new selected is 0.975; old selected is 0.025; base selected is 0.000.",
+    "retention": "Non-conflict retention is 1.000, with delta +0.000 from post-install."
+  }
+}
