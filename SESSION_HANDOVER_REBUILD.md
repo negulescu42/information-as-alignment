@@ -118,32 +118,44 @@ User runs the pod commands above. New session waits / verifies after `git pull`.
 
 ### Phase 3 — Run C1 on pod (validation gate)
 
-Pod side:
+**Important context first — two changes are being tested in C1:**
+
+(a) **Reading C engine patch** (in S1 — applied to all of v2). Agency channel now uses history-sufficiency gate (`n_agency_min=20`) instead of crystallization gate. This is a structural engine change. The existing `canonical_engine.pkl` in `mmlu_ibf_out/` was trained with the OLD engine; the new C1 run will produce the first truly "agency-open" canonical engine.
+
+(b) **Convergence-stop optimization** (in C1 cell, gated by `RUN_MODE = "verify-convergence"`). Stops phases early when `ma_delta < 0.001 AND slope < 0.0001 AND lin >= 0.95 AND ep >= min_epochs`. Independent of the engine patch.
+
+**Recommended two-step validation on pod** (to disentangle which change causes any deviation):
+
+**Step 3a — Reading C engine patch alone:**
 ```bash
 cd /workspace/information-as-alignment
 git pull --rebase origin claude/review-jupyter-notebook-8AU5y
 # Open (IBF)Companion-LLM-Durable-Alignment-v2.ipynb in JupyterLab
-# Set RUN_MODE = "verify-convergence" in the run config cell
-# Run all cells (S1, S2, S3, C1)
-# Watch the C1 validation-gate output
+# Set RUN_MODE = "paper" in the run config cell (full epochs, no early-stop)
+# Run cells S1, S2, S3, C1
+# Watch C1's avg lin output
 ```
 
-**Expected result:** "GATE PASSED — early-stop protocol approved for C2-C8" (if avg lin within 0.954 ± 0.01).
+Expected: avg lin within 0.954 ± 0.01. If passes → Reading C engine patch is benign for canonical training; the patched engine becomes canonical. If fails by small margin (say 0.01–0.03): Reading C shifts canonical dynamics slightly; document and decide whether to accept or per-claim calibrate. If fails by large margin: investigate.
 
-**If gate passes:**
-- Reading C engine patch is empirically validated on C1
-- Convergence-optimization protocol approved for C2-C8 (saves ~2.5× compute on subsequent cells)
-- Proceed to Phase 4.
+**Step 3b — Convergence-stop optimization (only if 3a passes):**
+```bash
+# Same notebook, change RUN_MODE = "verify-convergence" in the run config
+# Re-run cells S1, S2, S3, C1
+```
 
-**If gate fails by a small margin** (e.g., 0.940-0.950): convergence-stop too aggressive, but Reading C patch is fine.
-- Revert C1 to `RUN_MODE = "paper"` (full epochs, no early-stop)
-- Re-run C1 to confirm avg lin reproduces 0.954
-- Build C2-C8 without convergence optimization (slightly more compute but safe)
+Expected: avg lin within 0.954 ± 0.01 AND substantially reduced epoch count. If passes → convergence-stop approved for global application to C2-C8 (~2.5× compute savings).
 
-**If gate fails by a large margin** (e.g., < 0.90): something structural is wrong.
-- Check: are D-artifacts pulled correctly? Is canonical_engine.pkl the right version?
-- Check: did template fix apply (verify TEMPLATES dict has 7 categories × 15 templates)?
-- Diagnose before proceeding.
+**Decision matrix:**
+
+| Step 3a (Reading C alone) | Step 3b (+ convergence-stop) | Action |
+|---|---|---|
+| PASS (within 0.01) | PASS | Both validated. Build C2-C8 with `RUN_MODE = "verify-convergence"`. Full compute savings. |
+| PASS | FAIL (small margin) | Reading C OK, convergence-stop too aggressive. Build C2-C8 with `RUN_MODE = "paper"`. No compute savings but safe. |
+| FAIL (small margin) | — | Reading C shifts canonical dynamics. Decide: accept the new canonical (paper claim becomes "with patched engine, avg lin = X.XXX"), or revert Reading C and find a different fix for agency-channel-on-closure. |
+| FAIL (large margin) | — | Investigate before proceeding. Check D-artifact pulls, template fix, engine version, canonical pickle source. |
+
+**If 3a fails by small margin and you accept the new canonical:** save the new `canonical_engine.pkl` with `engine_version: "2.0-history_gate"` metadata. All downstream cells (C2-C8) use this new engine. Re-run C3 (Qwen) under patched engine too, confirm within ±0.02 on cross-model deltas. If both pass, the patched engine is canonical going forward.
 
 ### Phase 4 — Launch builder agent for C2-C8 + S4 + S5
 
