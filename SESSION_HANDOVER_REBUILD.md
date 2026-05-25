@@ -1,14 +1,14 @@
 # Session handover — pick up from notebook rebuild
 
-**Date:** 2026-05-XX (end of session, post-fix)
+**Date:** 2026-05-25 (end of session, post-S3 calibration fix)
 **Branch:** `claude/review-jupyter-notebook-8AU5y`
-**Last commit at handover:** `a2e0ea3` (v2 S3 verbatim FI templates fix)
+**Last commit at handover:** (this update) — v2 S3 σ calibration + precomputed builder ported verbatim from v1 cells 13/15/16
 
 ---
 
 ## Current state — clean, ready for next session
 
-V2 notebook (`(IBF)Companion-LLM-Durable-Alignment-v2.ipynb`) is at commit `a2e0ea3`. S1+S2+S3+C1 built by background agent; S3 FI dataset fixed to verbatim cell 11 content.
+V2 notebook (`(IBF)Companion-LLM-Durable-Alignment-v2.ipynb`) has S1+S2+S3+C1 built. S3 now contains FI dataset (verbatim v1 cell 11) **plus** token-ID resolution + Mistral base extraction + mpnet embeddings + 80-D PCA augmentation + σ calibration (verbatim v1 cells 13/15/16). The previously-flagged bug where S3 referenced undefined `SIGMA_PROP`/`SIGMA_AGENCY`/`MERGE_PROP`/`C_RC`/`precomputed` is fixed — these are now all produced by the ported calibration block before the adapter consumes them.
 
 **Commits on branch (since session start):**
 - `a2e0ea3` Fix v2 S3: replace representative FI templates with verbatim cell 11
@@ -20,7 +20,7 @@ V2 notebook (`(IBF)Companion-LLM-Durable-Alignment-v2.ipynb`) is at commit `a2e0
 - `41e1820` Add handover document for notebook restructure
 
 **V2 notebook state:**
-- 11 cells (5 markdown + 6 code), ~92KB total
+- 11 cells (5 markdown + 6 code), ~141KB total (S3 grew from 38KB → 88KB after calibration port)
 - All code cells `ast.parse`-verified
 - 4 of 13 sections built (S1 + S2 + S3 + C1)
 - 9 sections remaining: C2, C3, C4, C5, C6, C7, C8, S4, S5
@@ -40,16 +40,14 @@ V2 notebook (`(IBF)Companion-LLM-Durable-Alignment-v2.ipynb`) is at commit `a2e0
 - Uses `sentence-transformers/all-mpnet-base-v2` for proposition embeddings
 - Loads frozen `mistralai/Mistral-7B-v0.1` for R_base extraction
 
-**S3 — FI dataset + adapter + FAISS** (verbatim cell 11 + v2 adapter/FAISS):
-- TEAM_STRUCTURE: 11 departments
-- PROJECTS: 30 items
-- BUILDINGS, FLOORS, LOCATIONS: full original
-- CERTIFICATIONS: 40 items (verbatim)
-- COMMITTEES: 25 items (verbatim — was missing, now restored)
-- FIRST_NAMES: 120 items (verbatim — was 16)
-- LAST_NAMES: 80 items (verbatim — was 15)
-- TEMPLATES: 7 categories × (10 train + 5 test) = 105 templates with full linguistic variation
-- Propositional adapter + FAISS wrapper (from v2's working integration)
+**S3 — FI dataset + base extraction + mpnet + σ calibration + adapter + FAISS** (verbatim from v1 cells 11/13/15/16 + v2 adapter):
+- FI dataset (verbatim v1 cell 11) — TEAM_STRUCTURE (11 depts), PROJECTS (30), BUILDINGS, FLOORS, LOCATIONS (full), CERTIFICATIONS (40), COMMITTEES (25), FIRST_NAMES (120), LAST_NAMES (80), TEMPLATES (7 categories × 15 templates)
+- Token-ID resolution + Mistral base extraction (verbatim v1 cell 13) — `extract_hidden`, `precomputed[k]["z_question_raw", "z_choices_raw", "R_base_probs", "labels"]`
+- mpnet sentence embeddings (verbatim v1 cell 15) — overwrites `z_question_raw` and `z_choices_raw` with all-mpnet-base-v2 outputs
+- 80-D proposition geometry + σ calibration (verbatim v1 cell 16) — PCA(64) + subject(8) + answer(8), produces `SIGMA_PROP ≈ 7.2621`, `SIGMA_AGENCY`, `MERGE_PROP`, `C_RC`, `pca`, `scaler`, `subject_to_id`, `answer_to_id`
+- Propositional adapter + FAISS wrapper (from v2's working integration) — consumes the above to build `ibf` engine at the canonical operating geometry
+
+Non-content edits to the verbatim port: duplicate Mistral re-load at top of v1 cell 13 elided (v2 S2 already loads `model`/`tokenizer`/`extract_base`); `!pip install sentence-transformers -q` magic in v1 cell 15 elided (v2 S2 already installs sentence-transformers via subprocess).
 
 **C1 — Canonical lifecycle** (per spec):
 - Per-phase early-stop logic with convergence-stop criteria
