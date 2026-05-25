@@ -47,6 +47,74 @@ Each upper layer is *earned* by the layers below it. Falsifying a lower claim ca
 
 ---
 
+## Part 1.5 — Theoretical anchoring (mandatory required reading)
+
+This rebuild is **not stand-alone work**. The LLM companion paper sits on top of the IBF foundation paper, and the rebuilt notebook must remain faithful to the foundational theory. The builder must engage with the foundational paper before writing any code that touches the engine, agency dynamics, or the claim framing.
+
+### Required reading
+
+**Source:** `/home/user/information-as-alignment/(pre-print)information-as-alignment-v1.pdf` (also available as `information-as-alignment-v1.pdf` — same content).
+
+**Sections to read carefully (≈18 pages):**
+
+- **Section 2** — The toy model in 2 dimensions. Visual intuition for every mechanism in the engine.
+- **Section 3** — The general theory: the alignment premise, the four axioms, the modification postulate, and the four derived claims (Memory, Agency, Self-Correction, Intelligence). This is the foundation every cell of the rebuilt notebook rests on.
+- **Section 4** — The universal IBF engine. Maps the continuous theory to the discrete particle approximation. Reading C lives here — it's a refinement of the discretization in this section.
+- **Section 5.4 — "Frozen LLM extension"** — the foundational paper explicitly notes that the LLM companion is a separate write-up. The rebuilt notebook is that companion. Position it as the empirical realization of the LLM-substrate extension flagged at page 15 of the foundation paper.
+- **Section 8 — Discussion** — limitations, scope, and future directions. Particularly the "regime-dependent agency" pattern (chess decisive / RRW harmful / CIFAR neutral) — the rebuilt C3 + C8 add LLM closure as a fourth regime to this taxonomy.
+
+**Sections you can skip on first read:**
+- Sections 6, 7.1, 7.2, 7.3 (RRW, chess, CIFAR results) — these are the foundation paper's domain results, not directly mapped to the LLM companion.
+- Section 5.1–5.3 (RRW/Chess/CIFAR domain instantiations) — same.
+
+### Mapping companion claims to foundational concepts
+
+Every claim in the rebuilt notebook must trace to a foundational concept. The mapping:
+
+| Companion claim | Maps to foundational paper |
+|---|---|
+| **C1 — Existence** | Foundational Claim 1 (Memory) — persistent landscape deformation; the empirical signature is buffer-free retention on the frozen-LLM substrate. |
+| **C2 — Decoupling** | Postulate 1 constraint (iii) — discrepancy signal `D` is structurally independent of the gradient governing motion; LoRA durability empirically validates this independence under base evolution. |
+| **C3 — Generality** | Foundational Claim 5 (Discrete Convergence) — implementation conditions R/R′/A hold across encoders; Qwen replication confirms representation-invariance of the mechanism. |
+| **C4 — Distinction** | Foundational § 8.2 — relation to existing frameworks (kNN, RAG, MEMIT, etc.). The companion's empirical comparison instantiates the foundational paper's architectural argument. |
+| **C5 — Lifecycle** | Foundational Claims 1 + 4 (Memory + Self-Correction) — install (Claim 1: stability transition); revise/retract (Claim 4: contradiction-driven dissolution and the Crucible). |
+| **C6 — Locality** | Postulate 1's localization kernel `K(y, x_S)` — modifications are spatially concentrated by construction. NN/distant drift measurements are the empirical realization. |
+| **C7 — Deductive composition** | Foundational § 7.2 (chess strategic structure: compiled regularities + Crucible curation) translated to ontology graphs. Section 5.4's flag of LLM extension lands here. |
+| **C8 — Inductive composition** | Foundational Claim 2 (Agency) + Claim 3 (Intelligence) — agency-shaped trajectories + curated memory under agency-guided motion produces emergent capability. The LLM closure regime is a fourth entry in the regime-dependence taxonomy from Section 8.1. |
+
+The Reading C engine patch (Part 7 of this handover) is also a foundational-paper concept: it brings the engine's agency-channel discretization closer to Postulate 1's "parallel equation" framing (Section 3.3, where the foundational paper explicitly notes "A parallel equation governs the responsiveness modification δk_S (the agency channel)"). The current engine under-implements this; Reading C corrects it.
+
+### What this means for the builder
+
+1. **Every cell's banner must reference the foundational concept it instantiates.** Example for C1: `"Implements Claim 1 (Memory) of the foundation paper on the frozen-LLM substrate. Tests persistent landscape deformation via canonical lifecycle training."`
+
+2. **Falsifier statements must mirror the foundational paper's discipline.** The foundation paper provides explicit "What would prove otherwise?" statements for each derived claim. The rebuilt companion's falsifiers must match this format and intent — falsifiability is part of the framework's empirical methodology, not paper-paper aesthetics.
+
+3. **Vocabulary must remain consistent.** Use foundational terms (substrate, δR, δk, Crucible, dissolution, crystallization, configuration space, kernel) — not ad-hoc renaming. The companion is an extension of the foundation paper, not a redefinition.
+
+4. **For the Reading C patch (S1):** before writing the patched engine code, the builder must read both:
+   - The foundational paper's Section 3.3 (the postulate's "parallel equation" framing)
+   - The local supervisor note `AGENCY_DISCRETIZATION_NOTE.md` (the empirical motivation for the patch)
+   - The D6 result in `mmlu_ibf_out/fi_agency_channel_d6_alpha_vs_beta.json` (the validation evidence)
+   
+   The patch is not a quick fix — it is a refined discretization that the foundational paper's postulate explicitly suggests but the original engine under-implements.
+
+5. **For C8 specifically:** before writing the C8 cell, the builder must read foundation paper Section 8.1 (regime-dependent agency) so the LLM closure regime is positioned correctly as the fourth entry in the existing three-regime taxonomy (chess decisive / RRW harmful / CIFAR neutral / LLM closure: agency engages but endpoint-redundant in saturated regime).
+
+### Cross-checks at end of build
+
+Before declaring the rebuild complete, the builder must verify:
+
+- **Engine code (S1) is faithful to Postulate 1.** Every modification dynamic (δR update, δk update, decay, crystallization, dissolution, merge) in the patched engine corresponds to a specific equation or constraint in Postulate 1. Document the mapping in S1's cell banner.
+
+- **Claim 5 (Discrete Convergence) checks pass.** Per the foundation paper, every IBF instantiation must verify Conditions R, R′, A. The rebuilt S2 (representation calibration) implicitly does this; the builder must confirm and document.
+
+- **All eight companion claims have foundational anchoring.** Per the mapping table above; build the table into S5's reproducibility appendix.
+
+- **Reading C patch's faithfulness to Postulate 1.** The patched `_update_agency` and `delta_k` must implement the "parallel equation" framing — same dynamics as δR but operating on responsiveness rather than coherence amplitude. Builder writes a paragraph in S1 explaining this correspondence.
+
+---
+
 ## Part 2 — The eight claim cards
 
 Each card is a complete spec for one notebook section. Build them in order C1 → C2 → ... → C8. Each section's output artifact must be a deterministic function of the engine state and the cell's seed.
@@ -56,10 +124,11 @@ Each card is a complete spec for one notebook section. Build them in order C1 �
 ### C1 — Local durable alignment without weight editing
 
 - **Layer:** 1 (Existence)
+- **Foundational anchor:** Foundational Claim 1 (Memory) — *"If a visited region reaches local thermodynamic equilibrium under Postulate 1, the induced modification undergoes a stability transition (μ → 0) and persists as a long-lived structure in the effective coherence landscape."* This card is the LLM-substrate instantiation of buffer-free retention.
 - **Presupposes:** nothing (foundational existence claim)
 - **Adds:** the substrate exists as a distinct architectural object
 - **Enables:** every subsequent claim
-- **Falsifier:** alignment installation requires weight modification, period — or canonical lifecycle fails to converge
+- **Falsifier (mirroring foundational discipline):** crystallized modifications decay during dormant epochs despite the stability transition, OR they persist structurally but yield no measurable behavioral retention (avg lin indistinguishable from base model alone).
 
 - **Source cells (current notebook):** § 8 (canonical training at fixed operating geometry)
 - **Target cell (new notebook):** § C1 — Canonical lifecycle training on frozen Mistral-7B
@@ -89,6 +158,7 @@ Each card is a complete spec for one notebook section. Build them in order C1 �
 ### C2 — Substrate decouples from base-model evolution
 
 - **Layer:** 2 (Property: decoupling)
+- **Foundational anchor:** Postulate 1 constraint (iii) — *"the driving signal D is structurally independent of the gradient that governs motion (separation from motion dynamics)."* LoRA durability empirically validates this: a 37.5% base argmax shift causes 0.3% field drift, confirming the structural independence holds under realistic base evolution.
 - **Presupposes:** C1
 - **Adds:** the substrate is structurally orthogonal to base parameters — base evolution doesn't break the alignment layer
 - **Enables:** C3 (cross-model is a special case of decoupling), production framing
@@ -116,6 +186,7 @@ Each card is a complete spec for one notebook section. Build them in order C1 �
 ### C3 — Cross-model mechanism generality
 
 - **Layer:** 2 (Property: generality)
+- **Foundational anchor:** Foundational Claim 5 (Discrete Convergence) — *"Under verifiable conditions on the encoder, coherence function, and implementation parameters, discrete IBF dynamics converge to the continuous equations."* Qwen replication empirically confirms that conditions R/R′/A hold across encoders, validating the discretization bridge for a second frozen substrate.
 - **Presupposes:** C1, C2
 - **Adds:** the mechanism transfers across base models in practice — IBF is a substrate, not a Mistral feature
 - **Enables:** framing the contribution as architectural, not model-specific
@@ -144,6 +215,7 @@ Each card is a complete spec for one notebook section. Build them in order C1 �
 ### C4 — Distinct from kNN/RAG (architecturally)
 
 - **Layer:** 2 (Property: distinction)
+- **Foundational anchor:** Foundational § 8.2 "Relation to existing frameworks" — IBF stores *modification sites whose thermodynamic state changes through interaction* (crystallization, dissolution, broadcast-rights), categorically distinct from ART's stored categories, episodic methods' stored traces, or kernel methods' static support points. The lifecycle benchmark instantiates this architectural distinction empirically.
 - **Presupposes:** C1
 - **Adds:** the substrate is not reducible to retrieval-based or weight-editing alternatives
 - **Enables:** differentiation in the alignment literature
@@ -176,6 +248,7 @@ Each card is a complete spec for one notebook section. Build them in order C1 �
 ### C5 — Truth-maintenance lifecycle
 
 - **Layer:** 3 (Operation: lifecycle)
+- **Foundational anchor:** Foundational Claims 1 + 4 (Memory + Self-Correction). Claim 1 grounds install/retention (stability transition); Claim 4 grounds revise/retract via the Crucible (contradiction-driven dissolution). The companion's lifecycle cells empirically realize *"the system's ability to let false stability die."*
 - **Presupposes:** C1
 - **Adds:** install / revise / remove / rollback / retain as discrete operations on the substrate
 - **Enables:** C6 (locality is meaningful when ops exist), Layer 4 composition
@@ -215,6 +288,7 @@ Each card is a complete spec for one notebook section. Build them in order C1 �
 ### C6 — Locality preservation under operations
 
 - **Layer:** 3 (Operation: locality)
+- **Foundational anchor:** Postulate 1's localization kernel `K(y, x_S)` — *"a localization kernel concentrated near the visited configuration x_S."* Locality is structural in the modification dynamics; the companion's NN/distant drift measurements empirically confirm that the engine's particle-approximation of the continuous kernel preserves this property at scale.
 - **Presupposes:** C1, C5
 - **Adds:** operations are spatially localized — installing A doesn't leak into B's region
 - **Enables:** safe composition (Layer 4 isn't meaningful if locality fails)
@@ -246,6 +320,7 @@ Each card is a complete spec for one notebook section. Build them in order C1 �
 ### C7 — Compiled semantic structure (deductive composition)
 
 - **Layer:** 4 (Composition: deductive)
+- **Foundational anchor:** Foundational § 7.2 chess result — *"compiled regularities + Crucible curation"* — translated to policy-graph ontology closures. The foundational paper's § 5.4 flag ("LLM extension") lands here: compiled closure is the LLM-substrate realization of the deductive composition the framework enables.
 - **Presupposes:** C1, C5, C6
 - **Adds:** structured knowledge (rules + their derived consequences) installable as a unit, revisable as a unit
 - **Enables:** closure-style alignment without manual edge enumeration; complementary to C8
@@ -276,6 +351,7 @@ Each card is a complete spec for one notebook section. Build them in order C1 �
 ### C8 — Discovery-driven extension (inductive composition)
 
 - **Layer:** 4 (Composition: inductive)
+- **Foundational anchor:** Foundational Claim 2 (Agency) + Claim 3 (Intelligence). Agency claim: *"nontrivial interaction generically produces spatially nonuniform k_S(z)."* Intelligence claim: *"memory and agency together... achieves systematically higher-alignment outcomes."* This card extends the regime-dependence taxonomy (foundational § 8.1) with a fourth regime: **LLM closure — agency engages but endpoint-redundant in saturated regimes**. Reading C engine patch (Part 7) is what makes the agency channel testable on the small-data LLM substrate.
 - **Presupposes:** C1, C5, C6
 - **Adds:** the substrate extends itself through interaction + environmental reward; finds edges the compiler missed; conflict with compiled rules resolved via C5's existing Crucible mechanism with operator-tunable timescale resilience
 - **Enables:** continual alignment from production feedback; complementary to C7; substantively unifies deductive + inductive
