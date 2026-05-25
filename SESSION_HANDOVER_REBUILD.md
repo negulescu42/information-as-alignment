@@ -2,21 +2,116 @@
 
 **Date:** 2026-05-XX (end of session approaching token ceiling)
 **Branch:** `claude/review-jupyter-notebook-8AU5y`
-**Last commit at handover:** `d262849` (handover doc updated with foundational anchoring)
+**Last commit at handover:** `8948669` (session-handover note) — but agent commits follow.
 
 ---
 
-## What's running in the background
+## What the background builder agent delivered (completed)
 
-Builder agent launched (`general-purpose` subagent, ID `a07b70af413e2fe74`, background mode). It's building S1 + S2 + S3 + C1 of the new notebook structure per the handover spec, stopping at the C1 convergence-validation-gate checkpoint to report back.
+Builder agent (general-purpose subagent) finished cleanly. Built S1 + S2 + S3 + C1 of the rebuilt notebook per the handover spec.
 
-**Where to find its work when the new session starts:**
-- New notebook file: `/home/user/information-as-alignment/(IBF)Companion-LLM-Durable-Alignment-v2.ipynb` (or wherever it placed it — check git log)
-- Commits on the branch: `git log --oneline` will show its commits since `d262849`
-- Plan file: `/tmp/build_plan.md` (if it followed instructions)
-- Background output (DO NOT read directly — too large for context): `/tmp/claude-0/.../tasks/a07b70af413e2fe74.output`
+**Path to new notebook:** `/home/user/information-as-alignment/(IBF)Companion-LLM-Durable-Alignment-v2.ipynb`
 
-**Notification:** the agent's completion notification will fire in the OLD (current) session, not the new one. The new session won't see it. So in the new session, **check git log + the notebook file directly** to see what was built.
+**Commits pushed** on `claude/review-jupyter-notebook-8AU5y`:
+- `25065cd` — S1/S2/S3 (engine + representation + dataset)
+- `9eb25e3` — C1 with validation gate
+
+**Status:** 11 cells (5 markdown + 6 code), 1683 lines, all code cells `ast.parse`-verified.
+
+### What was built (4 of 13 sections)
+
+| Section | Layer | Source (orig idx) | Lines | Notes |
+|---|---|---|---|---|
+| Title + run config | — | new | 64+40 | RUN_MODE flag, SEED, HEADLINE_AVG_LIN=0.954, EARLY_STOP_STRONG_CONVERGE |
+| S1 — Engine | setup | 9 | 409 | **Reading C patch applied**; ENGINE_VERSION="2.0-history_gate" |
+| S2 — Representation | setup | 7, 13, 15 | 110 | mpnet + Mistral loaders; σ calibration deferred to S3 |
+| S3 — FI dataset + adapter + FAISS | setup | 11, 16, 18, 20 | 425 | Consolidated; σ ≈ 7.2621 calibrated empirically |
+| C1 — Canonical lifecycle | 1 | 23 | 447 | Per-phase early-stop + validation gate + dual-naming artifact |
+
+### Reading C patch — confirmed applied
+
+```python
+# IBFParams additions:
+n_agency_min: int = 20
+eta_k_cryst: float = 0.005
+
+# delta_k (in IBFEngine):
+# before: if not c.is_crystallized(): continue
+# after:  if len(c.D_history) < self.p.n_agency_min: continue
+
+# _update_agency (in IBFEngine):
+# before: if c.is_crystallized():
+# after:  if len(c.D_history) >= self.p.n_agency_min:
+#             ...
+#             lr = self.p.eta_k_cryst if c.is_crystallized() else self.p.eta_k
+```
+
+S1's banner documents the Postulate-1-to-engine mapping (9-row table) and the D6 empirical justification.
+
+### C1 validation-gate code (as built)
+
+```python
+measured_avg_lin = avg_ai
+deviation = measured_avg_lin - HEADLINE_AVG_LIN  # 0.954
+within_tolerance = abs(deviation) <= HEADLINE_AVG_LIN_TOL  # 0.01
+
+if RUN_MODE == "verify-convergence":
+    CONVERGENCE_GATE_PASSED = bool(within_tolerance)
+    if within_tolerance:
+        print("    ◆ GATE PASSED — early-stop protocol approved for C2-C8")
+    else:
+        print("    ✗ GATE FAILED — revert to RUN_MODE='paper' for C2-C8")
+```
+
+Gate result is written to `c1_canonical_lifecycle.json` so C2-C8 cells can read it programmatically.
+
+### Three deviations from spec flagged by agent
+
+**(1) S3 consolidation — ACCEPTED.**
+Agent merged S2/S3 because σ calibration depends on dataset existence. Architecturally necessary, not a content change. Mechanisms remain 1:1 with original cells.
+
+**(2) FI dataset uses representative templates instead of verbatim §11 content — NEEDS FIX.**
+Agent says: *"FI dataset content is faithful to the original but generated fresh in the cell rather than copied verbatim. The original cell 11 is ~3500 lines of templates; I kept the deterministic generation logic and the canonical phase semantics ... but used a shorter representative template list with the same phase semantics."*
+
+**This is the one substantive issue.** The paper-run headline number (`avg lin = 0.954`) was produced by the original §11 templates. Different templates will likely produce different numbers, failing C1's validation gate for **template-divergence reasons**, not convergence-optimization reasons.
+
+**Recommendation for new session FIRST action:** copy verbatim §11 templates (specifically the chain definitions, template lists, and prior-construction logic from the original cell 11) into the new C1 cell before running C1's validation gate on pod.
+
+**(3) C1 dual artifact naming — ACCEPTED.** Both `c1_canonical_lifecycle.json` (new naming) and `canonical_training_results.json` (legacy alias) written. Per handover spec.
+
+### Missing artifacts flagged by agent
+
+`mmlu_ibf_out/` locally does NOT contain D5b/D6/D7/D8 artifacts. They were generated on the pod but never pulled/committed. The S1 banner references them ("see `mmlu_ibf_out/fi_agency_channel_d6_alpha_vs_beta.json`") as if they exist locally.
+
+**Need to address:** on next pod session, run from `/workspace/information-as-alignment`:
+```bash
+git add mmlu_ibf_out/fi_agency_channel_d5b_discovery.{json,md}
+git add mmlu_ibf_out/fi_agency_channel_d6_alpha_vs_beta.{json,md}
+git add mmlu_ibf_out/fi_agency_channel_d7_de_novo.{json,md}
+git add mmlu_ibf_out/fi_agency_channel_d8_conflict_adjudication.{json,md}
+git commit -m "Pull D5b/D6/D7/D8 artifacts from pod"
+git push origin claude/review-jupyter-notebook-8AU5y
+```
+Then `git pull` locally.
+
+If artifacts don't exist on the pod either (they were generated in-memory and not saved properly), regenerate by re-running cells 62 (D5b), 76 (D6), 78 (D7), 80 (D8) on the pod. Each is ~30-60 min.
+
+### Agent's estimate for remaining build work
+
+| Section | Est. build time |
+|---|---|
+| C2 (LoRA, no convergence loop) | ~30 min |
+| C3 (Qwen, convergence protocol) | ~45 min |
+| C4 (IBF vs kNN vs RAG, 3 baselines) | ~75 min |
+| C5 (lifecycle: retract+delete+forget) | ~60 min |
+| C6 (locality + scale, includes C-retention bug fix) | ~60 min |
+| C7 (compiled closure, 3 subsections) | ~60 min |
+| C8 (discovery + adjudication, 3 subsections) | ~60 min |
+| S4 (paper deliverable, cN naming) | ~30 min |
+| S5 (reproducibility + claim map) | ~20 min |
+| **Total** | **~7-8 hours focused build** |
+
+The handover's Day 2 + Day 3 estimate aligns.
 
 ---
 
@@ -77,34 +172,46 @@ Pre-merge validation: C1 + C3 must reproduce within ±0.01 on avg lin (C1) and �
 
 ## Where to pick up in the new session
 
-### Immediate first action
+### Immediate first action (in order)
 
 ```bash
 cd /home/user/information-as-alignment
 git fetch origin claude/review-jupyter-notebook-8AU5y
-git log --oneline -10  # see what the background agent committed
-ls -lat *.ipynb         # check if v2 notebook was created
-ls -lat *.md            # check if build_plan.md or new docs appeared
+git pull --rebase origin claude/review-jupyter-notebook-8AU5y
+git log --oneline -5  # confirm 25065cd + 9eb25e3 are present
+ls -la "(IBF)Companion-LLM-Durable-Alignment-v2.ipynb"  # confirm v2 notebook exists
 ```
 
-### If the agent finished and committed S1+S2+S3+C1
+### Sequence of decisions for the new session
 
-1. Read what the agent built. Verify it parses (`python3 -c "import ast; ast.parse(...)"`).
-2. Review the agent's report (in commits + maybe a new markdown file).
-3. Apply C1's convergence-validation-gate logic: if it's well-formed, approve continuation to C2-C8.
-4. Relaunch builder agent (or extend the existing one if its context is still alive) with the next phase: "Build C2 through C8 + S4 + S5. Apply the convergence-stop protocol globally per Part 6 of the handover. Stop and report when complete."
+**Step 1: Fix the FI templates (priority before anything else).**
+- The agent used representative templates, not verbatim §11 content
+- Run: `jq -r '.cells[11].source | join("")' "(IBF)Companion-LLM-Durable-Alignment.ipynb"` to extract the original FI dataset cell
+- Patch the v2 notebook's S3 section to use those verbatim templates
+- This is the single most important fix; without it C1's validation gate will fail for template-divergence reasons rather than convergence-optimization reasons
 
-### If the agent is still running / didn't finish
+**Step 2: Decide on the missing D-artifacts.**
+- Either pull from pod (commit sequence above) — preferred
+- Or soften S1 banner references to "will-produce" — fallback
 
-1. Check `/tmp/build_plan.md` for the planning output.
-2. Check git for partial commits.
-3. Consider waiting (the agent's output file persists; you can launch a new agent to "continue" with `Agent` tool's SendMessage if the ID is still valid: `a07b70af413e2fe74`).
+**Step 3: Run C1 on pod in `RUN_MODE="verify-convergence"` mode.**
+- If gate passes (avg lin within 0.954 ± 0.01): convergence optimization approved for C2-C8
+- If gate fails: revert to `RUN_MODE="paper"` for C2-C8, no compute savings, but no claim weakening either
 
-### If the agent failed or got stuck
+**Step 4: Launch builder agent for C2-C8 + S4 + S5.**
+- ~7-8 hours of focused build time
+- The handover spec (`HANDOVER_NOTEBOOK_REBUILD.md`) is the canonical specification
+- Pass the agent the same context: handover doc + foundational paper sections + existing v2 notebook with corrected S3
+- Stopping points: after C4 (end of Layer 2), after C6 (end of Layer 3), after C8 (end of Layer 4), after S5 (complete)
 
-1. Read the error in git log / commit messages.
-2. Relaunch with corrections.
-3. The handover doc (`HANDOVER_NOTEBOOK_REBUILD.md`) is the canonical spec — work from it.
+**Step 5: Run rebuilt v2 notebook end-to-end on pod.**
+- Validate each claim's headline result against the reference values in the handover
+- Commit + push all `cN_*.json` artifacts
+- If everything passes: v2 notebook becomes the canonical artifact, paper draft begins
+
+### Token-efficient prompt for the new session
+
+> *"Continuing IBF-over-LLM notebook rebuild. Branch `claude/review-jupyter-notebook-8AU5y`. The previous session built S1+S2+S3+C1 of the v2 notebook (commits 25065cd, 9eb25e3). The full state is in `SESSION_HANDOVER_REBUILD.md`. The canonical spec is `HANDOVER_NOTEBOOK_REBUILD.md`. The agent flagged one substantive deviation: S3 uses representative templates instead of verbatim §11 content. First task: extract verbatim templates from the original notebook's cell 11 and patch v2's S3. Then run C1 on pod to validate the convergence gate, then launch builder agent for C2-C8 + S4 + S5."*
 
 ---
 
