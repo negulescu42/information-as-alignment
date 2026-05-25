@@ -1,0 +1,103 @@
+{
+  "meta": {
+    "experiment": "\u00a7 24b-D1 kernel-locality diagnostic",
+    "engine_source": "arm_transitive['engine']  (\u00a7 23 transitive arm, post AB+BC install)",
+    "n_value_centers": 3880,
+    "n_agency_centers_crystallized": 1303,
+    "sigma_op": 7.262067926124915,
+    "sigma_agency": 4.8361292246445,
+    "activation_threshold": 0.01,
+    "value_active_radius": 22.039317773079343,
+    "agency_active_radius": 14.676947373375834,
+    "radius_factor_sqrt_minus2lntau": 3.0348542587702925,
+    "notes": [
+      "Distances in \u03c3 units: d / \u03c3.",
+      "active radius = \u03c3 \u00b7 sqrt(-2 ln activation_threshold); inside-fraction = % of points within this radius of >=1 center.",
+      "Value channel evaluated on 80-D z_choices; agency on z_choices[:,:,:64] for choice-level and z_question for query-level."
+    ]
+  },
+  "per_group": {
+    "test_AB": {
+      "n_items": 24,
+      "val_sigma_min": 0.0,
+      "val_sigma_mean": 2.1936123371124268,
+      "val_sigma_med": 1.4187017679214478,
+      "val_sigma_max": 5.473291397094727,
+      "val_frac_inside_active_radius": 0.5625,
+      "ag_sigma_min": 4.271109580993652,
+      "ag_sigma_mean": 4.776157855987549,
+      "ag_sigma_med": 4.769192218780518,
+      "ag_sigma_max": 5.321825981140137,
+      "ag_frac_inside_active_radius": 0.0,
+      "ag_query_sigma_mean": 4.981090545654297,
+      "ag_query_sigma_min": 4.643846035003662
+    },
+    "test_BC": {
+      "n_items": 24,
+      "val_sigma_min": 0.0,
+      "val_sigma_mean": 2.3824543952941895,
+      "val_sigma_med": 2.679757595062256,
+      "val_sigma_max": 5.994627952575684,
+      "val_frac_inside_active_radius": 0.5,
+      "ag_sigma_min": 4.144375801086426,
+      "ag_sigma_mean": 4.691977024078369,
+      "ag_sigma_med": 4.630846977233887,
+      "ag_sigma_max": 5.4353742599487305,
+      "ag_frac_inside_active_radius": 0.0,
+      "ag_query_sigma_mean": 5.041841983795166,
+      "ag_query_sigma_min": 4.7247185707092285
+    },
+    "test_AC_transitive": {
+      "n_items": 24,
+      "val_sigma_min": 3.9133412837982178,
+      "val_sigma_mean": 5.563897609710693,
+      "val_sigma_med": 5.679181098937988,
+      "val_sigma_max": 6.5694756507873535,
+      "val_frac_inside_active_radius": 0.0,
+      "ag_sigma_min": 4.187182426452637,
+      "ag_sigma_mean": 4.841126918792725,
+      "ag_sigma_med": 4.80596923828125,
+      "ag_sigma_max": 5.546541213989258,
+      "ag_frac_inside_active_radius": 0.0,
+      "ag_query_sigma_mean": 4.965574264526367,
+      "ag_query_sigma_min": 4.5522003173828125
+    },
+    "ordinary_AC_control": {
+      "n_items": 24,
+      "val_sigma_min": 3.2530405521392822,
+      "val_sigma_mean": 5.467950820922852,
+      "val_sigma_med": 5.5596466064453125,
+      "val_sigma_max": 6.687203884124756,
+      "val_frac_inside_active_radius": 0.0,
+      "ag_sigma_min": 4.241722583770752,
+      "ag_sigma_mean": 4.657076835632324,
+      "ag_sigma_med": 4.641139030456543,
+      "ag_sigma_max": 5.147236347198486,
+      "ag_frac_inside_active_radius": 0.0,
+      "ag_query_sigma_mean": 4.962714672088623,
+      "ag_query_sigma_min": 4.528223037719727
+    },
+    "near": {
+      "n_items": 180,
+      "val_sigma_min": 4.152768611907959,
+      "val_sigma_mean": 5.5000176429748535,
+      "val_sigma_med": 5.5349578857421875,
+      "val_frac_inside_active_radius": 0.0,
+      "ag_sigma_min": 3.732042074203491,
+      "ag_sigma_mean": 4.332331657409668,
+      "ag_frac_inside_active_radius": 0.0
+    },
+    "distant": {
+      "n_items": 180,
+      "val_sigma_min": 4.4337873458862305,
+      "val_sigma_mean": 5.839766979217529,
+      "val_sigma_med": 5.812679290771484,
+      "val_frac_inside_active_radius": 0.0,
+      "ag_sigma_min": 4.018855094909668,
+      "ag_sigma_mean": 4.370625972747803,
+      "ag_frac_inside_active_radius": 0.0
+    }
+  },
+  "value_verdict": "AC items sit \u22651\u03c3 further from value centers than AB/BC items (AC med 5.68\u03c3 vs AB 1.42\u03c3, BC 2.68\u03c3) \u2014 this is the kernel-locality story",
+  "agency_verdict": "agency-active fraction is near zero across ALL groups (AB 0.0%, AC 0.0%) \u2014 crystallized agency centers do not overlap the closure dataset at all"
+}

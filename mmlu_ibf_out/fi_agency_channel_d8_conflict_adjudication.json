@@ -1,0 +1,686 @@
+{
+  "meta": {
+    "experiment": "\u00a7 24b-D8 \u2014 compiled vs discovered conflict adjudication",
+    "purpose": "Validate principled unification of C4 (compiled) and C8 (discovered)",
+    "compiled_install_low": {
+      "epochs": 3,
+      "push_mult": 1.8
+    },
+    "compiled_install_high": {
+      "epochs": 10,
+      "push_mult": 3.0,
+      "post_install_force_resilience": true,
+      "v_set_to_v_max": true,
+      "mu_eff_set_to_mu_crystallized": true,
+      "crucible_verified_set_to_true": true
+    },
+    "discovery": {
+      "epochs": 30,
+      "repeats": 3,
+      "push_mult": 2.5,
+      "max_push": 6.0,
+      "reward_target": "X = common_AB (contradicts compiled B)"
+    },
+    "n_install_items": 16,
+    "n_test_items": 16,
+    "sigma_op": 7.262067926124915,
+    "v_max": 8.0,
+    "mu_crystallized": 0.001,
+    "thresholds": {
+      "nodisc_tolerance": 0.05,
+      "erosion_threshold": 0.5,
+      "discovery_threshold": 0.5,
+      "resilience_threshold": 0.1
+    },
+    "notes": [
+      "Three engines: LOW_NODISC (baseline), LOW_DISC (evidence test), HIGH_DISC (resilience test).",
+      "HIGH_DISC compiled rule is post-install boosted to maximum Crucible-resilience.",
+      "Discovery rewards picking X (= common_AB, the OPPOSITE of compiled rule's B target).",
+      "Both LOW_DISC and HIGH_DISC receive identical discovery pressure.",
+      "Verdict = principled_adjudication_validated requires all three predicted outcomes."
+    ]
+  },
+  "LOW_NODISC": {
+    "baseline": {
+      "test_AB": 1.0,
+      "test_AX": 0.0
+    },
+    "final": {
+      "test_AB": 1.0,
+      "test_AX": 0.0
+    },
+    "v_baseline": {
+      "n": 16,
+      "mean": 0.0,
+      "min": -7.52,
+      "max": 7.52,
+      "abs_sum": 120.32
+    },
+    "v_final": {
+      "n": 16,
+      "mean": 0.0,
+      "min": -7.52,
+      "max": 7.52,
+      "abs_sum": 120.32
+    },
+    "trajectory": [
+      {
+        "epoch": 0,
+        "X_hit_rate": 0.0,
+        "mean_keff": 5.0,
+        "test_AB": 1.0,
+        "test_AX": 0.0,
+        "n_value": 6398,
+        "n_value_cryst": 6382
+      }
+    ]
+  },
+  "LOW_DISC": {
+    "baseline": {
+      "test_AB": 1.0,
+      "test_AX": 0.0
+    },
+    "final": {
+      "test_AB": 0.0,
+      "test_AX": 1.0
+    },
+    "v_baseline": {
+      "n": 16,
+      "mean": 0.0,
+      "min": -7.52,
+      "max": 7.52,
+      "abs_sum": 120.32
+    },
+    "v_final": {
+      "n": 16,
+      "mean": -0.20608117648928514,
+      "min": -0.9358600224238387,
+      "max": 0.49928582570249225,
+      "abs_sum": 11.285415788686624
+    },
+    "trajectory": [
+      {
+        "epoch": 1,
+        "X_hit_rate": 0.0,
+        "mean_keff": 5.0,
+        "test_AB": 0.0,
+        "test_AX": 0.0,
+        "n_value": 6414,
+        "n_value_cryst": 6382
+      },
+      {
+        "epoch": 2,
+        "X_hit_rate": 0.5208333333333334,
+        "mean_keff": 5.0,
+        "test_AB": 0.0,
+        "test_AX": 1.0,
+        "n_value": 6414,
+        "n_value_cryst": 6382
+      },
+      {
+        "epoch": 3,
+        "X_hit_rate": 0.9791666666666666,
+        "mean_keff": 5.0,
+        "test_AB": 0.0,
+        "test_AX": 1.0,
+        "n_value": 6414,
+        "n_value_cryst": 6382
+      },
+      {
+        "epoch": 4,
+        "X_hit_rate": 1.0,
+        "mean_keff": 5.0,
+        "test_AB": 0.0,
+        "test_AX": 1.0,
+        "n_value": 6414,
+        "n_value_cryst": 6382
+      },
+      {
+        "epoch": 5,
+        "X_hit_rate": 1.0,
+        "mean_keff": 5.0,
+        "test_AB": 0.0,
+        "test_AX": 1.0,
+        "n_value": 6414,
+        "n_value_cryst": 6382
+      },
+      {
+        "epoch": 6,
+        "X_hit_rate": 1.0,
+        "mean_keff": 5.0,
+        "test_AB": 0.0,
+        "test_AX": 1.0,
+        "n_value": 6414,
+        "n_value_cryst": 6382
+      },
+      {
+        "epoch": 7,
+        "X_hit_rate": 1.0,
+        "mean_keff": 5.0,
+        "test_AB": 0.0,
+        "test_AX": 1.0,
+        "n_value": 6414,
+        "n_value_cryst": 6382
+      },
+      {
+        "epoch": 8,
+        "X_hit_rate": 1.0,
+        "mean_keff": 5.0,
+        "test_AB": 0.0,
+        "test_AX": 1.0,
+        "n_value": 6414,
+        "n_value_cryst": 6382
+      },
+      {
+        "epoch": 9,
+        "X_hit_rate": 1.0,
+        "mean_keff": 5.0,
+        "test_AB": 0.0,
+        "test_AX": 1.0,
+        "n_value": 6414,
+        "n_value_cryst": 6382
+      },
+      {
+        "epoch": 10,
+        "X_hit_rate": 1.0,
+        "mean_keff": 5.0,
+        "test_AB": 0.0,
+        "test_AX": 1.0,
+        "n_value": 6414,
+        "n_value_cryst": 6382
+      },
+      {
+        "epoch": 11,
+        "X_hit_rate": 1.0,
+        "mean_keff": 5.0,
+        "test_AB": 0.0,
+        "test_AX": 1.0,
+        "n_value": 6414,
+        "n_value_cryst": 6382
+      },
+      {
+        "epoch": 12,
+        "X_hit_rate": 1.0,
+        "mean_keff": 5.0,
+        "test_AB": 0.0,
+        "test_AX": 1.0,
+        "n_value": 6414,
+        "n_value_cryst": 6382
+      },
+      {
+        "epoch": 13,
+        "X_hit_rate": 1.0,
+        "mean_keff": 5.0,
+        "test_AB": 0.0,
+        "test_AX": 1.0,
+        "n_value": 6414,
+        "n_value_cryst": 6382
+      },
+      {
+        "epoch": 14,
+        "X_hit_rate": 1.0,
+        "mean_keff": 5.0,
+        "test_AB": 0.0,
+        "test_AX": 1.0,
+        "n_value": 6414,
+        "n_value_cryst": 6382
+      },
+      {
+        "epoch": 15,
+        "X_hit_rate": 1.0,
+        "mean_keff": 5.0,
+        "test_AB": 0.0,
+        "test_AX": 1.0,
+        "n_value": 6414,
+        "n_value_cryst": 6382
+      },
+      {
+        "epoch": 16,
+        "X_hit_rate": 1.0,
+        "mean_keff": 5.0,
+        "test_AB": 0.0,
+        "test_AX": 1.0,
+        "n_value": 6414,
+        "n_value_cryst": 6382
+      },
+      {
+        "epoch": 17,
+        "X_hit_rate": 1.0,
+        "mean_keff": 5.0,
+        "test_AB": 0.0,
+        "test_AX": 1.0,
+        "n_value": 6414,
+        "n_value_cryst": 6382
+      },
+      {
+        "epoch": 18,
+        "X_hit_rate": 1.0,
+        "mean_keff": 5.0,
+        "test_AB": 0.0,
+        "test_AX": 1.0,
+        "n_value": 6414,
+        "n_value_cryst": 6382
+      },
+      {
+        "epoch": 19,
+        "X_hit_rate": 1.0,
+        "mean_keff": 5.0,
+        "test_AB": 0.0,
+        "test_AX": 1.0,
+        "n_value": 6414,
+        "n_value_cryst": 6382
+      },
+      {
+        "epoch": 20,
+        "X_hit_rate": 1.0,
+        "mean_keff": 5.0,
+        "test_AB": 0.0,
+        "test_AX": 1.0,
+        "n_value": 6414,
+        "n_value_cryst": 6382
+      },
+      {
+        "epoch": 21,
+        "X_hit_rate": 1.0,
+        "mean_keff": 5.0,
+        "test_AB": 0.0,
+        "test_AX": 1.0,
+        "n_value": 6414,
+        "n_value_cryst": 6382
+      },
+      {
+        "epoch": 22,
+        "X_hit_rate": 1.0,
+        "mean_keff": 5.0,
+        "test_AB": 0.0,
+        "test_AX": 1.0,
+        "n_value": 6414,
+        "n_value_cryst": 6382
+      },
+      {
+        "epoch": 23,
+        "X_hit_rate": 1.0,
+        "mean_keff": 5.0,
+        "test_AB": 0.0,
+        "test_AX": 1.0,
+        "n_value": 6414,
+        "n_value_cryst": 6382
+      },
+      {
+        "epoch": 24,
+        "X_hit_rate": 1.0,
+        "mean_keff": 5.0,
+        "test_AB": 0.0,
+        "test_AX": 1.0,
+        "n_value": 6414,
+        "n_value_cryst": 6382
+      },
+      {
+        "epoch": 25,
+        "X_hit_rate": 1.0,
+        "mean_keff": 5.0,
+        "test_AB": 0.0,
+        "test_AX": 1.0,
+        "n_value": 6414,
+        "n_value_cryst": 6382
+      },
+      {
+        "epoch": 26,
+        "X_hit_rate": 1.0,
+        "mean_keff": 5.0,
+        "test_AB": 0.0,
+        "test_AX": 1.0,
+        "n_value": 6414,
+        "n_value_cryst": 6382
+      },
+      {
+        "epoch": 27,
+        "X_hit_rate": 1.0,
+        "mean_keff": 5.0,
+        "test_AB": 0.0,
+        "test_AX": 1.0,
+        "n_value": 6414,
+        "n_value_cryst": 6382
+      },
+      {
+        "epoch": 28,
+        "X_hit_rate": 1.0,
+        "mean_keff": 5.0,
+        "test_AB": 0.0,
+        "test_AX": 1.0,
+        "n_value": 6414,
+        "n_value_cryst": 6382
+      },
+      {
+        "epoch": 29,
+        "X_hit_rate": 1.0,
+        "mean_keff": 5.0,
+        "test_AB": 0.0,
+        "test_AX": 1.0,
+        "n_value": 6414,
+        "n_value_cryst": 6382
+      },
+      {
+        "epoch": 30,
+        "X_hit_rate": 1.0,
+        "mean_keff": 5.0,
+        "test_AB": 0.0,
+        "test_AX": 1.0,
+        "n_value": 6414,
+        "n_value_cryst": 6382
+      }
+    ]
+  },
+  "HIGH_DISC": {
+    "baseline": {
+      "test_AB": 1.0,
+      "test_AX": 0.0
+    },
+    "final": {
+      "test_AB": 0.0,
+      "test_AX": 1.0
+    },
+    "v_baseline": {
+      "n": 16,
+      "mean": 0.0,
+      "min": -8.0,
+      "max": 8.0,
+      "abs_sum": 128.0
+    },
+    "v_final": {
+      "n": 16,
+      "mean": -5.925326418113107,
+      "min": -7.751227529798455,
+      "max": -3.953707371458835,
+      "abs_sum": 94.80522268980971
+    },
+    "trajectory": [
+      {
+        "epoch": 1,
+        "X_hit_rate": 0.0,
+        "mean_keff": 5.0,
+        "test_AB": 1.0,
+        "test_AX": 0.0,
+        "n_value": 6398,
+        "n_value_cryst": 6398
+      },
+      {
+        "epoch": 2,
+        "X_hit_rate": 0.0,
+        "mean_keff": 5.0,
+        "test_AB": 1.0,
+        "test_AX": 0.0,
+        "n_value": 6398,
+        "n_value_cryst": 6398
+      },
+      {
+        "epoch": 3,
+        "X_hit_rate": 0.0,
+        "mean_keff": 5.0,
+        "test_AB": 1.0,
+        "test_AX": 0.0,
+        "n_value": 6398,
+        "n_value_cryst": 6398
+      },
+      {
+        "epoch": 4,
+        "X_hit_rate": 0.0,
+        "mean_keff": 5.0,
+        "test_AB": 1.0,
+        "test_AX": 0.0,
+        "n_value": 6398,
+        "n_value_cryst": 6398
+      },
+      {
+        "epoch": 5,
+        "X_hit_rate": 0.0,
+        "mean_keff": 5.0,
+        "test_AB": 1.0,
+        "test_AX": 0.0,
+        "n_value": 6398,
+        "n_value_cryst": 6398
+      },
+      {
+        "epoch": 6,
+        "X_hit_rate": 0.0,
+        "mean_keff": 5.0,
+        "test_AB": 1.0,
+        "test_AX": 0.0,
+        "n_value": 6398,
+        "n_value_cryst": 6398
+      },
+      {
+        "epoch": 7,
+        "X_hit_rate": 0.0,
+        "mean_keff": 5.0,
+        "test_AB": 1.0,
+        "test_AX": 0.0,
+        "n_value": 6398,
+        "n_value_cryst": 6398
+      },
+      {
+        "epoch": 8,
+        "X_hit_rate": 0.0,
+        "mean_keff": 5.0,
+        "test_AB": 1.0,
+        "test_AX": 0.0,
+        "n_value": 6398,
+        "n_value_cryst": 6398
+      },
+      {
+        "epoch": 9,
+        "X_hit_rate": 0.0,
+        "mean_keff": 5.0,
+        "test_AB": 1.0,
+        "test_AX": 0.0,
+        "n_value": 6398,
+        "n_value_cryst": 6398
+      },
+      {
+        "epoch": 10,
+        "X_hit_rate": 0.0,
+        "mean_keff": 5.0,
+        "test_AB": 1.0,
+        "test_AX": 0.0,
+        "n_value": 6398,
+        "n_value_cryst": 6398
+      },
+      {
+        "epoch": 11,
+        "X_hit_rate": 0.0,
+        "mean_keff": 5.0,
+        "test_AB": 1.0,
+        "test_AX": 0.0,
+        "n_value": 6398,
+        "n_value_cryst": 6398
+      },
+      {
+        "epoch": 12,
+        "X_hit_rate": 0.0,
+        "mean_keff": 5.0,
+        "test_AB": 1.0,
+        "test_AX": 0.0,
+        "n_value": 6398,
+        "n_value_cryst": 6398
+      },
+      {
+        "epoch": 13,
+        "X_hit_rate": 0.0,
+        "mean_keff": 5.0,
+        "test_AB": 1.0,
+        "test_AX": 0.0,
+        "n_value": 6398,
+        "n_value_cryst": 6398
+      },
+      {
+        "epoch": 14,
+        "X_hit_rate": 0.0,
+        "mean_keff": 5.0,
+        "test_AB": 1.0,
+        "test_AX": 0.0,
+        "n_value": 6398,
+        "n_value_cryst": 6398
+      },
+      {
+        "epoch": 15,
+        "X_hit_rate": 0.0,
+        "mean_keff": 5.0,
+        "test_AB": 1.0,
+        "test_AX": 0.0,
+        "n_value": 6398,
+        "n_value_cryst": 6398
+      },
+      {
+        "epoch": 16,
+        "X_hit_rate": 0.0,
+        "mean_keff": 5.0,
+        "test_AB": 1.0,
+        "test_AX": 0.0,
+        "n_value": 6401,
+        "n_value_cryst": 6398
+      },
+      {
+        "epoch": 17,
+        "X_hit_rate": 0.0,
+        "mean_keff": 5.0,
+        "test_AB": 1.0,
+        "test_AX": 0.0,
+        "n_value": 6411,
+        "n_value_cryst": 6398
+      },
+      {
+        "epoch": 18,
+        "X_hit_rate": 0.0,
+        "mean_keff": 5.0,
+        "test_AB": 1.0,
+        "test_AX": 0.0,
+        "n_value": 6414,
+        "n_value_cryst": 6398
+      },
+      {
+        "epoch": 19,
+        "X_hit_rate": 0.0,
+        "mean_keff": 5.0,
+        "test_AB": 1.0,
+        "test_AX": 0.0,
+        "n_value": 6414,
+        "n_value_cryst": 6398
+      },
+      {
+        "epoch": 20,
+        "X_hit_rate": 0.0,
+        "mean_keff": 5.0,
+        "test_AB": 1.0,
+        "test_AX": 0.0,
+        "n_value": 6414,
+        "n_value_cryst": 6398
+      },
+      {
+        "epoch": 21,
+        "X_hit_rate": 0.0,
+        "mean_keff": 5.0,
+        "test_AB": 1.0,
+        "test_AX": 0.0,
+        "n_value": 6414,
+        "n_value_cryst": 6398
+      },
+      {
+        "epoch": 22,
+        "X_hit_rate": 0.0,
+        "mean_keff": 5.0,
+        "test_AB": 1.0,
+        "test_AX": 0.0,
+        "n_value": 6414,
+        "n_value_cryst": 6398
+      },
+      {
+        "epoch": 23,
+        "X_hit_rate": 0.0,
+        "mean_keff": 5.0,
+        "test_AB": 1.0,
+        "test_AX": 0.0,
+        "n_value": 6414,
+        "n_value_cryst": 6398
+      },
+      {
+        "epoch": 24,
+        "X_hit_rate": 0.08333333333333333,
+        "mean_keff": 5.0,
+        "test_AB": 1.0,
+        "test_AX": 0.0,
+        "n_value": 6414,
+        "n_value_cryst": 6398
+      },
+      {
+        "epoch": 25,
+        "X_hit_rate": 0.14583333333333334,
+        "mean_keff": 5.0,
+        "test_AB": 0.875,
+        "test_AX": 0.0,
+        "n_value": 6414,
+        "n_value_cryst": 6398
+      },
+      {
+        "epoch": 26,
+        "X_hit_rate": 0.3333333333333333,
+        "mean_keff": 5.0,
+        "test_AB": 0.25,
+        "test_AX": 0.5,
+        "n_value": 6414,
+        "n_value_cryst": 6398
+      },
+      {
+        "epoch": 27,
+        "X_hit_rate": 0.4791666666666667,
+        "mean_keff": 5.0,
+        "test_AB": 0.0,
+        "test_AX": 1.0,
+        "n_value": 6414,
+        "n_value_cryst": 6398
+      },
+      {
+        "epoch": 28,
+        "X_hit_rate": 0.75,
+        "mean_keff": 5.0,
+        "test_AB": 0.0,
+        "test_AX": 1.0,
+        "n_value": 6414,
+        "n_value_cryst": 6398
+      },
+      {
+        "epoch": 29,
+        "X_hit_rate": 0.875,
+        "mean_keff": 5.0,
+        "test_AB": 0.0,
+        "test_AX": 1.0,
+        "n_value": 6414,
+        "n_value_cryst": 6398
+      },
+      {
+        "epoch": 30,
+        "X_hit_rate": 0.8541666666666666,
+        "mean_keff": 5.0,
+        "test_AB": 0.0,
+        "test_AX": 1.0,
+        "n_value": 6414,
+        "n_value_cryst": 6398
+      }
+    ]
+  },
+  "deltas": {
+    "NODISC_AB_pres": 0.0,
+    "LOW_AB_change": -1.0,
+    "LOW_AX_change": 1.0,
+    "HIGH_AB_change": -1.0,
+    "HIGH_AX_change": 1.0
+  },
+  "predictions": {
+    "baseline_holds": true,
+    "evidence_won": true,
+    "resilience_won": false
+  },
+  "verdict": {
+    "code": "evidence_always_wins",
+    "message": "Evidence wins in both LOW_DISC and HIGH_DISC. Resilience boost insufficient to preserve compiled rule under sustained contradicting evidence. AB drop: LOW -1.000, HIGH -1.000. Either need stronger resilience mechanism or evidence wins universally."
+  }
+}
