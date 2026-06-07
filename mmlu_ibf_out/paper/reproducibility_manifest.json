@@ -1,0 +1,214 @@
+{
+  "title": "IBF over LLMs (v2) \u2014 Reproducibility manifest",
+  "generated_at": "2026-06-06T03:58:06.417860Z",
+  "engine": {
+    "version": "2.1-history_gate+xcontext_flag",
+    "patches": [
+      "Reading C agency-channel patch: gate on len(c.D_history) >= n_agency_min instead of is_crystallized(); eta_k_cryst parallel to eta_cryst for crystallised agency centres. See AGENCY_DISCRETIZATION_NOTE.md."
+    ]
+  },
+  "run": {
+    "RUN_MODE": "paper",
+    "RUN_ID": "20260603T164908Z",
+    "SEED": 42,
+    "SEED_OFFSETS": {
+      "C1": 100,
+      "C2": 200,
+      "C3": 300,
+      "C4": 400,
+      "C5": 500,
+      "C6": 600,
+      "C7": 700,
+      "C8": 800
+    },
+    "EARLY_STOP_STRONG_CONVERGE": true,
+    "HEADLINE_AVG_LIN": 0.954,
+    "HEADLINE_AVG_LIN_TOL": 0.01
+  },
+  "geometry": {
+    "SIGMA_PROP": 7.262067926124915,
+    "MERGE_PROP": 10.893101889187372,
+    "SIGMA_AGENCY": 4.8361292246445,
+    "Z_DIM": 64,
+    "Z_DIM_AUG": 80,
+    "SUBJECT_DIM": 8,
+    "ANSWER_DIM": 8
+  },
+  "repository": {
+    "repo": "negulescu42/information-as-alignment",
+    "branch": "unknown",
+    "commit": "unknown",
+    "notebook": "(IBF)Companion-LLM-Durable-Alignment-v2.ipynb"
+  },
+  "hardware": {
+    "gpu": "NVIDIA GeForce RTX 5090",
+    "gpu_mem_gb": 33.679736832,
+    "torch_cuda_available": true
+  },
+  "models": {
+    "base_model": "mistralai/Mistral-7B-v0.1",
+    "cross_model": "Qwen/Qwen2-1.5B",
+    "encoder": "sentence-transformers/all-mpnet-base-v2"
+  },
+  "datasets": {
+    "Future_Industries": "synthetic; generated in S3 from deterministic seeds",
+    "ZsRE": "Levy et al., 2017 (lifecycle harness in C4; synthetic surrogate here)",
+    "CounterFact": "Meng et al., 2022 (lifecycle harness in C4; synthetic surrogate here)"
+  },
+  "claim_to_artifact_map": {
+    "C1": [
+      "c1_canonical_lifecycle.json",
+      "canonical_training_results.json (alias)",
+      "canonical_engine.pkl",
+      "canonical_metrics.pkl"
+    ],
+    "C2": [
+      "c2_lora_durability.json",
+      "actual_lora_e2e_durability_control_fixed_report.json (alias)"
+    ],
+    "C3": [
+      "c3_qwen_cross_model.json",
+      "cross_model_generality_qwen2_1_5b.json (alias)",
+      "cross_model_generality.json (compat)",
+      "phi3_generality.json (compat)"
+    ],
+    "C4": [
+      "c4_lifecycle_comparison.json",
+      "benchmark_ibf_lifecycle.json",
+      "benchmark_knn_lifecycle.json",
+      "benchmark_rag_lifecycle.json",
+      "benchmark_comparison.md"
+    ],
+    "C5": [
+      "c5_lifecycle_retraction.json",
+      "c5_lifecycle_selective_deletion.json",
+      "c5_lifecycle_forgetting.json",
+      "retraction_full_results.json (alias)",
+      "selective_deletion.json (alias)",
+      "forgetting_diagnostic_report.json (alias)"
+    ],
+    "C6": [
+      "c6_locality_bleed.json",
+      "c6_scale_frontier.json",
+      "fi_locality_bleed_test.json (alias)",
+      "fi_scale_capacity_frontier.json (alias)"
+    ],
+    "C7": [
+      "c7_ontology_closure_23bc.json",
+      "c7_graph_closure_diagnostic.json",
+      "c7_compiled_closure.json",
+      "fi_ontology_closure_23bc.json (alias)",
+      "fi_local_ontology_graph_closure_cell24.json (alias)",
+      "fi_compiled_ontology_closure_cell24b.json (alias)"
+    ],
+    "C8": [
+      "c8_discovery_d5b.json",
+      "c8_de_novo_d7.json",
+      "c8_crucible_adjudication_d8.json",
+      "fi_agency_channel_d5b_discovery.json (alias)",
+      "fi_agency_channel_d7_de_novo.json (alias)",
+      "fi_agency_channel_d8_conflict_adjudication.json (alias)"
+    ],
+    "S4": [
+      "paper/paper_tables.md",
+      "paper/abstract_numbers.json",
+      "paper/claims_status_final.md"
+    ],
+    "S5": [
+      "paper/reproducibility_manifest.json",
+      "paper/reproducibility_appendix.md"
+    ]
+  },
+  "foundational_anchoring": {
+    "C1": {
+      "claim": "Local durable alignment without weight editing",
+      "layer": 1,
+      "foundational_concept": "Foundational Claim 1 (Memory)",
+      "instantiation": "Persistent landscape deformation under Postulate 1; empirical signature is buffer-free retention on the frozen-LLM substrate.",
+      "falsifier": "Crystallised modifications decay during dormant epochs despite the stability transition, OR persist structurally but yield no measurable behavioural retention."
+    },
+    "C2": {
+      "claim": "Substrate decoupling under base evolution",
+      "layer": 2,
+      "foundational_concept": "Postulate 1 constraint (iii) \u2014 D \u22a5 motion",
+      "instantiation": "LoRA durability validates structural independence of the driving signal D from the gradient that governs motion.",
+      "falsifier": "30%+ base perturbation degrades field accuracy by >10%, OR field drift > 5% under any base modification."
+    },
+    "C3": {
+      "claim": "Cross-model mechanism generality",
+      "layer": 2,
+      "foundational_concept": "Foundational Claim 5 (Discrete Convergence)",
+      "instantiation": "Conditions R/R\u2032/A hold across encoders; Qwen replication confirms representation-invariance of the mechanism.",
+      "falsifier": "Mechanism fails on a second base model, OR cross-model behaviour differs qualitatively."
+    },
+    "C4": {
+      "claim": "Distinct from kNN / RAG (architecturally)",
+      "layer": 2,
+      "foundational_concept": "Foundational \u00a7 8.2 \"Relation to existing frameworks\"",
+      "instantiation": "IBF stores modification sites whose thermodynamic state changes through interaction (crystallisation, dissolution, broadcast-rights), categorically distinct from ART, episodic, or kernel methods.",
+      "falsifier": "Oracle-maintained kNN or RAG matches IBF on every lifecycle dimension with comparable operational burden."
+    },
+    "C5": {
+      "claim": "Truth-maintenance lifecycle",
+      "layer": 3,
+      "foundational_concept": "Foundational Claims 1 + 4 (Memory + Self-Correction)",
+      "instantiation": "Claim 1 grounds install/retention (stability transition); Claim 4 grounds revise/retract via the Crucible (contradiction-driven dissolution).",
+      "falsifier": "Retraction doesn't remove; revision creates phantom side effects; rollback doesn't restore."
+    },
+    "C6": {
+      "claim": "Locality preservation under operations",
+      "layer": 3,
+      "foundational_concept": "Postulate 1's localisation kernel K(y, x_S)",
+      "instantiation": "Modifications are spatially concentrated by construction. NN/distant drift measurements are the empirical realisation.",
+      "falsifier": "NN drift > 0.05 under sustained operations; OR scale-frontier C-retention bug reproduces."
+    },
+    "C7": {
+      "claim": "Compiled semantic structure (deductive composition)",
+      "layer": 4,
+      "foundational_concept": "Foundational \u00a7 7.2 chess compiled regularities \u2192 ontology graph",
+      "instantiation": "\u00a7 5.4's flag of LLM extension lands here: compiled closure is the LLM-substrate realisation of the deductive composition the framework enables.",
+      "falsifier": "Compiled consequences don't survive across queries; revision fails to update derived edges; closure rules interact destructively."
+    },
+    "C8": {
+      "claim": "Discovery-driven extension (inductive composition)",
+      "layer": 4,
+      "foundational_concept": "Foundational Claims 2 + 3 (Agency + Intelligence) + \u00a7 8.1 fourth regime",
+      "instantiation": "Agency claim: \"nontrivial interaction generically produces spatially nonuniform k_S(z).\" Intelligence claim: \"memory and agency together achieves systematically higher-alignment outcomes.\" Extends regime-dependence taxonomy with fourth entry: LLM closure \u2014 agency engages but endpoint-redundant in saturated regime.",
+      "falsifier": "Emergence requires kernel scaffold (D7 falsified); Crucible adjudication fails to respond to resilience knob (D8 falsified)."
+    }
+  },
+  "deferred_in_v2": {
+    "diagnostics": [
+      "\u03ba/\u03c3 diagnostics (\u00a79 family)",
+      "amplitude hygiene (\u00a722B)",
+      "anchor experiments (paraphrase audit subcells)",
+      "mechanism continuation (\u00a735, \u00a737)"
+    ],
+    "eliminated_alternatives": [
+      "\u00a724b-D1 (kernel locality diagnostic \u2014 informed D5b design)",
+      "\u00a724b-D2/D3/D4 (static agency wirings, c.z[:64] proxy, z_before storage)",
+      "\u00a724b-D5 (original buggy version \u2014 superseded by D5b)",
+      "\u00a724b-D6 (\u03b1 vs \u03b2 engine-fix validation \u2014 moved to engine-patch documentation)"
+    ],
+    "redundant_variants": [
+      "\u00a715 Strong prior pilot",
+      "\u00a715b Strong absurdities",
+      "\u00a716 Bridge experiment",
+      "\u00a717 Local alignment phase transition",
+      "\u00a718 Local alignment system report"
+    ],
+    "superseded": [
+      "\u00a722B Amplitude hygiene",
+      "\u00a722C Forgetting trajectory",
+      "\u00a727 (deleted)",
+      "\u00a735 Benchmark failure-mode analysis",
+      "\u00a737 Cross-model continuation"
+    ]
+  },
+  "limitations": {
+    "L1": "Compiled closure (C7) is required for transitive A\u2192C \u2014 emergent closure does NOT arise automatically; the C8 discovery path complements C7 inductively.",
+    "L2": "Paraphrase generalisation depends on representation geometry. ZsRE transfers more easily than CounterFact under direct-only install.",
+    "L3": "Qwen replication is fresh-field cross-model generality, not zero-shot transfer of the same learned \u03b4R field.",
+    "L4": "External editor baselines (ROME / MEMIT / SERAC / GRACE / WISE) are deferred. C4's kNN/RAG comparison instantiates the architectural argument."
+  }
+}

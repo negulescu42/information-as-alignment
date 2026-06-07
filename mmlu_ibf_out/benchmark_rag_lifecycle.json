@@ -1,0 +1,260 @@
+{
+  "method": "RAG",
+  "burden": "oracle-maintained",
+  "schema_version": "c4_lifecycle.v1",
+  "config": {
+    "top_k": 1
+  },
+  "metrics": {
+    "direct": 0.9666666666666667,
+    "locality": 0.0,
+    "revise": 0.9666666666666667,
+    "remove": 1.0,
+    "rollback": 0.9666666666666667,
+    "n": 30,
+    "burden": "oracle-maintained (manual passage add/remove per op)"
+  },
+  "per_record": [
+    {
+      "record_id": "cf_0000",
+      "direct": true,
+      "locality": 0.0,
+      "revise": true,
+      "remove": true,
+      "rollback": true
+    },
+    {
+      "record_id": "cf_0001",
+      "direct": true,
+      "locality": 0.0,
+      "revise": true,
+      "remove": true,
+      "rollback": true
+    },
+    {
+      "record_id": "cf_0002",
+      "direct": true,
+      "locality": 0.0,
+      "revise": true,
+      "remove": true,
+      "rollback": true
+    },
+    {
+      "record_id": "cf_0003",
+      "direct": true,
+      "locality": 0.0,
+      "revise": true,
+      "remove": true,
+      "rollback": true
+    },
+    {
+      "record_id": "cf_0004",
+      "direct": true,
+      "locality": 0.0,
+      "revise": true,
+      "remove": true,
+      "rollback": true
+    },
+    {
+      "record_id": "cf_0005",
+      "direct": true,
+      "locality": 0.0,
+      "revise": true,
+      "remove": true,
+      "rollback": true
+    },
+    {
+      "record_id": "cf_0006",
+      "direct": true,
+      "locality": 0.0,
+      "revise": true,
+      "remove": true,
+      "rollback": true
+    },
+    {
+      "record_id": "cf_0007",
+      "direct": true,
+      "locality": 0.0,
+      "revise": true,
+      "remove": true,
+      "rollback": true
+    },
+    {
+      "record_id": "cf_0008",
+      "direct": true,
+      "locality": 0.0,
+      "revise": true,
+      "remove": true,
+      "rollback": true
+    },
+    {
+      "record_id": "cf_0009",
+      "direct": true,
+      "locality": 0.0,
+      "revise": true,
+      "remove": true,
+      "rollback": true
+    },
+    {
+      "record_id": "cf_0010",
+      "direct": true,
+      "locality": 0.0,
+      "revise": true,
+      "remove": true,
+      "rollback": true
+    },
+    {
+      "record_id": "cf_0011",
+      "direct": true,
+      "locality": 0.0,
+      "revise": true,
+      "remove": true,
+      "rollback": true
+    },
+    {
+      "record_id": "cf_0012",
+      "direct": true,
+      "locality": 0.0,
+      "revise": true,
+      "remove": true,
+      "rollback": true
+    },
+    {
+      "record_id": "cf_0013",
+      "direct": true,
+      "locality": 0.0,
+      "revise": true,
+      "remove": true,
+      "rollback": true
+    },
+    {
+      "record_id": "cf_0014",
+      "direct": true,
+      "locality": 0.0,
+      "revise": true,
+      "remove": true,
+      "rollback": true
+    },
+    {
+      "record_id": "cf_0015",
+      "direct": true,
+      "locality": 0.0,
+      "revise": true,
+      "remove": true,
+      "rollback": true
+    },
+    {
+      "record_id": "cf_0016",
+      "direct": true,
+      "locality": 0.0,
+      "revise": true,
+      "remove": true,
+      "rollback": true
+    },
+    {
+      "record_id": "cf_0017",
+      "direct": true,
+      "locality": 0.0,
+      "revise": true,
+      "remove": true,
+      "rollback": true
+    },
+    {
+      "record_id": "cf_0018",
+      "direct": true,
+      "locality": 0.0,
+      "revise": true,
+      "remove": true,
+      "rollback": true
+    },
+    {
+      "record_id": "cf_0019",
+      "direct": true,
+      "locality": 0.0,
+      "revise": true,
+      "remove": true,
+      "rollback": true
+    },
+    {
+      "record_id": "cf_0020",
+      "direct": true,
+      "locality": 0.0,
+      "revise": true,
+      "remove": true,
+      "rollback": true
+    },
+    {
+      "record_id": "cf_0021",
+      "direct": true,
+      "locality": 0.0,
+      "revise": true,
+      "remove": true,
+      "rollback": true
+    },
+    {
+      "record_id": "cf_0022",
+      "direct": true,
+      "locality": 0.0,
+      "revise": true,
+      "remove": true,
+      "rollback": true
+    },
+    {
+      "record_id": "cf_0023",
+      "direct": true,
+      "locality": 0.0,
+      "revise": true,
+      "remove": true,
+      "rollback": true
+    },
+    {
+      "record_id": "cf_0024",
+      "direct": true,
+      "locality": 0.0,
+      "revise": true,
+      "remove": true,
+      "rollback": true
+    },
+    {
+      "record_id": "cf_0025",
+      "direct": true,
+      "locality": 0.0,
+      "revise": true,
+      "remove": true,
+      "rollback": true
+    },
+    {
+      "record_id": "cf_0026",
+      "direct": true,
+      "locality": 0.0,
+      "revise": true,
+      "remove": true,
+      "rollback": true
+    },
+    {
+      "record_id": "cf_0027",
+      "direct": false,
+      "locality": 0.0,
+      "revise": true,
+      "remove": true,
+      "rollback": false
+    },
+    {
+      "record_id": "cf_0028",
+      "direct": true,
+      "locality": 0.0,
+      "revise": false,
+      "remove": true,
+      "rollback": true
+    },
+    {
+      "record_id": "cf_0029",
+      "direct": true,
+      "locality": 0.0,
+      "revise": true,
+      "remove": true,
+      "rollback": true
+    }
+  ],
+  "created_at": "2026-06-05T17:15:37.731543Z"
+}
