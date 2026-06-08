@@ -105,11 +105,29 @@ xs     = np.array(xs)
 y_pair = np.array(y_pair)
 y_star = np.array(y_star)
 
+# --- keep the density axis monotone before plotting ---
+# At very low n_shell the fixed background groups dominate the participation
+# ratio, so Neff dips slightly before the shell takes over. That non-monotone
+# prefix would render as a backward "hook" (the x-values double back on
+# themselves). A plain sort does NOT fix this: the (Neff, tail) relation is
+# multivalued across the fold, so sorting produces a sawtooth spike instead.
+# The robust fix is to restrict the swept family to the regime where the shell
+# controls density (Neff strictly increasing). This drops only the first couple
+# of low-n_shell points and changes no field parameters, so it does not preempt
+# the separate question of which field family matches the Section 6.2 table.
+i0     = int(np.argmin(xs))
+xs     = xs[i0:]
+y_pair = y_pair[i0:]
+y_star = y_star[i0:]
+assert np.all(np.diff(xs) > 0), "Neff is not strictly monotone after trimming the prefix"
+
 
 # ---------------------------------------------------------------------------
 # 5. Make the plot
 # ---------------------------------------------------------------------------
 fig, ax = plt.subplots(figsize=(7, 5))
+
+y_top = 1e3  # top of the visible y-axis; shading stops here so it doesn't imply data above the frame
 
 # the two strategy curves
 ax.plot(xs, y_pair, color="#1f5fbf", lw=2.2, label=r"Pairwise $\sigma_{pair}$ (fixed)")
@@ -118,8 +136,8 @@ ax.plot(xs, y_star, color="#e07b00", lw=2.2, label=r"Operating $\sigma^{*}$ (ada
 # safety line at y = 1  (tail = eps)
 ax.axhline(1.0, ls="--", color="black", lw=1.2, label=r"locality tolerance $\varepsilon$")
 
-# shade the unsafe region y > 1
-ax.axhspan(1.0, 1e4, color="red", alpha=0.07)
+# shade the unsafe region y > 1 (only up to the visible top of the frame)
+ax.axhspan(1.0, y_top, color="red", alpha=0.07)
 
 ax.set_xscale("log")
 ax.set_yscale("log")
@@ -127,7 +145,7 @@ ax.set_xlabel(r"non-local participation ratio  $N_{eff}^{\,non\text{-}local}$  (
 ax.set_ylabel(r"realized tail  $\mathrm{Tail}/\varepsilon$")
 ax.set_title("Calibration strategy under increasing field density")
 ax.legend(loc="upper left", frameon=False)
-ax.set_ylim(1e-2, 1e3)
+ax.set_ylim(1e-2, y_top)
 
 fig.tight_layout()
 fig.savefig("density_scaling.pdf")   # vector, for the paper
@@ -153,9 +171,19 @@ print("star tail/eps max  :", y_star.max())
 # Checkpoints 2/3/5 land away from the build-sheet's nominal anchors because of
 # the fixed background groups in make_field (30 @ 1.30 d_shell, 800 @ 2.00):
 #   2. Neff range               -> 14.4 .. 1008    (nominal ~1 .. 150-250)
-#   3. pair tail / eps range    -> 4.84 .. 945     (nominal ~1 .. tens-100x; stays > 1 throughout)
+#   3. pair tail / eps range    -> 6.72 .. 945     (nominal ~1 .. tens-100x; stays > 1 throughout)
 #   5. pair tail near Neff~100  -> ~90x            (nominal ~23x; the ~23x point falls at Neff ~ 28)
 # Cause: the background groups set a participation-ratio floor (~14-17), so Neff
 # never starts near 1, and the shell at 1.01 d_shell gives each shell center weight
 # ~0.047, so pair tail / eps ~= 0.94 * Neff. The shape (sigma_pair breaches the
 # tolerance, sigma* holds below it) is exactly as intended.
+#
+# Reconciling checkpoints 2/3/5 with the Section 6.2 table (so the 23.2x table
+# point becomes one slice at Neff ~ 103) is a deliberate field-family choice that
+# needs the real synthetic construction parameters -- left untouched here pending
+# that decision. The annotated single table point is likewise deferred until the
+# field family is finalized, so it is not marked on the curve yet.
+#
+# Issue 1 (backward "hook" from a non-monotone Neff prefix) is fixed above by
+# trimming the swept family to the strictly-increasing-density regime; pair
+# tail / eps min is now 6.72 (was 4.84 at the dropped n_shell=1 point).
