@@ -241,6 +241,14 @@ is left for a network that can reach lichess.)
   legal move is *strong*. Strong ranking needs position **evaluation** (engine-level);
   the real strategy lever is a coherence *landscape over board states*, not a
   move-affinity memory. See `ARCHITECTURE.md` §3.6.
+* **Position-value coherence layer** (`chess_value_ibf.py`): learns a coherence over
+  board *states* (position value) from game **outcomes**, then picks the move whose
+  resulting board has highest coherence (IBF gradient-flow over positions). **Piece
+  values emerge from outcomes** (queen most valuable, prior-free). Value-guided
+  selection among context-plausible moves lifts **move quality −606 → −149 cp**
+  (sound material play), though **acc@1 drops 0.14→0.05** — value-greedy ≠ human
+  *strategy*; human-level needs positional coherence beyond material (the
+  engine-level frontier). See `ARCHITECTURE.md` §3.7.
 
 ## Honest scope
 

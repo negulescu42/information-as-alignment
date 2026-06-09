@@ -275,6 +275,41 @@ gradient-flow/basin formulation applied to the board, rather than a move-affinit
 memory. The board-conditioned agent confirms the diagnosis; closing it is the next
 research step.
 
+### 3.7 Position-value coherence layer (strategy)
+
+`chess_value_ibf.py` learns a coherence *over board states* — position value — from
+game **outcomes**, and selects the move whose resulting board has highest coherence
+(the IBF gradient-flow/basin formulation applied to the position). Prior-free: a
+piece's **owner side** is inferred from move parity, and each piece's **value** is
+learned by regressing the final board's material onto the result (Widrow-Hoff = IBF
+discrepancy modification of the value coherence).
+
+**Emergent piece values (from outcomes only — no values/types/rules given),
+relative to pawn = 1:** Q **2.7** · B 1.5 · R 1.3 · P 1.0 · N 0.9 · K 0.3. The
+**queen emerges as most valuable**. Honest imperfections: the rook is undervalued and
+the scale compressed; and regressing over *all* positions (not final ones) mis-ranks
+the queen *lowest* — it weights pieces by capture frequency (pawns) rather than
+importance — so the final-position signal is essential.
+
+**Move selection.** Pure value-greedy *fails* — the occupancy state has no movement
+legality, so it chases impossible captures (`d1d8`, `b2g7`) at −1542 cp. Ranking by
+value **among the context model's plausible moves** (which respect learned movement),
+with a 1-ply material lookahead, gives sound play:
+
+| selector | move quality (cp) | acc@1 |
+|---|---|---|
+| context only (sim-masked) | −606 | 0.141 |
+| **value-guided** | **−149** | 0.049 |
+
+(human actual move ≈ +61 cp.) Move quality jumps **−606 → −149 cp** — the value layer
+grabs free material and avoids hanging pieces. **But acc@1 *drops* 0.14 → 0.05**:
+value-greedy ≠ human *strategy* (strong players play positionally, not just for
+material), and the quality oracle is itself material-based (favouring a material
+agent). So the position-value layer delivers **sound material play and emergent piece
+values**, confirming the coherence-landscape-over-boards approach — while
+human-level play needs **positional** coherence (activity, king safety, threats)
+beyond material: the engine-level frontier.
+
 ---
 
 ## 4. Theory connections (what instantiates what)
