@@ -715,3 +715,32 @@ re-sampled to act, and in ≥5-D the learner rarely re-samples a transferred cen
 is the mapped viable warm-start.
 
 Run: `python -m mscn.agi_transfer`.
+
+### 8.9 Upgrade 9 — Active Self-Improvement via Reflexive Coherence (`agi_selfimprove.py`)
+
+Closes the reflexive loop: the monitor drives the scarce driving signal `α` to weak
+domains under the consciousness-competence budget `Σα_i ≤ Γ`. Each domain improves by
+the modification ODE `R_i' = α_i·k_i − μ(R_i − c_i)` (equilibrium `c_i + α_i k_i/μ`);
+domain `i` clears `θ_i` iff its *sustained* allocation exceeds `cost_i = μ(θ_i−c_i)/k_i`.
+Grounding: `optimal_linear_allocation'`, `self_improvement_exceeds_half_gap`.
+
+**Measured (14 domains, scarce budget Γ = 50% of the total clearing cost, #above-threshold):**
+
+| policy | seed0–3 above-threshold | vs uniform |
+|---|---|---|
+| uniform (`Γ/n` each) | ~2/14 | — |
+| reflexive, naive (`α ∝ gap·k`) | ~3–4/14 | +1 to +2 |
+| **reflexive, cost-aware** (fund cheapest-to-maintain first) | **9–10/14** | **+6.5 avg** |
+
+**Honest result.** Closing the reflexive loop with a **cost-aware** allocation — drive
+`α` to the cheapest-to-maintain *responsive* domains (highest `k_i/(θ_i−c_i)`, i.e.
+`optimal_linear_allocation'` "concentrate on the highest rate") — clears **+6.5 more
+domains** than uniform at the same budget. Important modeling point (found, not
+assumed): domains need *sustained* `α` to **stay** above threshold (decay pulls them
+back), so this is water-filling on maintenance cost. Honest caveat: the **naive**
+reflexive rule `α ∝ gap·k` (the roadmap's first form) helps only marginally — it wastes
+budget on expensive high-gap domains; the effective reflexive signal is **marginal
+cost-effectiveness**, not raw gap. So the mechanism is functional and the advantage is
+real, with a precise correction to the allocation rule.
+
+Run: `python -m mscn.agi_selfimprove`.
