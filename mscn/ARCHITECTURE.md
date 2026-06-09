@@ -437,6 +437,31 @@ roadmap correctly identifies a valid architectural fix (bandwidth heterogeneity)
 while the larger lever for this model was the *representation* — the sufficient board
 state (§3.5), which is itself another roadmap item (§2.2, causal-state discovery).
 
+### 3.12 Resolution-roadmap: Interface-Principle pruning (O(M) → O(M_boundary))
+
+Roadmap §1.2: the Interface Principle (`InterfacePrinciple.lean`) proves a kernel
+field's tail is controlled by the **boundary** subset — a centre at distance > r
+contributes ≤ `V_max·exp(-r²/2σ²)`. So `δR(y)` can be summed over only the centres
+within `r = c·σ` of the query (a k-d-tree ball), skipping the deep interior, with
+total error ≤ `V_max·M·exp(-c²/2)`. Implemented in `correction_field.py`
+(`CorrectionField.eval_pruned`).
+
+**Benchmark (dim 8, fixed local density, growing volume):**
+
+| M | M_boundary | full ms/q | pruned ms/q | speedup | max error |
+|---|---|---|---|---|---|
+| 10 000 | 81 | 0.37 | 0.14 | 3× | 2.5e-2 |
+| 100 000 | 115 | 4.07 | 0.30 | 14× | 2.0e-2 |
+| 500 000 | 137 | 26.5 | 0.77 | **34×** | 3.2e-2 |
+
+Full evaluation is O(M); pruned stays ~O(M_boundary) (≈ constant), so the **speedup
+grows with M** (34× at 500k, and unbounded as M→∞) while the error stays ~2–3% —
+far under the conservative tail bound. This is what lets a kernel `δR` memory scale
+to 10⁵–10⁶ centres; it is the drop-in evaluation for large static fields (an
+`IBFLearner` at scale, the MSCN coupling). **Caveat (`no_shielding_equal_weights`):**
+pruning relies on genuine Gaussian distance-decay — it does **not** apply to the
+count-based, distance-free n-gram/VOM models (no metric to prune on).
+
 ---
 
 ## 4. Theory connections (what instantiates what)

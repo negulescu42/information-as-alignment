@@ -274,6 +274,12 @@ is left for a network that can reach lichess.)
   de-percolates dense regions (overlap-degree 309→35), and lifts opening legal@1
   0.849→0.907. A real, theory-demanded refinement — though the kernel's main limit is
   still its lossy context (the sufficient state fixes that). `ARCHITECTURE.md` §3.11.
+* **Interface-Principle pruning** (`correction_field.py`): a kernel field's tail is
+  controlled by the *boundary* subset, so `δR(y)` sums only centres within `c·σ`
+  (k-d-tree ball), skipping the deep interior. **O(M) → O(M_boundary)**: speedup
+  3×/14×/**34×** at M = 10k/100k/500k centres, error ~2–3% (under the tail bound) —
+  the lever for scaling kernel δR memories to 10⁵–10⁶ centres. Run
+  `python -m mscn.correction_field`. `ARCHITECTURE.md` §3.12.
 
 ## Honest scope
 
