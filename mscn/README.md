@@ -195,8 +195,10 @@ is left for a network that can reach lichess.)
   of strength. The model's own top move is **far above random** (≈ +370 cp) but
   **well below strong play** (engine/actual): partial, capped generative skill —
   a strong discriminator, a limited generator. That ceiling is the state-tracking
-  gap analysed in `NOTE-state-tracking-gap.md`. Run on real games via `load_pgn`
-  in an environment that allows lichess, or by dropping a `.pgn` in the repo.
+  gap analysed in `NOTE-state-tracking-gap.md`. **Run all three stages on a real
+  PGN** (lichess Elite, etc.) with one command:
+  `python -m mscn.chess_strategy --pgn path/to/games.pgn` — Stage 3 then keys on
+  real player Elo and results. `load_pgn` handles `.pgn` and `.pgn.zst`.
 
 ## Honest scope
 

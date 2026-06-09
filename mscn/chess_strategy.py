@@ -304,6 +304,139 @@ def strategy_metrics(model: IBFChessModel, test_games: list[dict], max_positions
     }
 
 
+def games_to_pgn(games: list[dict], path: str) -> str:
+    """Write game dicts to a real PGN file (with Elo + Result headers)."""
+    with open(path, "w") as f:
+        for g in games:
+            game = chess.pgn.Game()
+            game.headers["WhiteElo"] = str(g.get("white_elo", "?"))
+            game.headers["BlackElo"] = str(g.get("black_elo", "?"))
+            game.headers["Result"] = {1: "1-0", -1: "0-1", 0: "1/2-1/2"}.get(g.get("result"), "*")
+            node = game
+            for uci in g["moves"]:
+                node = node.add_variation(chess.Move.from_uci(uci))
+            print(game, file=f, end="\n\n")
+    return path
+
+
+def strategy_metrics_real(model: IBFChessModel, test_games: list[dict],
+                          max_positions: int = 4000) -> dict:
+    """Stage-3 metrics keyed on real player Elo (terciles) and real results."""
+    movers = []  # (coherence, mover_elo)
+    q_model_top, q_random, q_actual = [], [], []
+    per_game = []
+    seen = 0
+    rng = np.random.default_rng(0)
+    for g in test_games:
+        if g["white_elo"] is None or g["black_elo"] is None:
+            continue
+        board = chess.Board()
+        hist, wcoh, bcoh = [], [], []
+        for actual in g["moves"]:
+            legal = [m.uci() for m in board.legal_moves]
+            if not legal:
+                break
+            white_to_move = board.turn == chess.WHITE
+            coh = dict(model.predict(hist)).get(actual, 0.0)
+            (wcoh if white_to_move else bcoh).append(coh)
+            movers.append((coh, g["white_elo"] if white_to_move else g["black_elo"]))
+            if seen < max_positions:
+                ranked = model.predict(hist, top=1)
+                top = ranked[0][0] if ranked and ranked[0][0] in legal else None
+                if top is not None:
+                    q_model_top.append(_move_quality(board, top))
+                    q_random.append(_move_quality(board, legal[int(rng.integers(len(legal)))]))
+                    q_actual.append(_move_quality(board, actual))
+                    seen += 1
+            try:
+                board.push_uci(actual)
+            except Exception:
+                break
+            hist.append(actual)
+        if wcoh and bcoh and g["result"] is not None:
+            per_game.append((float(np.mean(wcoh) - np.mean(bcoh)), g["result"]))
+
+    coh = np.array([c for c, _ in movers])
+    elo = np.array([e for _, e in movers], float)
+    elo_corr = float(np.corrcoef(coh, elo)[0, 1]) if len(coh) > 2 and elo.std() > 0 else float("nan")
+    # tercile means
+    bins = {}
+    if len(elo) > 10:
+        q1, q2 = np.quantile(elo, [1 / 3, 2 / 3])
+        for name, mask in (("low", elo <= q1), ("mid", (elo > q1) & (elo <= q2)), ("high", elo > q2)):
+            if mask.any():
+                bins[name] = (float(np.mean(coh[mask])), float(elo[mask].mean()))
+    if per_game:
+        d = np.array([x for x, _ in per_game]); r = np.array([y for _, y in per_game], float)
+        outcome_corr = float(np.corrcoef(d, r)[0, 1]) if d.std() > 0 else float("nan")
+    else:
+        outcome_corr = float("nan")
+    return {"elo_corr": elo_corr, "coherence_by_elo_tercile": bins, "outcome_corr": outcome_corr,
+            "quality_model_top": float(np.mean(q_model_top)) if q_model_top else float("nan"),
+            "quality_random": float(np.mean(q_random)) if q_random else float("nan"),
+            "quality_actual": float(np.mean(q_actual)) if q_actual else float("nan"),
+            "n_positions": seen, "n_moves": len(movers)}
+
+
+def run_pgn(path: str, max_games: int = 8000, test_frac: float = 0.15,
+            strong_quantile: float = 0.5, seed: int = 0) -> dict:
+    """Run Stages 1-3 on a real PGN file (lichess or any). One call, drop-in."""
+    if not HAS_CHESS:
+        raise RuntimeError("python-chess not installed")
+    from .chess_world import evaluate_rules, recover_board_geometry
+    print("\n" + "#" * 74)
+    print(f"#  EMERGENT CHESS ON REAL GAMES  -- {path}")
+    print("#" * 74)
+    games = load_pgn(path, max_games=max_games)
+    print(f"\n  loaded {len(games)} games | "
+          f"with Elo: {sum(g['white_elo'] is not None for g in games)} | "
+          f"with result: {sum(g['result'] is not None for g in games)}")
+    if not games:
+        print("  no games parsed."); return {}
+    rng = np.random.default_rng(seed)
+    idx = rng.permutation(len(games))
+    n_test = max(int(len(games) * test_frac), 1)
+    test = [games[i] for i in idx[:n_test]]
+    train = [games[i] for i in idx[n_test:]]
+
+    # train on the stronger half (by avg Elo) so coherence reflects strong play
+    def avg_elo(g):
+        es = [e for e in (g["white_elo"], g["black_elo"]) if e is not None]
+        return np.mean(es) if es else 0
+    strong = sorted(train, key=avg_elo)[int(len(train) * strong_quantile):] or train
+    model = IBFChessModel().train([g["moves"] for g in strong])
+    print(f"  trained on {len(strong)} games (stronger half) | vocab {len(model.inv_vocab)} tokens")
+
+    print("\n  === STAGE 1: RULES (legal-move prediction, no rules given) ===")
+    r1 = evaluate_rules(model, [g["moves"] for g in test])
+    print(f"  {'phase':<9}{'IBF legal@1':>13}{'legal@5':>10}{'legalmass':>11}"
+          f"{'unigram@1':>11}{'random@1':>10}{'acc@1':>8}")
+    for p in ("opening", "midgame", "endgame", "all"):
+        i, u, rr = r1["IBF"][p], r1["unigram"][p], r1["random"][p]
+        print(f"  {p:<9}{i['legal@1']:>12.1%}{i['legal@5']:>10.1%}{i['legal_mass']:>11.1%}"
+              f"{u['legal@1']:>10.1%}{rr['legal@1']:>10.2%}{i['acc@1']:>8.1%}")
+
+    print("\n  === STAGE 2: BOARD GEOMETRY (recover the 8x8 grid) ===")
+    geo = recover_board_geometry(model)
+    print(f"  Procrustes disparity {geo['disparity']:.4f} | "
+          f"king-adjacency recovered {geo['neighbor_recovery']:.1%}")
+
+    print("\n  === STAGE 3: STRATEGY (real Elo + results) ===")
+    s = strategy_metrics_real(model, test)
+    print(f"  next-move accuracy@1 (real human moves): {r1['IBF']['all']['acc@1']:.1%}")
+    if s["coherence_by_elo_tercile"]:
+        print("  coherence by Elo tercile:")
+        for name in ("low", "mid", "high"):
+            if name in s["coherence_by_elo_tercile"]:
+                c, e = s["coherence_by_elo_tercile"][name]
+                print(f"     {name:<4} (~{e:.0f} Elo): mean move-coherence {c:.3f}")
+    print(f"  corr(move-coherence, Elo)            : {s['elo_corr']:+.3f}")
+    print(f"  move quality: model_top {s['quality_model_top']:.0f} | "
+          f"actual {s['quality_actual']:.0f} | random {s['quality_random']:.0f} cp")
+    print(f"  corr(white_coh - black_coh, result)  : {s['outcome_corr']:+.3f}")
+    return {"stage1": r1, "geometry": geo, "stage3": s}
+
+
 def strategy_demo(n_train: int = 450, n_test: int = 150, seed: int = 0) -> None:
     print("\n" + "#" * 74)
     print("#  STAGE 3: EMERGENT STRATEGY")
@@ -355,7 +488,13 @@ def _monotone(d: dict) -> bool:
 if __name__ == "__main__":
     import argparse
     p = argparse.ArgumentParser(description="Stage 3 emergent strategy")
+    p.add_argument("--pgn", type=str, default=None,
+                   help="run Stages 1-3 on a real PGN (lichess or any); e.g. workspace/lichess_elite_2024-01.pgn")
+    p.add_argument("--max-games", type=int, default=8000)
     p.add_argument("--train", type=int, default=450)
     p.add_argument("--test", type=int, default=150)
     a = p.parse_args()
-    strategy_demo(a.train, a.test)
+    if a.pgn:
+        run_pgn(a.pgn, max_games=a.max_games)
+    else:
+        strategy_demo(a.train, a.test)
