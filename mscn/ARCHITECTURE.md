@@ -202,6 +202,47 @@ the MSCN optimiser and IPD agents benefit), not to memorising a fixed corpus. So
 *prediction* task the right operating point is the crystallization limit; the
 acting-unit dynamics are a liability here by design.
 
+### 3.5 Route A, full — a simulation-faithful state (closes the gap)
+
+`chess_simstate.py` reconstructs the **board** as the recurrent state, prior-free.
+A move token in from-to form is an **occupancy transfer**; replaying transfers gives
+`z` = {location → piece-lineage tag}, i.e. `G` = occupancy transfer and `σ` =
+board decode (`σ(G(z,a)) = T(σ(z),a)`, `recurrent_sufficient_of_simulation`). No
+grid, no piece types, no rules are supplied — the only structure beyond atomic
+tokens is that a move has a source and a destination location (the "from-to pairs"
+encoding). The **start position is discovered from data** (a location used as a
+source before ever being a destination is initially occupied → **32 start
+locations**, exactly chess's starting pieces).
+
+**Sufficiency (the headline):** grouping test positions by `z`, the reconstructed
+board has **legal-set purity 0.998** — it *determines* the legal-move set — versus
+~0.01 for move-history-suffix states. The board is predictively sufficient; Route A
+**closes the state-tracking gap** the theorem identified.
+
+**Legality (sim-state masks impossible moves on the VOM predictor):**
+
+| phase | VOM legal@1 / @5 | → sim-state legal@1 / @5 |
+|---|---|---|
+| opening | 0.909 / 0.992 | **0.945 / 0.999** |
+| midgame | 0.520 / 0.888 | **0.693 / 0.972** |
+| endgame | 0.181 / 0.451 | **0.377 / 0.768** |
+| all     | 0.331 / 0.597 | **0.503 / 0.833** |
+
+Overall legal@1 **0.33→0.50**, legal@5 **0.60→0.83**; endgame **doubles** — exactly
+the regime where the bounded-history models failed. (Honest caveats: castling moves
+only the king token, en-passant/promotion are not special-cased, so purity is 0.998
+not exactly 1; and the predictor still *ranks* legal candidates by move-frequency —
+masking removes impossible moves but full board-conditioned ranking is the
+engine-level problem, so next-move acc@1 rises only modestly 0.125→0.148.)
+
+**Reading.** This is the empirical realization of Route A: a recurrent state that
+*simulates* the process is sufficient (purity ≈1) and substantially closes the
+legality gap. It is also an IBF recursive-scale / coarse-graining result — the board
+is the coarse-grained sufficient statistic of the unbounded move history, recovered
+without rules. The remaining gap (purity 0.998→1, ranking quality) is castling/
+en-passant/promotion bookkeeping plus board-conditioned strategy, not a structural
+ceiling.
+
 ---
 
 ## 4. Theory connections (what instantiates what)

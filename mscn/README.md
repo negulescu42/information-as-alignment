@@ -225,6 +225,14 @@ is left for a network that can reach lichess.)
   selective-retention vs exhaustive-memory tradeoff). The full unit's dynamics are
   built for *acting* in persistent/non-stationary environments, not stationary
   exhaustive prediction — see `ARCHITECTURE.md` §3.4.
+* **Route A, full — simulation-faithful state** (`chess_simstate.py`): reconstructs
+  the **board** as the recurrent state by replaying move tokens as occupancy
+  transfers (`σ∘G = T∘σ`), prior-free — no grid, no piece types, no rules; even the
+  **32-piece start position is discovered from data**. This **closes the gap**: the
+  reconstructed board has **legal-set purity 0.998** (it determines the legal set;
+  move-suffix states ≈0.01), and using it as a legality mask lifts legality to
+  **legal@1 0.50 / legal@5 0.83** overall (from 0.33/0.60), with endgame doubling
+  0.18→0.38. The headline Route-A result — see `ARCHITECTURE.md` §3.5.
 
 ## Honest scope
 

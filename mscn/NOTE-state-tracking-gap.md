@@ -171,3 +171,21 @@ n-gram on legality. The theorem says no kernel over a lossy context can; the fix
 **simulation-faithful recurrent state** (Route A) whose update commutes with the
 move dynamics. That homomorphism condition is now the concrete target for the next
 prototype.
+
+---
+
+## 7. Update — Route A built; the gap is closed empirically
+
+`../mscn/chess_simstate.py` realizes the simulation-faithful state: a move token in
+from-to form is an **occupancy transfer**, and replaying transfers reconstructs the
+**board** (occupancy + piece lineage) — `G` = occupancy transfer, `σ` = board
+decode, satisfying `σ(G(z,a)) = T(σ(z),a)`. Prior-free: no grid, no piece types, no
+rules; the **32-piece start position is discovered from data**.
+
+Result on real Lichess Elite: the reconstructed board has **legal-set purity 0.998**
+(it determines the legal-move set; move-history-suffix states ≈ 0.01) — the recurrent
+state is predictively *sufficient*, exactly as Route A requires. Used as a legality
+mask it lifts overall legal@1 0.33→0.50 and legal@5 0.60→0.83 (endgame doubles
+0.18→0.38). The bounded-history ceiling is broken by a sufficient state, not by more
+data or a bigger kernel — confirming the theory end to end. Remaining gap (0.998→1):
+castling/en-passant/promotion bookkeeping, not structure.
