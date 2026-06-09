@@ -26,6 +26,9 @@ the repository is organized as a research release, not as a production package. 
 ├── (IBF)Domain-II-Chess.ipynb
 ├── (IBF)Domain-III-CIFAR-100.ipynb
 │
+├── (IBF)MSCN-Toy-Model.ipynb
+├── mscn/
+│
 ├── RRW-paper-results.json
 ├── chess-results-seeds.json
 ├── chess-paper-results.json
@@ -115,6 +118,26 @@ if you want the fastest audit of the paper, read `REPRODUCIBILITY.md` and inspec
 - `CIFAR-paper-results.json`: contains the 20-task benchmark metrics, ablation results, class-IL evaluation, and the weak-head analysis.
 
 the notebooks themselves also contain embedded reported outputs. in many cases, direct inspection of the notebook output is enough to verify the relevant claim without needing to parse the json files.
+
+## MSCN TOY MODEL (exploratory)
+
+beyond the paper's continual-learning slice, `mscn/` contains a small, runnable
+**Multi-Scale Coherence Network** toy model: a three-layer IBF apparatus
+(individual coherence-gradient learning → network cooperation → meta-learning,
+self-knowledge and phase control). it is a faithful, dependency-light
+reimplementation that shows the proven IBF behaviours — basin expansion,
+selective retention, agency, emergent cooperation, multi-scale coarse-graining,
+bounded self-knowledge, and a consciousness phase transition — appearing in
+executable code, with no neural networks.
+
+```bash
+python -m mscn.demo     # guided tour of the four pilots + the integrated network
+python -m mscn.tests    # 24 behavioural checks of the proven guarantees
+```
+
+`(IBF)MSCN-Toy-Model.ipynb` is the notebook walkthrough; `mscn/README.md` has the
+architecture-to-code map. this is exploratory and separate from the paper-facing
+results above; it needs only `numpy` (`matplotlib` for the optional figures).
 
 ## PAPER
 
