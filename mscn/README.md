@@ -189,14 +189,14 @@ is left for a network that can reach lichess.)
   path (`stream_lichess`, `load_pgn`: moves + Elo + `%eval`) is built and ready,
   but this sandbox's network policy blocks the lichess CDN, so the methodology is
   validated on a labelled **skill-stratified proxy** (a tiny pure-Python minimax
-  engine: random / greedy / depth-2). Finding: learned **coherence rises
-  monotonically with player strength** and the more-coherent player tends to win
-  (outcome correlation positive), so coherence is a good *judge* of strength —
-  but the model's own top move is only modestly better than random (well below
-  the engine): a strong discriminator, a weak generative player. That gap is the
-  state-tracking ceiling analysed in `NOTE-state-tracking-gap.md`. Run on real
-  games (`python -c "from mscn.chess_strategy import load_pgn, ..."`) in an
-  environment that allows lichess, or by dropping a `.pgn` in the repo.
+  engine: random / greedy / depth-2). Findings: learned **coherence rises
+  monotonically with player strength** (0.01 → 0.10 → 0.14) and the more-coherent
+  player tends to win (outcome correlation ≈ +0.3), so coherence is a good *judge*
+  of strength. The model's own top move is **far above random** (≈ +370 cp) but
+  **well below strong play** (engine/actual): partial, capped generative skill —
+  a strong discriminator, a limited generator. That ceiling is the state-tracking
+  gap analysed in `NOTE-state-tracking-gap.md`. Run on real games via `load_pgn`
+  in an environment that allows lichess, or by dropping a `.pgn` in the repo.
 
 ## Honest scope
 

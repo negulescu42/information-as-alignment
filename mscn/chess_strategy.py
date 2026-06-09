@@ -339,8 +339,9 @@ def strategy_demo(n_train: int = 450, n_test: int = 150, seed: int = 0) -> None:
     print(f"        actual move    : {m['quality_actual']:8.1f}")
     print(f"        random legal   : {m['quality_random']:8.1f}   (lower bound)")
     print(f"        depth-2 engine : {m['quality_engine']:8.1f}   (upper bound)")
-    print("     -> the model's preferred move is much better than random and approaches"
-          " the engine: emergent move quality.")
+    print("     -> the model's preferred move is well above random but well below strong")
+    print("        play (engine/actual): partial, capped generative skill -- the")
+    print("        state-tracking ceiling (see NOTE-state-tracking-gap.md).")
 
     print(f"\n  (3) outcome: corr(white_coh - black_coh, result) = {m['outcome_corr']:+.3f}")
     print("     -> the player whose moves are more coherent tends to win.")
