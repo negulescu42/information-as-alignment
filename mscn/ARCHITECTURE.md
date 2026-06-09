@@ -606,3 +606,49 @@ python -m mscn.chess_strategy --pgn data/elite_2024-01_5k.pgn   # Stages 1-3 on 
 Deps: numpy (core); matplotlib (figures); scipy, cma (benchmark `strong`, kernel);
 python-chess (chess). See `mscn/README.md` for the full map and `formal/README.md`
 for the two theory results.
+
+---
+
+## 8. AGI-roadmap upgrades (implementation log)
+
+Implements the theory team's `MSCN_AGI_ROADMAP.md` (9 architectural upgrades),
+each grounded in `formal/AGIFoundations.lean`. Norm: every upgrade is a runnable
+mechanism with a **measured advantage on a concrete task, or an honest null** —
+no AGI is claimed; functional mechanisms with faithful measurements are.
+
+### 8.1 Upgrade 1 — Learnable Simulation Homomorphism (`agi_simulation.py`)
+
+The decisive lever (and roadmap §2.2-general): **learn** the simulation `G` with a
+decode `σ` satisfying `σ(G(z,a)) = T(σ(z),a)` from **atomic opaque tokens** — no
+from-to decomposition, no rules (`chess_simstate.py` was *given* from-to). Prior-free,
+observation-only, this is exactly ε-machine / causal-state reconstruction (Route B):
+a CSSR-style learner seeds a partition by the (frequent-token) legal set, **Moore-
+minimises** by successor-block refinement (the determinisation / homomorphism step),
+and infers **recurrently** `z_{t+1}=G(z_t,a_t)`. Grounding: `simulation_is_sufficient`
+(faithful ⇒ sufficient), `bounded_history_insufficient` (the window ceiling).
+
+**Validated on worlds whose causal states are enumerable + known:**
+
+| world | true states | learned | purity | faithful σ∘G=T∘σ | window match | compression |
+|---|---|---|---|---|---|---|
+| even (canonical ε-machine) | 2 | 7 | 0.951 | 0.946 | window-6 (0.959) | 64 ctx → **9×** |
+| toggle (`CausalStates.lean`) | 2 | 13 | 0.990 | 0.980 | window-5 (0.985) | 93 ctx → **7×** |
+
+**The real, measured advantage is ε-machine *compression*** (`causal_state_optimal`,
+`more_basis_less_error`): the learned recurrent state is **predictively sufficient
+and faithful** while matching a fixed window's legality with **7–9× fewer states**
+than the window needs contexts — a compact sufficient state, recovered from atomic
+tokens.
+
+**Honest frontier (reported, not asserted).** A dependency that persists *beyond the
+learner's estimable suffix horizon* — the persistent-flag latch (purity 0.974) and
+the mod-N counter (0.901) — is **not** recoverable from bounded suffixes; neither is
+a fixed window. Carrying unbounded latent state needs a latent-variable model
+(HMM/RNN), not suffix clustering. This is the genuine §2.2-general frontier, and
+quantifies *why* Route A used the from-to token structure: it sidesteps the
+statistical-estimation barrier by reading state off the token structure directly.
+So Upgrade 1's mechanism is functional and its compression advantage is real; the
+"learn the homomorphism with *no* structure for an arbitrarily long-range process"
+case remains the open frontier, now measured.
+
+Run: `python -m mscn.agi_simulation`.
