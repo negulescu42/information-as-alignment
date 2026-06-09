@@ -185,6 +185,18 @@ is left for a network that can reach lichess.)
   disparity ≈ 0.06 vs the true board; ≈ 72% of true king-adjacencies are nearest
   neighbours) — the board's 2-D geometry emerges from move tokens alone, no
   spatial prior. See the generated `chess_board_emergence.png`.
+* **Stage 3 — emergent strategy** (`chess_strategy.py`): the real-lichess data
+  path (`stream_lichess`, `load_pgn`: moves + Elo + `%eval`) is built and ready,
+  but this sandbox's network policy blocks the lichess CDN, so the methodology is
+  validated on a labelled **skill-stratified proxy** (a tiny pure-Python minimax
+  engine: random / greedy / depth-2). Finding: learned **coherence rises
+  monotonically with player strength** and the more-coherent player tends to win
+  (outcome correlation positive), so coherence is a good *judge* of strength —
+  but the model's own top move is only modestly better than random (well below
+  the engine): a strong discriminator, a weak generative player. That gap is the
+  state-tracking ceiling analysed in `NOTE-state-tracking-gap.md`. Run on real
+  games (`python -c "from mscn.chess_strategy import load_pgn, ..."`) in an
+  environment that allows lichess, or by dropping a `.pgn` in the repo.
 
 ## Honest scope
 

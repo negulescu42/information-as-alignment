@@ -140,6 +140,10 @@ python -m mscn.chess_world # emergent chess (rules + 8x8 board) from move tokens
 the chess experiment is a representation-learning probe: from opaque move tokens
 alone (no board/pieces/rules), the IBF mechanism learns to prefer legal moves and
 the 8×8 board geometry emerges from move co-occurrence (`pip install chess scipy`).
+`mscn/chess_strategy.py` adds the emergent-strategy stage and the real-lichess
+data path (loader ready; the CDN is blocked in PyPI-only environments), and
+`mscn/NOTE-state-tracking-gap.md` is a theory note on the associative-memory
+ceiling the experiment surfaces.
 
 `(IBF)MSCN-Toy-Model.ipynb` is the notebook walkthrough; `mscn/README.md` has the
 architecture-to-code map. this is exploratory and separate from the paper-facing
