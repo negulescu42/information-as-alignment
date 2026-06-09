@@ -817,3 +817,28 @@ per-cell planning, and **every in-basin ascent macro is coherence-non-decreasing
 is functional: temporal abstraction with the basin-invariance safety guarantee.
 
 Run: `python -m mscn.agi_temporal`.
+
+### 8.2 Upgrade 2 — Hierarchical Simulation (multi-scale internal models) (`agi_hierarchical_sim.py`)
+
+Stack a coarse-grained state layer over the fine one (Postulate II / recursive scale).
+By the RG results (`deep_coarsening_kills_fine_structure`, `fine_to_coarse_coherence`)
+the block coarse-graining **suppresses fine-scale noise** while **preserving the
+relevant large-scale structure** (the per-scale bandwidth is the σ*-sequence of §3.15).
+
+**Measured (24×24 fine, 6×6 coarse, block 4):**
+
+| | result |
+|---|---|
+| coarse argmax super-cell == goal super-cell | **True** (relevant structure kept) |
+| corr with clean signal: fine → coarse | **0.58 → 0.92** (fine noise suppressed) |
+| planning cost: flat fine vs hierarchical | **461 → 160 states (2.9× fewer)** |
+
+**Result.** The coarse simulation layer keeps the goal's super-cell as its maximum and
+correlates with the clean signal far better than the noisy fine field (0.58→0.92 —
+coarse-graining kills the fine noise, the RG result). Planning coarse-first to get a
+super-cell corridor, then refining within it, expands **2.9× fewer states** than flat
+fine planning. The mechanism is functional: multi-scale internal models give noise-robust
+abstraction and cheaper hierarchical planning. (Together with §3.15 this completes the
+roadmap §2.1/§3.1 multi-scale-resolution story.)
+
+Run: `python -m mscn.agi_hierarchical_sim`.
