@@ -52,6 +52,7 @@ class KernelIBFChessModel:
     def __init__(self, dim: int = 24, cooc_window: int = 4, ctx_len: int = 6,
                  gamma: float = 0.7, k_neighbors: int = 64, epsilon: float = 0.01,
                  sigma_scale: float = 1.0, unigram_mix: float = 0.05,
+                 local_sigma: bool = False, k_local_q: int = 256,
                  max_centers: int = 500_000, seed: int = 0) -> None:
         self.dim = dim
         self.cooc_window = cooc_window
@@ -59,6 +60,8 @@ class KernelIBFChessModel:
         self.gamma = gamma
         self.k = k_neighbors
         self.epsilon = epsilon
+        self.local_sigma = local_sigma          # per-query sigma*(y) vs one global sigma*
+        self.k_local_q = k_local_q
         self.sigma_scale = sigma_scale
         self.unigram_mix = unigram_mix
         self.max_centers = max_centers
@@ -159,6 +162,29 @@ class KernelIBFChessModel:
         n = np.linalg.norm(z)
         return z / n if n > 1e-9 else None
 
+    def _local_operating_bandwidth(self, z: np.ndarray) -> float:
+        """Per-query sigma*(y) = d_shell(y) / sqrt(2 log(N_eff(y)/eps)), with d_shell
+        and the non-local participation ratio N_eff read from the local neighbourhood
+        of y (Keystone.lean, locality_at_operatingBandwidth_refscale, stated per y)."""
+        kq = min(self.k_local_q, len(self.Z))
+        d, _ = self.tree.query(z, k=kq)
+        d = np.atleast_1d(d)
+        d_shell = float(np.median(d))                 # local characteristic distance at y
+        sref = d_shell + 1e-12
+        nl = d[d > d_shell]                            # non-local (boundary) within the query
+        if nl.size < 2:
+            return self.sigma
+        w = np.exp(-(nl ** 2) / (2 * sref ** 2))
+        n_eff = max(float(w.sum() ** 2 / (np.sum(w ** 2) + 1e-12)), self.epsilon * 1.001)
+        return self.sigma_scale * operating_bandwidth(d_shell, n_eff, self.epsilon) + 1e-12
+
+    def overlap_degree(self, sigma: float, n_sample: int = 1500) -> float:
+        """Percolation diagnostic: mean number of centres within 3*sigma of a centre
+        (the kernel-overlap-graph degree; OverlapGraph.lean). High -> percolation."""
+        s = self.Z[self.rng.choice(len(self.Z), size=min(n_sample, len(self.Z)), replace=False)]
+        counts = self.tree.query_ball_point(s, r=3.0 * sigma, return_length=True)
+        return float(np.mean(counts) - 1.0)           # exclude self
+
     def predict(self, history_tokens: list[str], top: int | None = None) -> list[tuple[str, float]]:
         ids = [self.vocab[t] for t in history_tokens if t in self.vocab]
         z = self._context_vec(ids)
@@ -166,10 +192,11 @@ class KernelIBFChessModel:
             ranked = sorted(self._uni.items(), key=lambda kv: -kv[1])
             out = [(self.inv_vocab[i], p) for i, p in ranked]
             return out[:top] if top else out
+        sigma = self._local_operating_bandwidth(z) if self.local_sigma else self.sigma
         kk = min(self.k, len(self.Z))
         dist, idx = self.tree.query(z, k=kk)
         dist = np.atleast_1d(dist); idx = np.atleast_1d(idx)
-        w = np.exp(-(dist ** 2) / (2 * self.sigma ** 2))
+        w = np.exp(-(dist ** 2) / (2 * sigma ** 2))
         scores: dict[int, float] = {}
         for wi, a in zip(w, self.A[idx]):
             scores[a] = scores.get(a, 0.0) + float(wi)
