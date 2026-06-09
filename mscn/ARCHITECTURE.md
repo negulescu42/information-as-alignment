@@ -744,3 +744,27 @@ cost-effectiveness**, not raw gap. So the mechanism is functional and the advant
 real, with a precise correction to the allocation rule.
 
 Run: `python -m mscn.agi_selfimprove`.
+
+### 8.6 Upgrade 6 — Compositional Coherence Algebras (`agi_compositional.py`)
+
+Skills compose via the network-coherence law `R_total = Σ_i R_i + Σ_ij J_ij R_pair`
+(`compositional_coherence_lower_bound'`: non-negative coupling only helps). A composite
+landscape (B block sub-landscapes + bounded coupling) need not be learned
+monolithically: **reuse a library of learned sub-skills** (block optima) and refine
+only the residual coupling.
+
+**Measured (4 blocks × 2-D = 8-D, bounded coupling; mean over 6 tasks):**
+
+| | best f at 400 new evals | amortized cost (20 tasks) |
+|---|---|---|
+| monolithic from scratch | 53.8 | 56 000 evals |
+| **compositional (reuse + refine)** | **7.9 (−85%)** | **10 400 evals (5.4× fewer)** |
+
+**Result.** Composing reusable sub-coherences and learning only the residual coupling
+reaches **85% lower objective** at the same *new*-eval budget and amortizes to **5.4×
+fewer evaluations** across tasks sharing the library; the coupling-only-helps bound holds
+(100% in the bounded-coupling regime). The mechanism is functional — knowledge reuse via
+the composition law. (It shares the warm-start lever with Upgrade 5; the distinct content
+here is the *library amortization* across many composite tasks.)
+
+Run: `python -m mscn.agi_compositional`.
