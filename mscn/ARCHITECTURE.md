@@ -652,3 +652,36 @@ So Upgrade 1's mechanism is functional and its compression advantage is real; th
 case remains the open frontier, now measured.
 
 Run: `python -m mscn.agi_simulation`.
+
+### 8.3 Upgrade 3 — Coherence-Gradient-Driven Exploration (`agi_exploration.py`)
+
+The base `IBFLearner` grows responsiveness `k` *monotonically* on improvement (Thm 8c
+agency, capped at `k_max`) — correct for unimodal climbs but a liability on the
+**deceptive Schwefel** function, the IBF optimiser's named weakness (§1): a greedy `k`
+commits to a basin. Upgrade 3 makes `k` a two-sided control loop on the local
+coherence gradient (entropy-production view `σ=k·‖∇R_eff‖²`): exploit on a confident
+improving gradient; when the gradient stays flat (the high-uncertainty "maybe-not-
+global" signal) **explore** via a memory-guided restart, the persistent `δR` memory and
+`best_*` keeping the best basin. Grounding: `high_variance_favors_exploration`,
+`exploration_cost_nonneg`.
+
+**Measured (mechanism isolated: both learners local-only, so the only exploration is
+the gradient-driven `k`+restart; mean best `f`, matched budget):**
+
+| function | structure | monotone-k base | grad-adaptive | improvement |
+|---|---|---|---|---|
+| schwefel-5d | deceptive | 585.98 | 407.28 | **+30.5%** |
+| schwefel-10d | deceptive | 1525.59 | 1409.67 | **+7.6%** |
+| rastrigin/ackley | funnel | — | — | *worse* |
+
+**Honest result.** Upgrade 3 **fixes the named weakness**: on deceptive Schwefel
+(optimum isolated from the other minima) the stall-restart escapes the wrong region a
+monotone-k climber commits to — **+19% mean (local-only), +3.4% on the full learner**.
+The faithful flip side: on **funnel**-structured multimodal landscapes (Rastrigin,
+Ackley) the restart is a *loss* — it abandons the funnel descent. So the advantage is a
+real explore/exploit tradeoff **keyed to landscape structure** (helps deceptive-isolated
+optima, not funnels). Second honest caveat: on the full architecture the existing global
+jumps already supply most exploration, shrinking the marginal benefit. The mechanism is
+functional and improves exactly the case the roadmap targeted; it is not a free lunch.
+
+Run: `python -m mscn.agi_exploration`.

@@ -317,9 +317,8 @@ class IBFLearner:
         self._reinforce(new_x, driving)
         self._decay(exclude=new_x)
 
-        # ADAPT responsiveness if the move improved effective coherence (capped).
-        if increments[idx] > 0.0:
-            self.k = min(self.k + self.k_adapt, self.k_max)
+        # ADAPT responsiveness (overridable hook; default = monotone agency, Thm 8c).
+        self._adapt_k(increments, idx)
 
         self.x = new_x
         self.step_count += 1
@@ -327,6 +326,12 @@ class IBFLearner:
         if R_here > self.best_R:
             self.best_R = R_here
             self.best_x = self.x.copy()
+
+    def _adapt_k(self, increments: ArrayF, idx: int) -> None:
+        """Responsiveness update. Default: monotone agency (Thm 8c) -- ``k`` grows on
+        improvement, capped. Subclasses (e.g. gradient-adaptive exploration) override."""
+        if increments[idx] > 0.0:
+            self.k = min(self.k + self.k_adapt, self.k_max)
 
     def _reinforce(self, x: ArrayF, driving: float) -> None:
         # find nearest center
