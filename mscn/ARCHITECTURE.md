@@ -81,6 +81,38 @@ never feeds rules to the model. Data: locally-generated legal games (for
 rules/geometry) and **5,000 real Lichess Elite 2024-01 games**
 (`data/elite_2024-01_5k.pgn`, Elo 2314–2950, avg 89 plies) for the headline run.
 
+### 3.0 Is the chess model an instance of the IBF unit?
+
+**Partly.** It instantiates the IBF unit's *coherence-memory + effective-coherence
+selection* substrate, in **predictive (learn-from-observation) mode** — not the full
+acting agent loop of §1. The mapping:
+
+| IBF unit (§1) | chess instantiation |
+|---|---|
+| configuration `x` | game position / move-context |
+| baseline coherence `R̂` | immediate prior over moves |
+| modification `δR` | learned coherence over `(context, move)` — Gaussian-kernel memory in `chess_kernel.py` |
+| effective coherence `R_eff = R̂ + δR` | the model's scored move distribution |
+| Boltzmann selection `P(a) ∝ exp(k·R_eff)` | the predictive softmax over moves |
+| MODIFY `δR' = α·discr − μ·δR` | accumulation of `δR` from observed games |
+
+The **kernel model is the literal Layer-1 memory** (Gaussian-kernel `δR` +
+Operating-Resolution bandwidth); the n-gram/VOM are the same coherence-memory
+principle in discrete / variable-order form.
+
+**What differs from the full unit (honest gaps):** (i) `δR` is fit by *batch
+accumulation over a corpus*, not online discrepancy-driven self-modification while
+*acting* in an environment; (ii) responsiveness `k` is a fixed softmax temperature,
+not adaptively grown (the agency dynamics); (iii) decay `μ ≈ 0` (crystallized counts)
+for n-gram/VOM; (iv) there is no continuous coherence **gradient flow / basin**
+dynamics — context is discrete, so no `∇R_eff`. So the chess study exercises the IBF
+*representation/selection* substrate on a sequence-prediction task; it does not run
+the closed sense→select→**act**→modify→adapt loop. (The "acting agent" form of the
+unit is exercised instead by Layer 1 in §1–2: the optimiser and the IPD agents.)
+**Route A** then adds a recurrent history coarse-graining `G` (Postulate II /
+recursive scale) on top of the IBF readout — it *extends* the unit, it is not part of
+the basic unit.
+
 Three model families share one interface (`predict`, `inv_vocab`, `move_salience`):
 
 | model | context / state | mechanism | file |
