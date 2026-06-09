@@ -310,6 +310,37 @@ values**, confirming the coherence-landscape-over-boards approach — while
 human-level play needs **positional** coherence (activity, king safety, threats)
 beyond material: the engine-level frontier.
 
+### 3.8 Positional coherence layer (strategy frontier)
+
+`chess_positional_ibf.py` enriches the value landscape with an emergent
+**piece-square table** `pst[lineage, location]` (how much a piece on a square
+correlates with winning, learned from outcomes), and selects with the IBF-agency
+mixture `score(m) = log P_context(m) + β·(R(z'_m) − R(z))` — the human move-prior
+nudged by the value gradient (1-ply lookahead), *not* pure value-greedy.
+
+**Emergent positional structure (prior-free):** the learned pawn piece-square value
+**rises with advancement** — white-pawn PST by rank: 2:0.002, 4:−0.001, 6:0.013,
+7:0.022, 8:0.020 — i.e. advanced pawns (toward promotion) are valued higher, learned
+from outcomes alone. Positional knowledge emerges, as piece values did.
+
+**Selection (β sweep):**
+
+| β | acc@1 | move quality (cp) |
+|---|---|---|
+| 0.0 (context only) | 0.146 | −528 |
+| 1.0 | 0.146 | −412 |
+| 2.0 | 0.146 | −367 |
+
+The mixture **improves objective move quality (−528 → −367 cp) while preserving
+human-matching (acc@1 ≈ 0.146)** — the correct combination, vs pure value-greedy
+which crashed acc@1 to 0.05. **Honest limit:** acc@1 does **not** rise — an
+outcome-regressed material+PST eval with 1-ply lookahead plays *sounder* but not more
+*human*; matching 2400+ strategy is the genuine engine-level frontier, and the
+quality oracle is itself material-based (some circularity). So positional coherence
+**emerges and helps objective play**, but human-level strategy needs richer positional
+coherence (mobility, king safety, threats, deeper search) or a stronger learner — the
+open frontier the layer cleanly localizes.
+
 ---
 
 ## 4. Theory connections (what instantiates what)

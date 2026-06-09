@@ -249,6 +249,13 @@ is left for a network that can reach lichess.)
   (sound material play), though **acc@1 drops 0.14→0.05** — value-greedy ≠ human
   *strategy*; human-level needs positional coherence beyond material (the
   engine-level frontier). See `ARCHITECTURE.md` §3.7.
+* **Positional coherence layer** (`chess_positional_ibf.py`): adds an emergent
+  **piece-square table** (learned from outcomes) and selects by *context-prior +
+  value-gain* (not value-greedy). **Positional structure emerges** — pawn value
+  rises with advancement (rank 2→7: 0.002→0.022), prior-free. The mixture improves
+  objective move quality (−528→−367 cp) **without hurting** human-matching (acc@1
+  ≈0.146). Honest limit: acc@1 doesn't rise — human-level *strategy* is the
+  engine-level frontier (richer positional coherence / search needed). `ARCHITECTURE.md` §3.8.
 
 ## Honest scope
 
