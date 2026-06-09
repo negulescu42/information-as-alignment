@@ -5,7 +5,7 @@
 > grounded in an existing IBF theorem or a new one in `formal/AGIFoundations.lean`.
 > The Python system implementation of each upgrade lives in `mscn/agi_*.py`, with
 > a runnable validation that measures a concrete advantage (or an honest null).
-> See `mscn/ARCHITECTURE.md` §4.x for the implementation log and measured results.
+> See `mscn/ARCHITECTURE.md` §8.x for the implementation log and measured results.
 
 ## Executive Summary
 
@@ -127,7 +127,7 @@ Schwefel-10D success via directed exploration. **Multi-agent** — scale agents,
 task diversity via transfer, superlinear coherence growth via self-improvement.
 
 The honest measured outcomes (which of these are achieved, partially achieved, or
-null) are logged per-upgrade in `mscn/ARCHITECTURE.md` §4.
+null) are logged per-upgrade in `mscn/ARCHITECTURE.md` §8 and summarized in §10 below.
 
 ---
 
@@ -170,3 +170,33 @@ consistency. These constrain the design space: every upgrade must preserve them.
 
 All Lean statements are in `formal/AGIFoundations.lean` (verified by the theory team
 via `lake build`; not lake-built in this PyPI-only sandbox — see the file header).
+
+---
+
+## §10. Measured outcomes (implementation, honest)
+
+All nine upgrades are implemented as runnable `mscn/agi_*.py` mechanisms; each prints
+and asserts a measured result (`python -m mscn.agi_all`). Full detail + caveats in
+`mscn/ARCHITECTURE.md` §8. Summary:
+
+| # | Upgrade | Module | Measured advantage (honest) |
+|---|---|---|---|
+| 1 | Learnable Simulation | `agi_simulation` | Causal states recovered from **atomic** tokens; sufficient (purity .95/.99) + faithful (σ∘G=T∘σ); **7–9× ε-machine compression** vs windows. Honest frontier: dependencies beyond the suffix horizon need a latent-state model (the §2.2-general residue, quantified). |
+| 2 | Hierarchical Simulation | `agi_hierarchical_sim` | Coarse-graining preserves the goal + lifts signal corr **0.58→0.92** (noise killed); hierarchical planning **2.9× fewer** states expanded. |
+| 3 | Gradient-Driven Exploration | `agi_exploration` | Fixes the **named** weakness — deceptive Schwefel **+19%** (isolated) / +3.4% (full). Honest: hurts funnel landscapes; global jumps already explore. |
+| 4 | Directed Exploration | `agi_directed` | Higher info gain (0.58 vs 0.36), better coverage, **8–14% lower regret** once coverage matters. Honest: a coverage lever; pairs with exploitation. |
+| 5 | Cross-Domain Morphisms | `agi_transfer` | Basin/viability preservation **100%** (the theorem); morphism warm-start **+75–93%** head-start. Honest: passive δR-memory transfer alone is a few-% lift in moderate dim. |
+| 6 | Compositional Coherence | `agi_compositional` | Skill-library reuse: **−85%** objective at equal new-eval budget, **5.4× fewer** evals amortized; coupling-only-helps bound 100%. |
+| 7 | Coherence-Based Planning | `agi_planning` | Plan over the **learned** sim: goal-reaching **0%→100%**, clear diminishing returns. |
+| 8 | Temporal Abstraction | `agi_temporal` | Macro-actions over basins: **3.6× fewer** decisions; in-basin ascent **100% safe** (basin invariance). |
+| 9 | Active Self-Improvement | `agi_selfimprove` | Cost-aware reflexive α-allocation clears **+6.5 more** domains than uniform. Honest: naive proportional-to-gap rule helps only marginally; marginal cost-effectiveness is the signal. |
+
+Plus roadmap §2.1/3.1 (`hierarchical_sigma`): the RG flow is a **geometric σ*-sequence**
+(ratio = the RG factor) that selects the relevant scale.
+
+**Bottom line.** Every mechanism is **functional** and shows a **real, measured
+advantage** on a concrete task — with negative/mixed findings reported faithfully (no AGI
+is claimed; the deliverable is functional mechanisms with honest measurements). The
+single deepest open frontier is sharpened and quantified: learning a simulation
+homomorphism for **arbitrarily long-range** dependencies from atomic tokens needs a
+latent-state learner, not bounded-suffix clustering.

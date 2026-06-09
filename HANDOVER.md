@@ -20,7 +20,12 @@ the IBF / Operating-Resolution theory. Two bodies of work:
    tied to a theorem.
 3. **Resolution-roadmap items** (from a colleague's note) implemented & validated:
    local σ*, Interface-Principle pruning, percolation diagnostic, O(N²)→O(N) coupling,
-   per-center adaptive μ.
+   per-center adaptive μ, **hierarchical σ* (RG flow as a σ*-sequence, §2.1/3.1)**.
+4. **MSCN→AGI roadmap** (`MSCN_AGI_ROADMAP.md` + `formal/AGIFoundations.lean`, theory
+   team): **all 9 architectural upgrades implemented** as runnable `mscn/agi_*.py`
+   mechanisms, each with a **measured advantage or an honest null** (see ARCHITECTURE §8;
+   one-shot check `python -m mscn.agi_all`). Upgrade 1 (learnable simulation from atomic
+   tokens) *is* the §2.2-general frontier — done, with its honest limit quantified.
 
 Everything is committed to branch **`claude/happy-carson-3zhihq`** (push there only).
 The repo is the public companion to the "Information as Alignment" paper; MSCN is an
@@ -96,9 +101,24 @@ exploratory addition under `mscn/`.
 - `correction_field.py` — Interface-Principle pruned field eval (O(M)→O(M_boundary)).
 - `nonstationary.py` — adaptive-μ evaluation on drift streams.
 
-**Docs**: `mscn/ARCHITECTURE.md` (the log), `mscn/NOTE-state-tracking-gap.md` (theory
-note + team response), `formal/README.md` (Operating Resolution + Causal States Lean
-results), `data/README.md` (how to add games).
+**MSCN→AGI upgrades** (`agi_*.py`; each has a runnable `main()` that prints + asserts a
+measured result; `python -m mscn.agi_all` runs all nine):
+- `agi_simulation.py` — U1 learnable simulation homomorphism from **atomic** tokens
+  (CSSR/ε-machine, recurrent), compression win + honest beyond-horizon frontier (§2.2-general).
+- `agi_hierarchical_sim.py` — U2 multi-scale simulation (coarse-graining suppresses noise, cheaper planning).
+- `agi_exploration.py` — U3 coherence-gradient-driven exploration (fixes deceptive Schwefel; honest funnel tradeoff).
+- `agi_directed.py` — U4 directed exploration via information gain (coverage lever).
+- `agi_transfer.py` — U5 cross-domain coherence morphisms (basin preservation 100%, warm-start head-start).
+- `agi_compositional.py` — U6 compositional coherence algebras (skill-library reuse, 5.4× amortized).
+- `agi_planning.py` — U7 coherence-based planning over the learned simulation (0%→100%, diminishing returns).
+- `agi_temporal.py` — U8 temporal abstraction / macro-actions (3.6× fewer decisions, basin-invariance safety).
+- `agi_selfimprove.py` — U9 active self-improvement (cost-aware reflexive α-allocation).
+- `hierarchical_sigma.py` — roadmap §2.1/3.1 (RG flow as a σ*-sequence).
+
+**Docs**: `mscn/ARCHITECTURE.md` (the log; §8 = AGI upgrades), `MSCN_AGI_ROADMAP.md` (the
+theory-team roadmap), `formal/AGIFoundations.lean` (the new Lean grounding, as provided —
+not lake-built here), `mscn/NOTE-state-tracking-gap.md` (theory note + team response),
+`formal/README.md` (Operating Resolution + Causal States Lean results), `data/README.md`.
 
 ---
 
@@ -132,19 +152,28 @@ results), `data/README.md` (how to add games).
 
 ## 6. Open work / suggested next steps (pick up here)
 Prioritised; all are theory-grounded and reuse existing modules.
-1. **Wide-Elo / scale-up acc@1** (highest-leverage, demonstrated lever): user commits
-   a larger PGN slice (50k+); rerun `run_pgn` and the acc@1-vs-data curve. Should also
-   turn the weak coherence↔Elo signal strongly monotone (the skill-stratified proxy
-   shows it). *Blocked only on data via git.*
-2. **Theory-team capstones** (don't depend on acc@1): a **linear board-state probe**
-   (Othello-GPT-style) on the Route-A state for a quantitative sufficiency figure; and
-   **prove Route B on a tractable world** (K+R endgame): IBF coarse-graining → ε-machine
-   optimality, with legality-vs-depth + purity curves.
-3. **Remaining roadmap items**: §2.1/§3.1 hierarchical σ* (RG flow as a σ*-sequence);
-   §2.3 N_eff module-isolation metric; §3.2 vector-valued δR; §3.3 Lawvere metacognition;
-   §3.5 dense-coupling k-d-tree variant. (See the colleague's roadmap in the chat / §3.x.)
-4. **§2.2-general** (research): learn the homomorphism without from-to structure
-   (ε-machine/PSR state-merging, or factored per-square state from the emergent geometry).
+
+**Done since the last handover (see ARCHITECTURE §3.15, §8):**
+- §2.1/§3.1 **hierarchical σ*** (RG flow as a σ*-sequence) — `hierarchical_sigma.py`.
+- §2.2-general / Route B — **learnable simulation homomorphism from atomic tokens** —
+  `agi_simulation.py` (Upgrade 1). Recovers causal states, sufficient + faithful, an
+  ε-machine *compression* win; the honest limit (dependencies beyond the estimable suffix
+  horizon need a latent-state model) is quantified — that residue is the remaining frontier.
+- **All 9 MSCN→AGI upgrades** — `agi_*.py`, each a measured advantage or honest null
+  (ARCHITECTURE §8; `python -m mscn.agi_all`).
+
+**Still open:**
+1. **Wide-Elo / scale-up acc@1** (highest-leverage chess lever): user commits a larger
+   PGN slice (50k+); rerun `run_pgn` and the acc@1-vs-data curve. *Blocked only on data via git.*
+2. **§2.2-general, the hard residue**: a *latent-state* simulation learner (HMM/RNN-style,
+   still IBF/non-neural in spirit) for dependencies beyond the suffix horizon — where
+   `agi_simulation`'s CSSR hits its ceiling (the flag/counter worlds). Apply it to chess
+   atomic tokens and compare to the from-to Route A (0.998 purity).
+3. **Upgrade chess instantiations**: wire the AGI mechanisms into the chess agent
+   (planning over the learned sim for move choice; hierarchical sim = piece→material→
+   strategic layers) and re-measure acc@1 / strength.
+4. **Remaining minor roadmap items**: §2.3 N_eff module-isolation metric; §3.2
+   vector-valued δR; §3.3 Lawvere metacognition; §3.5 dense-coupling k-d-tree variant.
 
 When in doubt about scope/data/direction, ask the user one crisp question (they
 steer actively) — but act on sensible defaults where the path is clear.
@@ -160,4 +189,6 @@ python -m mscn.chess_world --figures      # emergent rules + board geometry (gen
 python -m mscn.chess_strategy --pgn data/elite_2024-01_5k.pgn   # Stages 1-3 on real games
 python -m mscn.correction_field           # Interface-Principle pruning scaling
 python -m mscn.nonstationary              # adaptive-μ on drift streams
+python -m mscn.hierarchical_sigma         # RG flow as a σ*-sequence (roadmap 2.1/3.1)
+python -m mscn.agi_all                    # all 9 MSCN→AGI upgrade validations (§8)
 ```

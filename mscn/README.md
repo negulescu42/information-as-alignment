@@ -286,6 +286,36 @@ is left for a network that can reach lichess.)
   cost is constant (~0.46 ms/round) from 64 → **2048 agents** (N×4 → time×4); the old
   O(N²) scan choked at ~125. All 24 guarantee checks still pass. `ARCHITECTURE.md` §3.13.
 
+## MSCN → AGI upgrades (`agi_*.py`)
+
+The theory team's `MSCN_AGI_ROADMAP.md` (+ `formal/AGIFoundations.lean`) lists nine
+architectural upgrades toward general-intelligence *capabilities*. All nine are
+implemented as runnable mechanisms, each with a **measured advantage or an honest null**
+(`ARCHITECTURE.md` §8; one-shot `python -m mscn.agi_all`):
+
+* **U1 learnable simulation** (`agi_simulation.py`) — learn `G` with `σ∘G=T∘σ` from
+  **atomic** tokens (ε-machine reconstruction): sufficient + faithful, **7–9×**
+  compression vs windows; honest beyond-horizon frontier (this *is* §2.2-general).
+* **U2 hierarchical simulation** (`agi_hierarchical_sim.py`) — coarse-graining kills fine
+  noise (corr 0.58→0.92), **2.9×** cheaper planning.
+* **U3 gradient-driven exploration** (`agi_exploration.py`) — fixes deceptive Schwefel
+  (+19%); honest funnel tradeoff.
+* **U4 directed exploration** (`agi_directed.py`) — info-gain sampling, better coverage,
+  8–14% lower regret.
+* **U5 cross-domain morphisms** (`agi_transfer.py`) — basin preservation **100%**,
+  warm-start **+75–93%** head-start.
+* **U6 compositional coherence** (`agi_compositional.py`) — skill-library reuse, −85% /
+  **5.4×** amortized.
+* **U7 coherence-based planning** (`agi_planning.py`) — plan over the learned sim, goal
+  **0%→100%**, diminishing returns.
+* **U8 temporal abstraction** (`agi_temporal.py`) — macro-actions, **3.6×** fewer
+  decisions, basin-invariance safety.
+* **U9 active self-improvement** (`agi_selfimprove.py`) — cost-aware reflexive
+  α-allocation, **+6.5** more domains cleared.
+
+No AGI is claimed; the deliverable is functional mechanisms with faithful measurements
+(negative/mixed findings included).
+
 ## Honest scope
 
 This is a toy model. Agent counts are in the tens, runs are seconds, and the
