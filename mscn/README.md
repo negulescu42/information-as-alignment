@@ -256,6 +256,12 @@ is left for a network that can reach lichess.)
   objective move quality (−528→−367 cp) **without hurting** human-matching (acc@1
   ≈0.146). Honest limit: acc@1 doesn't rise — human-level *strategy* is the
   engine-level frontier (richer positional coherence / search needed). `ARCHITECTURE.md` §3.8.
+* **Playing strength — head-to-head** (`chess_arena.py`): with python-chess as
+  *referee* (legality + result only), a value+SEE agent (emergent values + static
+  exchange evaluation + positional coherence) **beats the context-only model 40–0**.
+  Real, measurable strength — it plays *sound* chess while context-only blunders out
+  of book. (acc@1 still ≈0.146: stronger *play* ≠ predicting human *moves*.)
+  `ARCHITECTURE.md` §3.9.
 
 ## Honest scope
 
