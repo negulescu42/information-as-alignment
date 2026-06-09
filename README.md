@@ -131,10 +131,15 @@ bounded self-knowledge, and a consciousness phase transition — appearing in
 executable code, with no neural networks.
 
 ```bash
-python -m mscn.demo       # guided tour of the four pilots + the integrated network
-python -m mscn.tests      # 24 behavioural checks of the proven guarantees
-python -m mscn.benchmark  # eval-budget-matched benchmark vs classical baselines
+python -m mscn.demo        # guided tour of the four pilots + the integrated network
+python -m mscn.tests       # 24 behavioural checks of the proven guarantees
+python -m mscn.benchmark   # eval-budget-matched benchmark vs classical + SOTA baselines
+python -m mscn.chess_world # emergent chess (rules + 8x8 board) from move tokens, no priors
 ```
+
+the chess experiment is a representation-learning probe: from opaque move tokens
+alone (no board/pieces/rules), the IBF mechanism learns to prefer legal moves and
+the 8×8 board geometry emerges from move co-occurrence (`pip install chess scipy`).
 
 `(IBF)MSCN-Toy-Model.ipynb` is the notebook walkthrough; `mscn/README.md` has the
 architecture-to-code map. this is exploratory and separate from the paper-facing

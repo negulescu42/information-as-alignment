@@ -153,6 +153,39 @@ better):
   0.3 s → 5.2 s; cost grows with the O(N²) pairwise coupling (sparse graphs are
   the path to larger N).
 
+## Emergent chess representation (experiment)
+
+`chess_world.py` is a representation-learning / generalisation probe: can the IBF
+coherence mechanism learn the *structure* of chess — rules and the board — from
+sequences of **opaque move tokens**, with no board, pieces, rules or strategy
+built in? (Same spirit as Othello-GPT / Chess-GPT, but with non-neural coherence
+memory instead of a transformer.)
+
+```bash
+python -m mscn.chess_world --figures     # needs: pip install chess scipy
+```
+
+Strict no-priors: the model sees each move only as an atomic id; it is never told
+tokens contain squares, that squares form a grid, or that pieces have movement
+rules. `python-chess` is used only to generate legal games (data) and as an
+evaluation oracle. (This environment's network policy blocks lichess, so games
+are generated locally; emergent *strategy* — Stage 3 — wants real human games and
+is left for a network that can reach lichess.)
+
+* **Stage 1 — emergent rules:** trained only on token transitions, the model's
+  top move is legal far above chance (opening 72%, overall 38% legal@1; 79%
+  legal@5; legal-probability-mass ≈ 14× a random token's 1.5%) — it learned to
+  prefer legal moves *with no rules supplied*. Legality is strongest in openings
+  and decays in novel late positions: an associative n-gram memory does not fully
+  track board state (the gap a transformer's full-history attention closes). On
+  near-random generated data, next-move *accuracy* is low by construction —
+  that's the Stage-3 strategy question, which needs real games.
+* **Stage 2 — emergent board geometry:** embedding the 64 squares from move
+  co-occurrence in the learned representation recovers the 8×8 grid (Procrustes
+  disparity ≈ 0.06 vs the true board; ≈ 72% of true king-adjacencies are nearest
+  neighbours) — the board's 2-D geometry emerges from move tokens alone, no
+  spatial prior. See the generated `chess_board_emergence.png`.
+
 ## Honest scope
 
 This is a toy model. Agent counts are in the tens, runs are seconds, and the
