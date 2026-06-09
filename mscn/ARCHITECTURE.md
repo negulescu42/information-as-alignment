@@ -489,6 +489,30 @@ over agent states gives the same O(N·k_eff) (operating bandwidth for coupling).
 O(N²) ceiling flagged in the earlier scaling note is removed; the network scales to
 1000+ agents.
 
+### 3.14 Resolution-roadmap: per-center adaptive μ (honest, mixed)
+
+Roadmap §1.3: per-center decay `μ_i` — crystallise repeatedly-reinforced centres
+(μ→0), keep one-off centres plastic (μ>0). Implemented in `IBFChessAgent`
+(`adaptive_mu=True`, `μ_i = μ/(1+λ·count_i)`) and stress-tested on non-stationary
+streams (`nonstationary.py`).
+
+- **Stationary (chess): a clear win.** Adaptive μ recovers most of the
+  crystallisation advantage over a fixed μ: legal@1 **0.096 (fixed μ=0.04) → 0.147
+  (adaptive) → 0.205 (μ=0)** — frequent legal moves crystallise while rare ones still
+  fade.
+- **Non-stationary: the count scheme is the *wrong* signal.** On a mixed-timescale
+  stream it *crystallises now-stale patterns* and fails drift (mean 0.50, ≈ μ=0),
+  while a tuned fixed μ=0.4 gets 0.765. **Error-gating** (`μ_i = μ·recent_error_i`,
+  forget centres that became wrong) is the correct signal (0.743) but only *matches*
+  a fixed μ tuned to the change rate — it is not a clear win.
+
+**Reading.** §1.3's premise (μ>0 for non-stationarity) holds — crystallisation fails
+drift — but the proposed *count-based* `μ_i` is counterproductive there (it locks in
+stale knowledge); the right adaptive signal is recent prediction *error*, and even
+then adaptive μ ties rather than beats a well-tuned fixed μ on single/dual-timescale
+tasks. Constructive feedback for the resolution team: key `μ_i` on error, not count;
+adaptive μ's real edge needs strongly heterogeneous timescales (no single optimal μ).
+
 ---
 
 ## 4. Theory connections (what instantiates what)

@@ -33,10 +33,13 @@ class IBFChessAgent:
     def __init__(self, max_depth: int = 4, alpha: float = 0.5, mu: float = 0.04,
                  k: float = 1.0, k_adapt: float = 0.002, k_max: float = 8.0,
                  T_ext: float = 4.0, global_topk: int = 40, agency_frac: float = 0.5,
+                 adaptive_mu: bool = False, mu_lambda: float = 1.0,
                  seed: int = 0) -> None:
         self.D = max_depth
         self.alpha = alpha
         self.mu = mu
+        self.adaptive_mu = adaptive_mu        # per-center mu_i = mu/(1+lambda*count) (roadmap 1.3)
+        self.mu_lambda = mu_lambda
         self.k = k
         self.k0 = k
         self.k_adapt = k_adapt
@@ -49,6 +52,7 @@ class IBFChessAgent:
         self.unigram = Counter()              # for evaluate_rules' unigram baseline
         self.R_hat: dict[int, float] = {}     # baseline coherence (log global count)
         self.dR: dict[tuple, dict[int, float]] = {}   # context -> {move: modification}
+        self.cnt: dict[tuple, dict[int, int]] = {}    # context -> {move: reinforcement count}
         self.k_history: list[float] = []
         self._agency_hits = 0
         self._steps = 0
@@ -101,18 +105,25 @@ class IBFChessAgent:
             self._agency_hits += 1
 
         # MODIFY: discrepancy-driven reinforcement of a + competitive decay (retention).
+        # Per-center adaptive mu (roadmap 1.3): mu_i = mu/(1+lambda*count_i) -- a move
+        # reinforced many times (a stable rule) crystallises (mu_i -> 0); a one-off move
+        # stays plastic (mu_i ~ mu) and fades. Amplitude bound holds for each center.
         disc = max(self.T_ext - reff_a, 0.0)
         for ell, ctx in active:
             d = self.dR.get(ctx)
             if d is None:
                 d = self.dR[ctx] = {}
+                self.cnt[ctx] = {}
+            c = self.cnt[ctx]
+            c[a] = c.get(a, 0) + 1
+            mu_a = self.mu / (1.0 + self.mu_lambda * (c[a] - 1)) if self.adaptive_mu else self.mu
             old = d.get(a, 0.0)
-            d[a] = max(old + self.alpha * disc - self.mu * old, 0.0)
+            d[a] = max(old + self.alpha * disc - mu_a * old, 0.0)
             if self.mu > 0 and len(d) > 1:
-                decay = 1.0 - self.mu
                 for m in list(d.keys()):
                     if m != a:
-                        d[m] *= decay
+                        mu_m = self.mu / (1.0 + self.mu_lambda * c.get(m, 0)) if self.adaptive_mu else self.mu
+                        d[m] *= (1.0 - mu_m)
 
         # baseline landscape update (global frequency)
         self.unigram[a] += 1
