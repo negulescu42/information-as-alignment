@@ -54,7 +54,10 @@ class MSCN:
         self.L = landscape
         self.cfg = config or MSCNConfig()
         self.rng = np.random.default_rng(self.cfg.seed)
-        self.J = net.scale_free_graph(self.cfg.n_agents, self.cfg.graph_m, 1.0, seed=self.cfg.seed)
+        # sparse adjacency (Interface Principle, roadmap 3.5): coupling is O(n*k_eff),
+        # not O(n^2) -- each agent couples only to its (boundary) graph neighbours.
+        self.adj, self.adj_w = net.scale_free_adjacency(
+            self.cfg.n_agents, self.cfg.graph_m, 1.0, seed=self.cfg.seed)
         # one Layer-1 learner per node
         self.agents = [
             IBFLearner(
@@ -74,27 +77,27 @@ class MSCN:
         return float(np.exp(-np.sum((x - y) ** 2) / (2.0 * self.cfg.proximity_scale ** 2)))
 
     def _coupling_term(self, i: int, x: ArrayF) -> float:
-        total = 0.0
-        for j in range(self.cfg.n_agents):
-            w = self.J[i, j]
-            if w != 0.0:
-                total += w * self._r_pair(x, self.states[j])
-        return self.cfg.coupling_strength * total
+        nb = self.adj[i]
+        if len(nb) == 0:
+            return 0.0
+        sq = np.sum((self.states[nb] - x) ** 2, axis=1)
+        rp = np.exp(-sq / (2.0 * self.cfg.proximity_scale ** 2))
+        return self.cfg.coupling_strength * float(self.adj_w[i] @ rp)
 
     def _agent_coherence(self, i: int):
         def coh(x: ArrayF) -> float:
             return self.L.coherence(x) + self._coupling_term(i, x)
         return coh
 
-    # ----- metrics -----
+    # ----- metrics (all O(n*k_eff) over the sparse edge set) -----
     def network_coherence(self) -> float:
-        states = [self.states[i] for i in range(self.cfg.n_agents)]
-        cn = net.CoherenceNetwork(
-            self.J,
-            R_eff=lambda i, x: self.L.coherence(x) + self.agents[i].delta_R(x),
-            R_pair=self._r_pair,
-        )
-        return cn.network_coherence(states)
+        total = self.individual_total()
+        for i in range(self.cfg.n_agents):
+            nb = self.adj[i]
+            for j, w in zip(nb, self.adj_w[i]):
+                if j > i:                      # each undirected edge once
+                    total += float(w) * self._r_pair(self.states[i], self.states[j])
+        return total
 
     def individual_total(self) -> float:
         return float(sum(self.L.coherence(self.states[i]) + self.agents[i].delta_R(self.states[i])
@@ -104,11 +107,11 @@ class MSCN:
         """Mean distance across coupled edges (lower = more aligned)."""
         ds, w = 0.0, 0.0
         for i in range(self.cfg.n_agents):
-            for j in range(i + 1, self.cfg.n_agents):
-                if self.J[i, j] != 0.0:
-                    ds += np.linalg.norm(self.states[i] - self.states[j])
+            for j in self.adj[i]:
+                if j > i:
+                    ds += float(np.linalg.norm(self.states[i] - self.states[j]))
                     w += 1.0
-        return float(ds / w) if w > 0 else 0.0
+        return ds / w if w > 0 else 0.0
 
     def effective_coherence(self, i: int) -> float:
         """Layer-1 effective coherence R_eff = landscape + learned modification."""

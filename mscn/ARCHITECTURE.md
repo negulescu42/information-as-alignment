@@ -462,6 +462,33 @@ to 10⁵–10⁶ centres; it is the drop-in evaluation for large static fields (
 pruning relies on genuine Gaussian distance-decay — it does **not** apply to the
 count-based, distance-free n-gram/VOM models (no metric to prune on).
 
+### 3.13 Resolution-roadmap: scalable MSCN coupling (O(N²) → O(N·k_eff))
+
+Roadmap §3.5. The integrated MSCN coupling was O(N²) (the implementation scanned all
+pairs). But the relational coupling `J·R_pair` decays with state distance and each
+agent only couples to its sparse (boundary) neighbours — the Interface Principle
+applied to coupling. Refactored to **sparse adjacency** (`network.scale_free_adjacency`,
+O(N·m), no dense N×N matrix); coupling and all network metrics now run over the edge
+set only.
+
+**Scaling (Rastrigin-2D, 30 rounds):**
+
+| agents | time (s) | ms/agent/round | best coh | consensus |
+|---|---|---|---|---|
+| 64 | 0.90 | 0.467 | 3.03 | 1.76 |
+| 256 | 3.48 | 0.453 | 6.59 | 1.62 |
+| 1024 | 14.0 | 0.457 | 14.5 | 1.53 |
+| 2048 | 28.0 | 0.456 | 18.1 | 1.52 |
+
+The per-agent-per-round cost is **constant** (~0.46 ms) — total cost is **O(N)**:
+N×4 → time×4. MSCN now reaches **2048 agents in 28 s**; the old O(N²) scan choked at
+125 (≈5 s/60 rounds, → ~10+ min extrapolated to 2048). Behaviour is preserved (all 24
+guarantee checks pass; best coherence rises with N, coarse-graining now goes
+2048→683→…→1). For *dense* (all-to-all) coupling intent, a per-round k-d-tree ball
+over agent states gives the same O(N·k_eff) (operating bandwidth for coupling). The
+O(N²) ceiling flagged in the earlier scaling note is removed; the network scales to
+1000+ agents.
+
 ---
 
 ## 4. Theory connections (what instantiates what)

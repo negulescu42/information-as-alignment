@@ -69,6 +69,35 @@ def scale_free_graph(n: int, m: int = 2, weight: float = 1.0, seed: int = 0) -> 
     return J
 
 
+def scale_free_adjacency(n: int, m: int = 2, weight: float = 1.0, seed: int = 0):
+    """Barabasi-Albert graph as **sparse adjacency lists** (O(n*m), no dense matrix).
+
+    Returns ``(nbr, nbr_w)`` where ``nbr[i]`` is the int array of i's neighbours and
+    ``nbr_w[i]`` their weights -- the form needed to make coupling O(n*k_eff) rather
+    than O(n^2) (Interface Principle: an agent couples only to its boundary set).
+    """
+    rng = np.random.default_rng(seed)
+    m = max(1, min(m, n - 1))
+    nbr = [set() for _ in range(n)]
+    targets = []  # node multiset weighted by degree (preferential attachment pool)
+    for i in range(m):
+        for j in range(i + 1, m):
+            nbr[i].add(j); nbr[j].add(i); targets += [i, j]
+    for new in range(m, n):
+        chosen = set()
+        guard = 0
+        while len(chosen) < min(m, new) and guard < 50 * m:
+            t = int(targets[rng.integers(len(targets))]) if targets else int(rng.integers(new))
+            if t != new:
+                chosen.add(t)
+            guard += 1
+        for t in chosen:
+            nbr[new].add(t); nbr[t].add(new); targets += [new, t]
+    nbr_idx = [np.array(sorted(s), dtype=int) for s in nbr]
+    nbr_w = [np.full(len(s), weight) for s in nbr]
+    return nbr_idx, nbr_w
+
+
 def connected_components(J: ArrayF) -> list[list[int]]:
     n = J.shape[0]
     seen = [False] * n

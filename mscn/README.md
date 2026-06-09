@@ -280,6 +280,11 @@ is left for a network that can reach lichess.)
   3×/14×/**34×** at M = 10k/100k/500k centres, error ~2–3% (under the tail bound) —
   the lever for scaling kernel δR memories to 10⁵–10⁶ centres. Run
   `python -m mscn.correction_field`. `ARCHITECTURE.md` §3.12.
+* **Scalable MSCN coupling** (`mscn.py` + `network.scale_free_adjacency`): the same
+  Interface-Principle idea on the integrated network — each agent couples only to its
+  sparse (boundary) neighbours, so coupling is **O(N·k_eff), not O(N²)**. Per-agent
+  cost is constant (~0.46 ms/round) from 64 → **2048 agents** (N×4 → time×4); the old
+  O(N²) scan choked at ~125. All 24 guarantee checks still pass. `ARCHITECTURE.md` §3.13.
 
 ## Honest scope
 
