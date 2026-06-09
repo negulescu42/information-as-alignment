@@ -262,6 +262,12 @@ is left for a network that can reach lichess.)
   Real, measurable strength — it plays *sound* chess while context-only blunders out
   of book. (acc@1 still ≈0.146: stronger *play* ≠ predicting human *moves*.)
   `ARCHITECTURE.md` §3.9.
+* **Deeper search + the acc@1 lever** (`chess_search_ibf.py`): negamax (context =
+  move generator, emergent value = leaf eval). **Strength**: depth-2 beats value+SEE
+  12–12–0 and context 24–0. **acc@1**: search does *not* crack it (flat-to-negative —
+  stronger play ≠ human moves), but **data does** — acc@1 scales 0.090→0.120 over
+  500→4000 games, unsaturated. The move-predictor is data-limited; more games (and
+  ultimately a stronger learner) raise acc@1, not search. `ARCHITECTURE.md` §3.10.
 
 ## Honest scope
 

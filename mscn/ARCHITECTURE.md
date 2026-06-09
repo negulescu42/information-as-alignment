@@ -371,6 +371,40 @@ sufficiency/legality (Route A) → emergent values → SEE tactics gives a non-n
 prior-free agent that plays *sound* chess and crushes the context-only baseline;
 human-level *prediction* is the part that needs a fundamentally stronger learner.
 
+### 3.10 Deeper search (more strength) + the acc@1 lever (data, not search)
+
+`chess_search_ibf.py` runs negamax/alpha-beta where the **context model is the move
+generator** (plausible occ-valid moves per node), the emergent **position value**
+scores leaves, and occupancy transfer applies moves — no hand-coded movement rules.
+
+**More strength (arena, referee-judged):** depth-2 search vs the 1-ply value+SEE
+agent = **12–12–0 (0.75)**; vs context-only = **24–0–0**. Deeper search is the
+stronger player — Phase-1 goal met.
+
+**Cracking acc@1 — two findings:**
+1. **Search does *not* do it.** Mixing the search value into selection
+   (`log P_ctx + β·minimax`) leaves acc@1 flat-to-negative: β=0 → 0.149, β=1 → 0.146,
+   β=3 → 0.143, β=6 → 0.124 (it *diverges* from human moves as value-weight grows).
+   Stronger *play* ≠ predicting strong-human *move choice* — confirmed again.
+2. **Data does.** The move-predictor is data-limited; acc@1 scales monotonically and
+   is **not saturated**:
+
+   | train games | 500 | 1000 | 2000 | 4000 |
+   |---|---|---|---|---|
+   | acc@1 | 0.090 | 0.100 | 0.112 | **0.120** |
+   | opening | 0.348 | 0.360 | 0.389 | 0.395 |
+   | rest | 0.057 | 0.067 | 0.076 | 0.085 |
+
+   acc@1 rises ~33% over an 8× data increase, in both opening and midgame, with no
+   plateau. So the route to higher acc@1 is **more games** (we used a 5k slice of the
+   235 MB file) and ultimately a **stronger learner** (a neural predictor à la Maia
+   reaches ~0.5 with millions of games) — *not* search/value on this substrate.
+
+**Reading.** Strength and human-prediction are different objectives: search/value
+push *strength* (depth-2 beats every prior agent), while acc@1 is governed by the
+*move-predictor's* data and learner capacity. Both levers are now identified and
+quantified; acc@1's is data + learner, and is demonstrably unsaturated at 5k games.
+
 ---
 
 ## 4. Theory connections (what instantiates what)
