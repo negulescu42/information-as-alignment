@@ -199,10 +199,14 @@ class MSCN:
             if len(states) <= 1:
                 break
             f = self.cfg.hierarchy_factor
-            n_groups = max(len(states) // f, 1)
+            if len(states) <= f:                       # collapse the remainder to one macro-agent
+                states = states.mean(axis=0, keepdims=True)
+                level += 1
+                continue
+            n_groups = len(states) // f
             usable = n_groups * f
             grouped = states[:usable].reshape(n_groups, f, -1).mean(axis=1)
-            if usable < len(states):  # carry the remainder up
+            if usable < len(states):                   # carry the leftover units up as a group
                 grouped = np.vstack([grouped, states[usable:].mean(axis=0, keepdims=True)])
             states = grouped
             level += 1

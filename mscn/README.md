@@ -114,6 +114,36 @@ machine-checked in Lean; these keep the *implementation* honest).
 | Dissipative lifetime                      | `test_dissipative_lifetime` |
 | Zombie-Twin survival advantage            | `test_zombie_twin_survival` |
 
+## Benchmarks
+
+```bash
+python -m mscn.benchmark            # full report (20 seeds): optimiser,
+                                    # convergence, cooperation, hierarchy, scaling
+python -m mscn.benchmark --quick    # 8 seeds
+python -m mscn.benchmark optimiser --figures
+```
+
+Headline results (eval-budget matched, 20 seeds, objective = best `f`, lower is
+better):
+
+* **Optimiser, mean rank over all function × dim × seed (1 = best of four):**
+  **IBF 1.89** · SA 2.11 · hill 2.39 · random 3.61. The IBF learner has the best
+  overall rank, **beats random search almost everywhere**, and **wins on every
+  10-D function** against hill climbing and simulated annealing (where memory +
+  basin expansion matter most and random search collapses). It is weakest in
+  2-D (hill/SA edge it out) and on the deceptive Schwefel (high variance).
+* **Cost:** ~140 ms/run vs SA's ~38 ms — about 4× slower per evaluation (richer
+  per-step computation: proposals, kernel memory, modification update).
+* **Convergence:** IBF's best-so-far is consistently below random search and
+  competitive with SA (it overtakes SA late on Ackley-5D).
+* **Cooperation:** IBF-memory tops the round-robin tournament
+  (score 2.46 ± 0.02), above TitForTat and Pavlov.
+* **Hierarchy:** coarse-grained block optimisation beats the flat learner with a
+  win-rate of 1.00 on the small-block configurations.
+* **Scaling:** the integrated network runs 9 → 125 agents for 60 rounds in
+  0.3 s → 5.2 s; cost grows with the O(N²) pairwise coupling (sparse graphs are
+  the path to larger N).
+
 ## Honest scope
 
 This is a toy model. Agent counts are in the tens, runs are seconds, and the

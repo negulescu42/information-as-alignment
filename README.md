@@ -131,8 +131,9 @@ bounded self-knowledge, and a consciousness phase transition — appearing in
 executable code, with no neural networks.
 
 ```bash
-python -m mscn.demo     # guided tour of the four pilots + the integrated network
-python -m mscn.tests    # 24 behavioural checks of the proven guarantees
+python -m mscn.demo       # guided tour of the four pilots + the integrated network
+python -m mscn.tests      # 24 behavioural checks of the proven guarantees
+python -m mscn.benchmark  # eval-budget-matched benchmark vs classical baselines
 ```
 
 `(IBF)MSCN-Toy-Model.ipynb` is the notebook walkthrough; `mscn/README.md` has the

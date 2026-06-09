@@ -379,11 +379,23 @@ class IBFLearner:
             "viable_trace": np.array(viable_trace) if grid is not None else None,
         }
 
-    def run_until_evals(self, eval_budget: int) -> dict:
-        """Run until ``eval_budget`` coherence queries are spent (budget match)."""
+    def run_until_evals(self, eval_budget: int, trace_points: int = 0) -> dict:
+        """Run until ``eval_budget`` coherence queries are spent (budget match).
+
+        If ``trace_points > 0`` also return a best-so-far convergence trace
+        sampled at that many evenly spaced evaluation checkpoints.
+        """
+        checkpoints = (np.linspace(eval_budget / trace_points, eval_budget, trace_points)
+                       if trace_points > 0 else np.array([]))
+        ci = 0
+        trace_evals, trace_best = [], []
         while self.evals < eval_budget:
             self.step()
-        return {
+            while ci < len(checkpoints) and self.evals >= checkpoints[ci]:
+                trace_evals.append(self.evals)
+                trace_best.append(-self.best_R)  # best objective so far
+                ci += 1
+        out = {
             "best_x": self.best_x.copy(),
             "best_R": self.best_R,
             "best_f": -self.best_R,
@@ -391,3 +403,7 @@ class IBFLearner:
             "k": self.k,
             "evals": self.evals,
         }
+        if trace_points > 0:
+            out["trace_evals"] = np.array(trace_evals)
+            out["trace_best_f"] = np.array(trace_best)
+        return out
