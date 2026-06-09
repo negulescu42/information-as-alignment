@@ -208,6 +208,14 @@ is left for a network that can reach lichess.)
   non-sufficient map, so a kernel over it cannot recover board state. The fix is a
   simulation-faithful recurrent state (Route A in `NOTE-state-tracking-gap.md`),
   not a richer kernel — the bottleneck is the context representation.
+* **Route A — recurrent model** (`chess_recurrent.py`): a variable-order recurrent
+  state `z_t = G(z_{t-1}, a_t)` (deepest supported move-suffix; IBF adaptive-
+  resolution coarse-graining). It **beats the n-gram** on legality, most where
+  longer history matters (opening legal@1 0.84→0.91, acc@1 0.38→0.45; all 0.32→0.34),
+  so **VOM > n-gram > kernel**. But the predictive-sufficiency probe shows even the
+  depth-6 state has low legal-set purity (~0.29): no bounded move-history statistic
+  determines the legal set. A longer suffix helps but isn't sufficient — only a
+  simulation-faithful state (`σ∘G = T∘σ`) closes it (see `ARCHITECTURE.md`).
 
 ## Honest scope
 
