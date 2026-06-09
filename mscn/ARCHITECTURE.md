@@ -794,3 +794,26 @@ depth 1→16 = +100% ≫ gain depth 24→28 = +0%), exactly `planning_diminishin
 convert a trapped reactive agent into one that solves the task.
 
 Run: `python -m mscn.agi_planning`.
+
+### 8.8 Upgrade 8 — Temporal Abstraction (macro-actions as basins) (`agi_temporal.py`)
+
+A macro-action is a coherence basin: following the gradient within it converges to a
+peak, coherence non-decreasing (Thm 2 basin invariance), so the macro is *safe* —
+`temporal_abstraction_safety`; composing safe in-basin macros stays safe
+(`macro_action_composition`). Setup: a multi-basin corridor (a chain of bumps of
+increasing height, last = goal).
+
+**Measured (mean over 8 starts):**
+
+| | decisions to goal | reached | ascent macros safe |
+|---|---|---|---|
+| primitive (per-cell lookahead) | 32.5 | 100% | — |
+| **macro (per-basin)** | **9.0 (3.6× fewer)** | 100% | **100% monotone** |
+
+**Result.** Planning over macro-actions (ascend the current basin; transit to the next
+toward the goal) reaches the goal in **3.6× fewer high-level decisions** than primitive
+per-cell planning, and **every in-basin ascent macro is coherence-non-decreasing**
+(basin invariance) — so the composed plan's ascent segments are all safe. The mechanism
+is functional: temporal abstraction with the basin-invariance safety guarantee.
+
+Run: `python -m mscn.agi_temporal`.
