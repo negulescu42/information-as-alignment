@@ -199,6 +199,15 @@ is left for a network that can reach lichess.)
   PGN** (lichess Elite, etc.) with one command:
   `python -m mscn.chess_strategy --pgn path/to/games.pgn` — Stage 3 then keys on
   real player Elo and results. `load_pgn` handles `.pgn` and `.pgn.zst`.
+* **Kernel model** (`chess_kernel.py`): the *faithful* IBF mechanism — Gaussian-
+  kernel memory over learned move embeddings, with bandwidth set by the **Operating
+  Resolution** law `σ* = d_shell/√(2·log(N_eff/ε))` (see `../formal/README.md`).
+  Honest finding: on real Elite games it **does not beat the exact n-gram** on
+  legality at any novelty level (seen 0.37 vs 0.46; novel 0.11 vs 0.17). This
+  confirms the causal-states theorem: the recency-weighted-sum context is a lossy,
+  non-sufficient map, so a kernel over it cannot recover board state. The fix is a
+  simulation-faithful recurrent state (Route A in `NOTE-state-tracking-gap.md`),
+  not a richer kernel — the bottleneck is the context representation.
 
 ## Honest scope
 

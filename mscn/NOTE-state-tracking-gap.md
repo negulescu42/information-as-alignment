@@ -143,3 +143,31 @@ transformer's legality number.
 claim on a tractable sub-process (e.g. a 4×4 or king-and-rook endgame world, where
 the causal states are enumerable), with the legality-vs-`k` and linear-probe
 curves as the empirical anchor.
+
+---
+
+## 6. Update — theory-team response (now formalized)
+
+The team formalized this note (`../formal/CausalStates.lean`, arXiv:2604.07108).
+Confirmed:
+
+- **Route B is a theorem.** For deterministic-transition processes with injective
+  observable profiles, a representation is predictively sufficient **iff it refines
+  the state partition** (`causal_state_optimal`); the state map is the *unique
+  coarsest* sufficient representation, and an IBF coarse-graining (Postulate II) is
+  valid iff it is sufficient. So "learn the causal-state partition" is now precise.
+- **Route A has an exact condition.** A recurrent update `z_t = G(z_{t-1}, a_t)` is
+  sufficient **iff it simulates the process**: ∃ decoding σ with `σ(init)=s₀` and
+  `σ(G(z,a)) = T(σ(z), a)` (`recurrent_sufficient_of_simulation`) — an algebraic
+  homomorphism from the move monoid into the state space.
+- **The window ceiling is a theorem, not a guess** (`window1_not_sufficient`): the
+  toggle process exhibits two histories with the same last token reaching states
+  with different legality.
+
+**What this changes for the build.** The kernel chess model represents context as a
+recency-weighted **sum of move embeddings** — precisely a lossy window/sum map the
+toggle counterexample rules out. Empirically the pure kernel does not beat the exact
+n-gram on legality. The theorem says no kernel over a lossy context can; the fix is a
+**simulation-faithful recurrent state** (Route A) whose update commutes with the
+move dynamics. That homomorphism condition is now the concrete target for the next
+prototype.
