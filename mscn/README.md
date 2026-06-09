@@ -117,9 +117,10 @@ machine-checked in Lean; these keep the *implementation* honest).
 ## Benchmarks
 
 ```bash
-python -m mscn.benchmark            # full report (20 seeds): optimiser,
+python -m mscn.benchmark            # full report (20 seeds): optimiser, strong,
                                     # convergence, cooperation, hierarchy, scaling
 python -m mscn.benchmark --quick    # 8 seeds
+python -m mscn.benchmark strong     # vs CMA-ES / DE / dual-annealing (needs cma, scipy)
 python -m mscn.benchmark optimiser --figures
 ```
 
@@ -134,6 +135,14 @@ better):
   2-D (hill/SA edge it out) and on the deceptive Schwefel (high variance).
 * **Cost:** ~140 ms/run vs SA's ~38 ms — about 4× slower per evaluation (richer
   per-step computation: proposals, kernel memory, modification update).
+* **Vs state-of-the-art (`python -m mscn.benchmark strong`):** against CMA-ES
+  (BIPOP restarts), differential evolution and dual annealing, IBF is **not**
+  competitive on raw continuous optimisation — mean rank CMA-ES 1.61 <
+  dual-annealing 2.27 < DE 2.86 < **IBF 3.92** < SA 4.34. IBF beats the classical
+  heuristic (SA) and occasionally DE in 10-D, but the decades-tuned global
+  optimisers dominate. This is the honest finding and the intended framing: the
+  IBF advantage is interpretability, formal guarantees, emergent cooperation and
+  representation — not beating CMA-ES at single-objective black-box search.
 * **Convergence:** IBF's best-so-far is consistently below random search and
   competitive with SA (it overtakes SA late on Ackley-5D).
 * **Cooperation:** IBF-memory tops the round-robin tournament

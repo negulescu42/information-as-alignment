@@ -25,7 +25,7 @@ import time
 
 import numpy as np
 
-from . import baselines, games, hierarchy, landscapes
+from . import baselines, games, hierarchy, landscapes, strong_baselines
 from .learner import IBFLearner
 from .mscn import MSCN, MSCNConfig
 
@@ -106,6 +106,65 @@ def optimiser_benchmark(seeds: int = 20, functions=None, dims=None) -> dict:
     print("\n  mean wall-clock per run (ms):")
     for m in methods:
         print(f"    {m:<8} {1000 * np.mean(time_acc[m]):7.1f}")
+    return results
+
+
+# ===========================================================================
+#  Strong-baseline benchmark (CMA-ES, differential evolution, dual annealing)
+# ===========================================================================
+
+def strong_benchmark(seeds: int = 15, functions=None, dims=None) -> dict:
+    """IBF vs SOTA black-box optimisers, evaluation-budget matched."""
+    functions = functions or FUNCTIONS
+    dims = dims or DIMS
+    strong = [m for m, ok in strong_baselines.AVAILABLE.items() if ok]
+    if not strong:
+        _rule("STRONG-BASELINE BENCHMARK")
+        print("\n  (install `cma` and `scipy` to enable: pip install cma scipy)")
+        return {}
+    methods = ["IBF", "SA"] + strong
+    _rule(f"STRONG-BASELINE BENCHMARK  (vs {', '.join(strong)}; {seeds} seeds, budget-matched)")
+    print(f"\n  {'function':<11}{'dim':>4} {'budget':>7} | "
+          + "".join(f"{m:>12}" for m in methods)
+          + " | IBF win vs " + "/".join(m.split('-')[0] for m in strong))
+    print("  " + "-" * (30 + 12 * len(methods) + 24))
+
+    rank_acc = {m: [] for m in methods}
+    time_acc = {m: [] for m in methods}
+    results = {}
+    for name in functions:
+        for dim in dims:
+            budget = _budget(dim)
+            vals = {m: [] for m in methods}
+            for s in range(seeds):
+                L = landscapes.make(name, dim)
+                runs = {}
+                t = time.perf_counter()
+                runs["IBF"] = IBFLearner(L.coherence, L.lo, L.hi, alpha=0.4, mu=0.03,
+                                         k=1.0, k_adapt=0.05, seed=s).run_until_evals(budget)["best_f"]
+                time_acc["IBF"].append(time.perf_counter() - t)
+                t = time.perf_counter(); runs["SA"] = baselines.simulated_annealing(L, budget, s)["best_f"]
+                time_acc["SA"].append(time.perf_counter() - t)
+                for m in strong:
+                    t = time.perf_counter()
+                    runs[m] = strong_baselines.STRONG[m](L, budget, s)["best_f"]
+                    time_acc[m].append(time.perf_counter() - t)
+                for m in methods:
+                    vals[m].append(runs[m])
+                order = sorted(methods, key=lambda m: runs[m])
+                for rk, m in enumerate(order):
+                    rank_acc[m].append(rk + 1)
+            results[(name, dim)] = {m: np.array(vals[m]) for m in methods}
+            cell = "".join(f"{np.mean(vals[m]):>12.2f}" for m in methods)
+            wins = "/".join(f"{np.mean(np.array(vals['IBF']) < np.array(vals[m])):.2f}" for m in strong)
+            print(f"  {name:<11}{dim:>4} {budget:>7} | {cell} | {wins}")
+
+    print("\n  mean rank (1 = best of these methods, over all function x dim x seed):")
+    for m in sorted(methods, key=lambda m: np.mean(rank_acc[m])):
+        print(f"    {m:<12} {np.mean(rank_acc[m]):.2f}")
+    print("\n  mean wall-clock per run (ms):")
+    for m in methods:
+        print(f"    {m:<12} {1000 * np.mean(time_acc[m]):8.1f}")
     return results
 
 
@@ -256,6 +315,7 @@ def scaling_benchmark() -> dict:
 
 def run_all(seeds: int, figures: bool) -> None:
     optimiser_benchmark(seeds)
+    strong_benchmark(seeds)
     convergence_benchmark(seeds, figpath="mscn_outputs/convergence.png" if figures else None)
     cooperation_benchmark(seeds)
     hierarchy_benchmark(seeds)
@@ -264,6 +324,7 @@ def run_all(seeds: int, figures: bool) -> None:
 
 SECTIONS = {
     "optimiser": lambda seeds, figures: optimiser_benchmark(seeds),
+    "strong": lambda seeds, figures: strong_benchmark(seeds),
     "convergence": lambda seeds, figures: convergence_benchmark(
         seeds, figpath="mscn_outputs/convergence.png" if figures else None),
     "cooperation": lambda seeds, figures: cooperation_benchmark(seeds),
