@@ -233,6 +233,14 @@ is left for a network that can reach lichess.)
   move-suffix states ≈0.01), and using it as a legality mask lifts legality to
   **legal@1 0.50 / legal@5 0.83** overall (from 0.33/0.60), with endgame doubling
   0.18→0.38. The headline Route-A result — see `ARCHITECTURE.md` §3.5.
+* **Board-conditioned IBF agent** (`chess_board_ibf.py`): feeds the sufficient board
+  state into the IBF coherence — a board-conditioned `δR(piece→destination)` with
+  full IBF-unit dynamics (online, decay, adaptive `k`), mixed with context and
+  occupancy-masked. Honest finding: this **barely improves ranking** (acc@1 +0.001,
+  top-move quality −599→−592 cp vs human −14) — the board gives *legality*, not which
+  legal move is *strong*. Strong ranking needs position **evaluation** (engine-level);
+  the real strategy lever is a coherence *landscape over board states*, not a
+  move-affinity memory. See `ARCHITECTURE.md` §3.6.
 
 ## Honest scope
 

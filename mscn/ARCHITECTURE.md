@@ -243,6 +243,38 @@ without rules. The remaining gap (purity 0.998→1, ranking quality) is castling
 en-passant/promotion bookkeeping plus board-conditioned strategy, not a structural
 ceiling.
 
+### 3.6 Board-conditioned IBF agent — and the ranking frontier
+
+`chess_board_ibf.py` feeds the sufficient board state into the IBF coherence: it
+learns a board-conditioned modification `δR(piece-lineage → destination)` with full
+IBF-unit dynamics (online discrepancy reinforcement, selective-retention decay,
+adaptive `k` — `k` grows 2→8), and predicts by mixing (`λ`) this board signal with
+the move-context coherence, occupancy-masked.
+
+**Retest (matched split):**
+
+| λ | legal@1 | legal@5 | acc@1 | top-move quality (cp) |
+|---|---|---|---|---|
+| 0.0 (sim-masked context) | 0.500 | 0.833 | 0.145 | −599 |
+| 0.5 (board-conditioned mix) | 0.505 | 0.836 | 0.146 | −592 |
+| 1.0 (board feature only) | 0.291 | 0.753 | 0.012 | — |
+
+(human actual move quality: **−14 cp**.)
+
+**Honest finding.** Board-conditioning via the piece→destination feature gives only a
+**marginal** lift in ranking (acc@1 +0.001, move-quality −599→−592 cp), and the
+agent's top move is far worse than the human's (−592 vs −14 cp); the feature *alone*
+(`λ=1`) is a weak predictor. So the sufficient board state's value is overwhelmingly
+**legality (sufficiency)**, *not* selecting which legal move is strong. Strong move
+*ranking* requires position **evaluation** — material/activity/threats/king-safety —
+which a destination-affinity table cannot represent. That is genuinely the
+engine-level frontier and the **real Stage-3 strategy lever**: learn a coherence
+*landscape over board states* (position value, e.g. from outcomes/strong play) and
+select the move whose resulting board has highest coherence — the IBF
+gradient-flow/basin formulation applied to the board, rather than a move-affinity
+memory. The board-conditioned agent confirms the diagnosis; closing it is the next
+research step.
+
 ---
 
 ## 4. Theory connections (what instantiates what)
