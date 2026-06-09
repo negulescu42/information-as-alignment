@@ -405,6 +405,38 @@ push *strength* (depth-2 beats every prior agent), while acc@1 is governed by th
 *move-predictor's* data and learner capacity. Both levers are now identified and
 quantified; acc@1's is data + learner, and is demonstrably unsaturated at 5k games.
 
+### 3.11 Resolution-roadmap validation: per-query local σ* (and percolation)
+
+A colleague's resolution-principle roadmap notes (correctly) that the locality
+theorem is stated *per query point y* (`Keystone.lean`), so the kernel should use a
+**local** `σ*(y) = d_shell(y)/√(2·log(N_eff(y)/ε))`, not a single global σ. Chess is
+the heterogeneous case the theory warns about (dense openings vs sparse endgames).
+Implemented in `chess_kernel.py` (`local_sigma=True`, `_local_operating_bandwidth`)
+plus a percolation diagnostic (`overlap_degree`, §2.4).
+
+**Validated, exactly as predicted:** σ*(y) tracks local density — opening **0.057**
+(dense), midgame 0.076, endgame **0.111** (sparse) — vs the global 0.097. The
+overlap-degree (centres within 3σ — the percolation proxy) at the *global* σ is
+**309** (heavily overlapped); local σ* cuts the dense-opening degree to **35**, i.e.
+it de-percolates exactly where the global bandwidth bled. Legal@1 improves, most in
+the dense opening:
+
+| phase | kernel-global | kernel-**local** |
+|---|---|---|
+| opening | 0.849 | **0.907** |
+| midgame | 0.398 | 0.400 |
+| endgame | 0.114 | 0.116 |
+| all | 0.257 | **0.266** |
+
+**Reading.** The §1.1 correction is right and helps — per-query σ* is a real,
+theory-demanded refinement, and the percolation diagnostic (§2.4) flags the dense
+over-overlap it fixes. But it does **not** close the kernel→n-gram gap on its own:
+the kernel's dominant limitation is its *lossy context* (the recency-weighted sum —
+not predictively sufficient, `CausalStates.lean`), which bandwidth cannot fix. So the
+roadmap correctly identifies a valid architectural fix (bandwidth heterogeneity),
+while the larger lever for this model was the *representation* — the sufficient board
+state (§3.5), which is itself another roadmap item (§2.2, causal-state discovery).
+
 ---
 
 ## 4. Theory connections (what instantiates what)

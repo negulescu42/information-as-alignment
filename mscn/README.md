@@ -268,6 +268,12 @@ is left for a network that can reach lichess.)
   stronger play ≠ human moves), but **data does** — acc@1 scales 0.090→0.120 over
   500→4000 games, unsaturated. The move-predictor is data-limited; more games (and
   ultimately a stronger learner) raise acc@1, not search. `ARCHITECTURE.md` §3.10.
+* **Per-query local σ\*** (`chess_kernel.py`, `local_sigma=True`): per a resolution-
+  principle roadmap, σ should be local (`σ*(y) = d_shell(y)/√(2·log(N_eff(y)/ε))`).
+  Validated: σ*(y) tracks density (opening 0.057 → endgame 0.111 vs global 0.097),
+  de-percolates dense regions (overlap-degree 309→35), and lifts opening legal@1
+  0.849→0.907. A real, theory-demanded refinement — though the kernel's main limit is
+  still its lossy context (the sufficient state fixes that). `ARCHITECTURE.md` §3.11.
 
 ## Honest scope
 
