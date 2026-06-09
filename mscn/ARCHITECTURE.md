@@ -685,3 +685,33 @@ jumps already supply most exploration, shrinking the marginal benefit. The mecha
 functional and improves exactly the case the roadmap targeted; it is not a free lunch.
 
 Run: `python -m mscn.agi_exploration`.
+
+### 8.5 Upgrade 5 — Cross-Domain Coherence Morphisms (`agi_transfer.py`)
+
+A coherence morphism `φ: F1→F2` (continuous, coherence-non-decreasing) carries learned
+coherence to a related domain. Formal (`AGIFoundations.lean` §2):
+`transfer_preserves_superlevel`/`transfer_preserves_viability` — φ maps basins to
+basins, so a learned skill transfers as a *viable region*. Realization: the learned
+`δR` is a sum of Gaussian centres `{(z_c,v_c)}`; for a structure-preserving φ (a
+coordinate permutation+shift relating two landscapes of one family, so
+`coh₂(φ(z))=coh₁(z)`) transfer maps every centre `z_c→φ(z_c)` and warm-starts at
+`φ(best_x_source)`.
+
+**Measured (target = φ(source); mean best f, lower better):**
+
+| | basin preservation | budget 200 | 500 | 1500 |
+|---|---|---|---|---|
+| rastrigin-5d | **100%** | scratch 32.7 → **full 8.1** (+75%) | +69% | +56% |
+| ackley-5d | **100%** | scratch 14.3 → **full 0.99** (+93%) | +92% | +87% |
+
+**Honest result.** The basin/viability-preservation theorem holds **exactly (100%)** —
+every source super-level point maps into the target's. Operationally, the
+morphism-mapped **viable warm-start** (the theorem's guarantee) gives a **large
+head-start (75–93%) at small budgets**, narrowing as from-scratch catches up — transfer
+learning, the IBF way. Honest scope: **passive `δR`-memory transfer alone** is only a
+few-% lift in moderate dim (≈ scratch for rastrigin-5d) — a passive memory must be
+re-sampled to act, and in ≥5-D the learner rarely re-samples a transferred centre early
+(the same dimensionality barrier as exploration). The decisive, theorem-backed transfer
+is the mapped viable warm-start.
+
+Run: `python -m mscn.agi_transfer`.
