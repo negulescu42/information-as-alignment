@@ -169,6 +169,39 @@ a bounded move-history suffix helps but cannot determine board state. Closing th
 needs a **simulation-faithful** recurrent state (`σ(G(z,a)) = T(σ(z),a)`), not a
 longer suffix.
 
+### 3.4 Full IBF unit (closed acting loop) + retest
+
+`chess_ibf.py` (`IBFChessAgent`) runs the **complete Layer-1 loop** online over the
+game stream — `R_eff = R̂ + Σ_ℓ w_ℓ δR(c_ℓ,·)`, Boltzmann-`k` selection,
+discrepancy-driven modification `δR' = α·max(T_ext−R_eff,0) − μ·δR` with
+selective-retention decay, and adaptive `k` (agency). The unit properties manifest:
+**`k` grows 1.0→8.0 (agency rate ≈ 0.9)** and δR shows selective retention.
+
+**Retest (matched split, legal@1 / legal@5, all):**
+
+| model | legal@1 | legal@5 |
+|---|---|---|
+| batch n-gram | 0.306 | 0.586 |
+| batch VOM (Route A) | 0.331 | 0.597 |
+| **full IBF unit**, crystallization + strong drive (`μ=0, T_ext=50`) | **0.299** | **0.579** |
+| **full IBF unit**, acting dynamics (`μ=0.04, T_ext=4`) | 0.096 | 0.232 |
+
+μ-sweep (legal@1): `μ=0` 0.205 → `0.005` 0.138 → `0.02` 0.110 → `0.06` 0.086 —
+legality falls **monotonically as forgetting rises**.
+
+**Reading.** (1) The full unit **subsumes the batch predictor**: in the
+crystallization limit (`μ=0`, Thm 3a) with strong drive (so `δR` tracks frequency)
+and a broad readout it *recovers* batch legality (0.299 ≈ 0.306). So the n-gram
+substrate is the `μ→0` special case of the full unit. (2) The unit's *characteristic*
+dynamics — **forgetting (`μ>0`) + coherence-saturation + agency** — **trade off
+against stationary exhaustive prediction**: they prune memory to the recently/strongly
+reinforced moves, but legality rewards remembering *every* legal continuation. These
+dynamics are matched to **acting in persistent / non-stationary environments** (where
+the MSCN optimiser and IPD agents benefit), not to memorising a fixed corpus. So
+"make the chess model a full IBF unit" is faithful and instructive, but for the
+*prediction* task the right operating point is the crystallization limit; the
+acting-unit dynamics are a liability here by design.
+
 ---
 
 ## 4. Theory connections (what instantiates what)

@@ -216,6 +216,15 @@ is left for a network that can reach lichess.)
   depth-6 state has low legal-set purity (~0.29): no bounded move-history statistic
   determines the legal set. A longer suffix helps but isn't sufficient — only a
   simulation-faithful state (`σ∘G = T∘σ`) closes it (see `ARCHITECTURE.md`).
+* **Full IBF unit** (`chess_ibf.py`): the closed Layer-1 acting loop online over the
+  game stream (Boltzmann-`k` selection, discrepancy modification ODE with
+  selective-retention decay, adaptive `k`/agency — `k` grows 1→8). Retest: in the
+  **crystallization limit** (`μ=0`, strong drive) it *recovers* the batch predictor
+  (legal@1 0.30 ≈ n-gram), so the batch model is its `μ→0` special case (Thm 3a);
+  with its characteristic **forgetting** (`μ>0`) legality falls monotonically (the
+  selective-retention vs exhaustive-memory tradeoff). The full unit's dynamics are
+  built for *acting* in persistent/non-stationary environments, not stationary
+  exhaustive prediction — see `ARCHITECTURE.md` §3.4.
 
 ## Honest scope
 
