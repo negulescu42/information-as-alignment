@@ -162,8 +162,10 @@ def run(pgn_path: str, max_games: int = 5000, test_frac: float = 0.1, seed: int 
     for p in ("opening", "midgame", "endgame", "all"):
         s = hm[p]
         print(f"  {p:<9}{s['legal@1']:>8.1%}{s['legal@5']:>9.1%}{s['acc@1']:>14.1%}")
+    _rel = ("below" if hm["acc1_search"] < hm["all"]["acc@1"] - 0.005 else
+            "above" if hm["acc1_search"] > hm["all"]["acc@1"] + 0.005 else "~flat vs")
     print(f"  acc@1 of the SEARCH-played (strength) move: {hm['acc1_search']:.1%}  "
-          f"(<= prior's {hm['all']['acc@1']:.1%}: stronger play diverges from human moves)")
+          f"({_rel} the {hm['all']['acc@1']:.1%} move-prior: search does not improve human-matching)")
 
     print("\n  === PLAYING STRENGTH (self-play referee score) ===")
     st = strength(player)
@@ -185,8 +187,8 @@ def run(pgn_path: str, max_games: int = 5000, test_frac: float = 0.1, seed: int 
     print("\n  verdict:")
     print(f"   * the apparatus plays **legal, sound-material** chess (beats random/context,")
     print(f"     {st['vs_context']:.0%} vs context-only) -- club-level, NOT human-level (2400).")
-    print(f"   * human-move acc@1 = {acc:.1%}, far below Maia's ~0.50, and search/value")
-    print(f"     *lower* it ({hm['acc1_search']:.1%}) -- stronger play != predicting human moves.")
+    print(f"   * human-move acc@1 = {acc:.1%}, far below Maia's ~0.50, and search/value do")
+    print(f"     NOT improve it ({hm['acc1_search']:.1%}) -- stronger play != predicting human moves.")
     print(f"   * the gap is **data + a neural-capacity learner** (5k games vs Maia's millions;")
     print(f"     non-neural value/policy caps out), not the architecture -- exactly the")
     print(f"     ARCHITECTURE 3.10 finding. The end-to-end apparatus confirms it cleanly.")
