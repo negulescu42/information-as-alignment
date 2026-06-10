@@ -110,8 +110,9 @@ def human_match(player: MSCNChessPlayer, test: list[dict], max_pos: int = 800,
     return out
 
 
-def strength(player: MSCNChessPlayer, n_games: int = 20) -> dict:
-    """Self-play referee scores vs baselines + a random mover, and legal-move rate."""
+def strength(player: MSCNChessPlayer, n_games: int = 30, rand_open: int = 6) -> dict:
+    """Self-play referee scores vs baselines. Deterministic agents collapse to 2
+    repeated lines, so we randomise the opening (`rand_open` plies) -> distinct games."""
     ag = player.agent
     rng = np.random.default_rng(0)
 
@@ -128,13 +129,14 @@ def strength(player: MSCNChessPlayer, n_games: int = 20) -> dict:
         return value_see_move(ag, hist, legal)
 
     return {
-        "vs_random": arena(mscn_move, random_move, n_games)["A_score"],
-        "vs_context": arena(mscn_move, ctx, n_games)["A_score"],
-        "vs_value_see": arena(mscn_move, vsee, n_games)["A_score"],
+        "vs_random": arena(mscn_move, random_move, n_games, rand_open=rand_open)["A_score"],
+        "vs_context": arena(mscn_move, ctx, n_games, rand_open=rand_open)["A_score"],
+        "vs_value_see": arena(mscn_move, vsee, n_games, rand_open=rand_open)["A_score"],
     }
 
 
-def run(pgn_path: str, max_games: int = 5000, test_frac: float = 0.1, seed: int = 0) -> dict:
+def run(pgn_path: str, max_games: int = 5000, test_frac: float = 0.1,
+        max_test: int = 220, seed: int = 0) -> dict:
     if not HAS_CHESS:
         raise RuntimeError("python-chess required")
     print("\n" + "#" * 74)
@@ -145,7 +147,7 @@ def run(pgn_path: str, max_games: int = 5000, test_frac: float = 0.1, seed: int 
     rng = np.random.default_rng(seed)
     idx = rng.permutation(len(games))
     n_test = max(int(len(games) * test_frac), 1)
-    test = [games[i] for i in idx[:n_test]]
+    test = [games[i] for i in idx[:n_test]][:max_test]
     train = [games[i] for i in idx[n_test:]]
 
     def avg_elo(g):
@@ -184,11 +186,16 @@ def run(pgn_path: str, max_games: int = 5000, test_frac: float = 0.1, seed: int 
     print(f"  {'random / unigram baseline':<26}{'~0 Elo':>16}{'~0.02':>14}")
 
     acc = hm["all"]["acc@1"]
+    def _rel(s):
+        return "beats" if s > 0.55 else ("loses to" if s < 0.45 else "ties")
     print("\n  verdict:")
-    print(f"   * the apparatus plays **legal, sound-material** chess (beats random/context,")
-    print(f"     {st['vs_context']:.0%} vs context-only) -- club-level, NOT human-level (2400).")
-    print(f"   * human-move acc@1 = {acc:.1%}, far below Maia's ~0.50, and search/value do")
-    print(f"     NOT improve it ({hm['acc1_search']:.1%}) -- stronger play != predicting human moves.")
+    print(f"   * the apparatus plays **legal chess** (legal@1 {hm['all']['legal@1']:.0%}) and is")
+    print(f"     {_rel(st['vs_random'])} random ({st['vs_random']:.2f}), "
+          f"{_rel(st['vs_context'])} context-only ({st['vs_context']:.2f}), "
+          f"{_rel(st['vs_value_see'])} value+SEE ({st['vs_value_see']:.2f})")
+    print(f"     -- club-level at best, NOT human-level (2400 Elo).")
+    print(f"   * human-move acc@1 = {acc:.1%}, far below Maia's ~0.50, and the search-played")
+    print(f"     move matches no better ({hm['acc1_search']:.1%}) -- stronger play != human moves.")
     print(f"   * the gap is **data + a neural-capacity learner** (5k games vs Maia's millions;")
     print(f"     non-neural value/policy caps out), not the architecture -- exactly the")
     print(f"     ARCHITECTURE 3.10 finding. The end-to-end apparatus confirms it cleanly.")

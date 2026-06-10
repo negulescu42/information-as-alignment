@@ -97,10 +97,16 @@ def value_see_move(ag, hist, legal, beta=2.0, n_cand=24):
 #  Arena
 # ---------------------------------------------------------------------------
 
-def play_game(white_fn, black_fn, max_plies=160, seed=0):
+def play_game(white_fn, black_fn, max_plies=160, seed=0, rand_open=0):
     rng = np.random.default_rng(seed)
     board = chess.Board()
     hist = []
+    for _ in range(rand_open):            # random (but legal) opening so games are distinct
+        if board.is_game_over():
+            break
+        legal = list(board.legal_moves)
+        mv = legal[int(rng.integers(len(legal)))].uci()
+        board.push_uci(mv); hist.append(mv)
     for ply in range(max_plies):
         if board.is_game_over():
             break
@@ -119,15 +125,17 @@ def play_game(white_fn, black_fn, max_plies=160, seed=0):
     return 1 if v > 1 else (-1 if v < -1 else 0)
 
 
-def arena(fn_a, fn_b, n_games=40, max_plies=160) -> dict:
-    """A vs B, alternating colours. Returns A's score (win=1, draw=0.5)."""
+def arena(fn_a, fn_b, n_games=40, max_plies=160, rand_open=0) -> dict:
+    """A vs B, alternating colours. Returns A's score (win=1, draw=0.5). With
+    ``rand_open`` random opening plies the games are distinct (deterministic agents
+    otherwise collapse to 2 repeated lines, making the score statistically empty)."""
     wins = draws = losses = 0
     for g in range(n_games):
         if g % 2 == 0:
-            r = play_game(fn_a, fn_b, max_plies, seed=g)
+            r = play_game(fn_a, fn_b, max_plies, seed=g, rand_open=rand_open)
             res = r
         else:
-            r = play_game(fn_b, fn_a, max_plies, seed=g)
+            r = play_game(fn_b, fn_a, max_plies, seed=g, rand_open=rand_open)
             res = -r
         if res > 0:
             wins += 1
