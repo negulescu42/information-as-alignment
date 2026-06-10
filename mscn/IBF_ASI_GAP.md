@@ -90,15 +90,33 @@ Design corrections found *en route* (each measured before/after):
    transfer across *independently drifting* worlds without a morphism is
    misinformation (U5's lesson) — partners must share a world or a map.
 
-## 4. Measured outcomes (8–12 seeds, eval-budget-matched)
+## 4. Measured outcomes (CI-graded: paired per-seed differences, 95% t-intervals)
 
-| Validation | Result |
+> The first version of this table reported 8-seed point means. CI-grading
+> (`mscn/stats.py`, requested as testing upgrade #1) revised three of them — the
+> revisions are the finding. Earlier values are kept in parentheses for the record.
+
+| Validation | CI-graded result (16–24 seeds) |
 |---|---|
-| V1 integration | **Memory and error-gated dissolution are decisively load-bearing**: no-memory 2.09 / reflexive-ok 0.78, no-dissolve 3.16, full **3.52 / ok 1.00**. Planning, extra scales, reflect: ties (honest nulls; the regimes where each wins are U7's trap corridor, U2/§3.15, and the Zombie-Twin resp.). |
-| V2 (6.1 analog) | **Sharpened null**: with a noise-robust high-water agency signal, monotone-k self-limits and the two-sided reset adds nothing (0.42 vs 0.42). U3's measured win exists under the noisy per-tick k-ratchet, which the high-water rule removes at the source. Theorem 6.1 stays open. |
-| V3 (6.2 analog) | Adaptive wₛ ≈ uniform ≈ single-scale (3.47–3.52): **honest null** at these scales; the allocation theorem (6.2) is not operationally discriminated by this world. |
-| V4 (6.3 analog) | **Honest negative**: the floor-sized reserve costs ~3% steady-state coherence and does not buy faster shock recovery; reflexive viability unaffected (0.99 vs 1.00). What stands: the conflation floor is measured, positive, and reported every tick — the agent never claims complete self-knowledge. |
-| V5 (6.4 analog) | **Supported operationally**: cooperation Pareto-beats solo (joint 7.18 vs 6.77; both partners individually better), and under drift **defection does not pay** (B cooperative 3.61 > B parasitic 3.48) because the reciprocity ledger withholds and stale gifts fade. |
+| V1 integration | **Memory is decisively load-bearing and significant**: full−no-memory **+1.18 [+0.88, +1.47]** coherence, +0.21 (sig) reflexive viability. **Dissolution: null** −0.05 [−0.21, +0.12] (an 8-seed "+0.37, load-bearing" did **not** replicate) — consistent with §3.14: error-gating only ties a tuned fixed μ. Planning / scales / reflect: nulls. |
+| V2 (6.1 analog) | **Directional, not significant**: +0.13 [−0.06, +0.31], 24 seeds (after fixing two real mechanism issues: warm jumps silently undoing restarts; ripple-dominated worlds being physically undiscriminable — at ripple 0.45 both arms tie *exactly*). The regime matrix adds: two-sided-k is significantly **harmful** under shocks (−0.30*) and in the moat (−0.15*). Theorem 6.1 stays open. |
+| V3 (6.2 analog) | **Null, trending negative**: adaptive−uniform −0.23 [−0.51, +0.05]; uniform weights are the honest default. The allocation theorem (6.2) is not operationally discriminated by these worlds. |
+| V4 (6.3 analog) | **Null both ways** (the earlier "costs ~3%" was also noise): +0.03 [−0.36, +0.42] coherence, −0.006 [−0.03, +0.02] viability. What stands: the conflation floor is measured, positive, and reported every tick — the agent never claims complete self-knowledge. |
+| V5 (6.4 analog) | **CI-significant in the scarce-information regime** (3-D, narrow optimum, drift): cooperation−solo joint **+0.54 [+0.01, +1.08]**, both partners individually ahead; defection neither pays nor costs (+0.03 [−0.10, +0.16]). In 2-D the claim is a **null** (solo discovery is cheap; sharing is worthless) — both readings kept. |
+
+### 4b. The testing apparatus (upgrades #1–3, built on request)
+
+- **`stats.py`** — paired-CI machinery; all asserts now on CI bounds.
+- **`ibf_asi_fuzz.py`** — property-based invariant fuzzing: 150+40 random
+  configurations (dim 1–4, 0 decoys, zero noise/memory, tiny Γ, coupled/parasitic
+  pairs); per-tick I1/I2/I4 + finiteness checks. Caught one real crash
+  (`shock_point` with no decoys — fixed); zero violations since. I3 reported, not
+  asserted (sub-critical configs legitimately live below θ).
+- **`ibf_asi_regimes.py`** — the 6×6 regimes × mechanisms matrix, every cell a
+  paired CI. Map: **memory significant in all six regimes** (+0.69…+0.91*);
+  dissolution redundant with base decay; this plan operator (stochastic rollout on
+  a noisy sensed field) buys nothing even in the moat — U7's planning win used BFS
+  over a learned *discrete* simulation; two-sided-k harmful in 2/6 regimes.
 
 ## 5. Open (not claimable from here)
 
@@ -107,8 +125,13 @@ Design corrections found *en route* (each measured before/after):
   against a library this repo does not carry. No Lean toolchain (PyPI-only sandbox).
 - The L7 thermodynamic backing (Landauer, 2nd law) — telemetry computes a free
   energy, but no conservation/dissipation law is verified here.
-- 6.2 and 6.3 lack even an operational *advantage* in the tested regime (nulls
-  above) — a harder allocation-bound world might discriminate them; that is a
-  measurement target, not a claim.
+- 6.1–6.3 lack an operational *advantage* at CI grade (6.1 directional; 6.2/6.3
+  null) — harder allocation-bound worlds might discriminate them; that is a
+  measurement target, not a claim. 6.4's advantage exists and is regime-scoped
+  (information scarcity), now CI-significant.
+- A planning operator worthy of the moat regime: BFS/value-iteration over a
+  *learned discrete* simulation (U1/U7 style) inside the ASI loop, replacing the
+  stochastic rollout.
 
-Run: `python -m mscn.ibf_asi` (numpy only, ~4 min; all asserts green).
+Run: `python -m mscn.ibf_asi` · `python -m mscn.ibf_asi_fuzz` ·
+`python -m mscn.ibf_asi_regimes` (numpy+scipy; all asserts green).

@@ -688,8 +688,8 @@ def main(quick: bool = False) -> None:
         "honest epistemics: the agent must measure and report a positive conflation floor"
     assert d1["no-memory"]["lo"] > 0 and d_mem_ok["lo"] > 0, \
         "memory must be load-bearing (coherence AND viability), CI-significant"
-    assert d1["no-dissolve"]["mean"] > 0.15, \
-        "error-gated dissolution must be load-bearing under drift (directional)"
+    assert d1["no-dissolve"]["hi"] > 0, \
+        "error-gated dissolution must at least not be significantly harmful"
     assert ci2["mean"] >= 0, \
         "6.1: two-sided agency must not lose to monotone (directional)"
     assert ci_js["mean"] > 0.2, \
@@ -702,14 +702,21 @@ def main(quick: bool = False) -> None:
     print("\n  honest readings (significance stated per claim; nulls are findings):")
     print(f"   * MEMORY is load-bearing and SIGNIFICANT: full-vs-no-memory "
           f"{fmt_ci(d1['no-memory'])} true /")
-    print(f"     {fmt_ci(d_mem_ok)} viability. DISSOLUTION is directional: "
-          f"{fmt_ci(d1['no-dissolve'])} {verdict(d1['no-dissolve'])}")
-    print("     (consistent sign across suite revisions; the regime matrix probes it).")
+    print(f"     {fmt_ci(d_mem_ok)} viability -- and CI-significant in EVERY regime")
+    print("     of the matrix (ibf_asi_regimes). The one universally earning stage.")
+    print(f"   * DISSOLUTION is a NULL at proper power: {fmt_ci(d1['no-dissolve'])} "
+          f"{verdict(d1['no-dissolve'])}")
+    print("     (an earlier 8-seed +0.37 did not replicate at 16; the matrix nulls it")
+    print("     in its own drift regime too). Consistent with 3.14: error-gating only")
+    print("     ties a tuned fixed mu -- the base decay already does the work here.")
     print(f"   * PLAN / extra scales / reflect: paired CIs straddle 0 here "
           f"(plan {d1['no-plan']['mean']:+.2f}, scale {d1['single-scale']['mean']:+.2f}, "
           f"reflect {d1['no-reflect']['mean']:+.2f}) --")
-    print("     regime-scoped nulls; the regimes where each wins are U7's corridor,")
-    print("     U2/3.15, and the Zombie-Twin respectively.")
+    print("     and the matrix nulls planning even in the moat regime: a stochastic")
+    print("     greedy rollout on a noisy sensed field is NOT the U7 planner (BFS over")
+    print("     a learned discrete simulation) -- lookahead pays only with a")
+    print("     structured internal model. U2/3.15 and Zombie-Twin carry the")
+    print("     multiscale/reflect wins in their isolated settings.")
     print(f"   * 6.1 DIRECTIONAL: two-sided vs monotone k = {fmt_ci(ci2)} "
           f"{verdict(ci2)}. Two mechanism")
     print("     findings en route: memory-guided warm jumps silently UNDO restarts")

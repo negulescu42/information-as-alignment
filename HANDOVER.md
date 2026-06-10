@@ -200,4 +200,8 @@ python -m mscn.correction_field           # Interface-Principle pruning scaling
 python -m mscn.nonstationary              # adaptive-μ on drift streams
 python -m mscn.hierarchical_sigma         # RG flow as a σ*-sequence (roadmap 2.1/3.1)
 python -m mscn.agi_all                    # all 9 MSCN→AGI upgrade validations (§8)
+python -m mscn.agi_alergia                # statistical state-merging (§8.11)
+python -m mscn.ibf_asi [--quick]          # IBF-ASI coupled 9-stage agent, CI-graded (§9)
+python -m mscn.ibf_asi_fuzz               # invariant fuzzing of the ASI mechanism (§9.1)
+python -m mscn.ibf_asi_regimes            # regimes × mechanisms claim map (§9.1)
 ```

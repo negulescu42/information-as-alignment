@@ -1053,17 +1053,18 @@ the Lawvere gap reported, never claimed zero) → ADAPT (two-sided k, wₛ, capa
 projection to Γ). Invariants asserted **every tick**: I1 ascent monotonicity, I2
 δR ≥ 0 (basin expansion over baseline), I3 bounded below-θ transients, I4 Σ|δR| ≤ Γ.
 
-**Measured (noisy + slow-coarse/fast-fine drift + fast-mode-damaging shocks;
-eval-matched, 8–12 seeds):**
+**Measured (CI-graded — every comparison a paired per-seed difference with a 95%
+t-interval, eval-matched, 16–24 seeds; see §9.1 for why earlier 8-seed numbers
+were revised):**
 
-| claim | outcome |
+| claim | CI-graded outcome |
 |---|---|
-| memory load-bearing | **yes, decisive**: no-memory 2.09 / reflexive-ok 0.78 vs full **3.52 / 1.00** |
-| error-gated dissolution | **yes**: no-dissolve 3.16 vs 3.52 |
-| planning / extra scales / reflect | ties — honest nulls *in this regime* (wins live in U7's corridor, U2/§3.15, Zombie-Twin) |
-| 6.1 (global-basin agency) | **sharpened null**: a noise-robust high-water agency signal removes the k-ratchet pathology for both variants (0.42 = 0.42); U3's win presupposed the noisy ratchet |
-| 6.3 (honest budget reserve) | **honest negative**: floor-sized reserve costs ~3% coherence, buys no recovery; the floor telemetry itself stands |
-| 6.4 (aligned interaction) | **supported**: cooperation Pareto-beats solo (joint 7.18 vs 6.77, both partners better) and defection does not pay under drift (B: 3.61 coop > 3.48 parasitic) — credit-ledger reciprocity + stale gifts |
+| memory load-bearing | **decisive + significant**: full−no-memory **+1.18 [+0.88, +1.47]** coherence, **+0.21 (sig)** reflexive viability — and CI-significant in **all six regimes** of the matrix (+0.69…+0.91, every cell) |
+| error-gated dissolution | **null at proper power**: −0.05 [−0.21, +0.12] at 16 seeds (an 8-seed +0.37 did not replicate); the matrix nulls it in its own drift regime too. Consistent with §3.14: error-gating only ties a tuned fixed μ — base decay already does the work |
+| planning / extra scales / reflect | nulls (CIs straddle 0), incl. planning in the moat regime: a stochastic greedy rollout on a noisy sensed field is **not** the U7 planner (BFS over a learned *discrete* simulation) — lookahead pays only with a structured internal model |
+| 6.1 (global-basin agency) | **directional, not significant**: +0.13 [−0.06, +0.31] at 24 seeds; and the matrix shows two-sided-k **significantly harmful** under shocks (−0.30*) and in the moat (−0.15*) — restarting abandons position exactly when position is the asset |
+| 6.3 (honest budget reserve) | **null both ways**: +0.03 [−0.36, +0.42] coherence, −0.006 viability; the floor telemetry (measured conflation floor > 0, never claimed zero) is what stands |
+| 6.4 (aligned interaction) | **CI-significant in the scarce-information regime** (3-D, narrow optimum): cooperation−solo joint **+0.54 [+0.01, +1.08]**; defection neither pays nor costs (+0.03 ns). In 2-D, where solo discovery is cheap, sharing is worthless — null kept |
 
 Five design corrections were forced by measurement (each logged in
 `IBF_ASI_GAP.md` §3): reinforce on **raw** sensed improvement (reinforcing R_eff
@@ -1075,4 +1076,43 @@ de-noised per-centre quality EWMA, not the raw high-water mark; reciprocity is a
 ledger, not a time-window, and transfer across independently-drifting worlds without
 a morphism is misinformation (U5 at system level).
 
-Run: `python -m mscn.ibf_asi` (numpy only; all asserts green).
+Run: `python -m mscn.ibf_asi [--quick]` (numpy+scipy; all asserts green).
+
+### 9.1 Testing the architecture: CI-grading, invariant fuzzing, the regime matrix
+
+Three testing layers were added on top of the per-module validations, and they
+materially **changed the conclusions** — which is the point.
+
+**(a) Paired-CI statistics (`stats.py`).** Every comparative claim in `ibf_asi` is
+now a paired per-seed difference with a 95% t-interval, asserted on CI bounds, not
+point means (institutionalising the §3.18 small-sample lesson). This immediately
+killed three earlier 8-seed headlines: "dissolution load-bearing (+0.37)" (null at
+16 seeds), "6.4 supported in 2-D" (null at 16 — solo discovery is cheap there), and
+"6.3 costs ~3%" (null both ways). It also *established* one: cooperation in the
+scarce-information regime is significant (+0.54 [+0.01, +1.08], 24 seeds). Three
+mechanism bugs surfaced while chasing significance: memory-guided warm jumps were
+silently **undoing stall-restarts** one tick later (fixed: restarts open a
+memory-free exploration phase); a deceptive gap smaller than the fine-structure
+amplitude is **physically undiscriminable** (both arms tie exactly); and a
+quality-record is required because the raw high-water mark is noise-dominated.
+
+**(b) Property-based invariant fuzzing (`ibf_asi_fuzz.py`).** The agent asserts its
+spec invariants (I1 ascent monotonicity, I2 δR ≥ 0, I4 capacity ≤ Γ) on every tick,
+which makes it fuzzable: 150+40 random configurations across wide ranges (dim 1–4,
+0 decoys, zero noise, zero memory, tiny Γ, coupled + parasitic pairs) with
+finiteness checks. It caught one real crash (`shock_point` with no decoys — fixed);
+zero violations since. I3 (bounded transients) is deliberately reported, not
+asserted: configurations whose equilibrium cannot reach θ are legitimately
+**sub-critical** (the phase.py phase structure).
+
+**(c) The regimes × mechanisms matrix (`ibf_asi_regimes.py`).** Six regimes
+(clean / noisy / drift / shocked / deceptive / moat), six ablations, every cell a
+paired CI. The map: **memory is the one universally significant stage** (all six
+cells, +0.69…+0.91*); dissolution is redundant with base decay at these timescales;
+this plan operator buys nothing even in the moat; two-sided-k restarts are harmful
+under shocks and in the moat. A stage's value is a property of
+(mechanism × regime) — the honest spec for the integrated agent is the table
+itself.
+
+Run: `python -m mscn.ibf_asi_fuzz [--n 150]` · `python -m mscn.ibf_asi_regimes
+[--seeds 8]`.

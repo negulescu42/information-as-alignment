@@ -132,15 +132,23 @@ def main(n_seeds: int = 8) -> None:
           f"{fmt_ci(cells[('two-sided-k', 'deceptive')])}")
     print(f"   * significantly HARMFUL cells: {neg_sig or 'none'}")
 
-    assert len(mem_sig) >= 2, "memory must be CI-significant in >= 2 regimes"
-    assert cells[("dissolve", "drift")]["mean"] > 0, \
-        "dissolution must help (directionally) in the drift regime"
+    assert len(mem_sig) >= 4, \
+        "memory must be CI-significant in most regimes (measured: all six)"
+    assert all(cells[("dissolve", r)]["hi"] > 0 for r in REGIMES), \
+        "dissolution must not be significantly harmful in any regime"
     assert cells[("memory", "clean")]["hi"] > -0.2, \
         "memory must not be strongly harmful even where unneeded"
 
     print("\n  The matrix -- including its nulls -- is the architecture's claim map:")
-    print("  a stage's value is a property of (mechanism x regime), and the honest")
-    print("  spec for the integrated agent is exactly this table.\n")
+    print("  MEMORY is the one universally significant stage; dissolution is")
+    print("  redundant with base decay at these timescales (the 3.14 module-level")
+    print("  finding, reproduced at system level); this plan operator (stochastic")
+    print("  rollout on a noisy sensed field) buys nothing even in the moat regime")
+    print("  (U7's win used BFS over a learned DISCRETE simulation); and the")
+    print("  two-sided-k restart is actively harmful under shocks and in the moat")
+    print("  (it abandons position exactly when position is the asset). A stage's")
+    print("  value is a property of (mechanism x regime); the honest spec for the")
+    print("  integrated agent is exactly this table.\n")
 
 
 if __name__ == "__main__":
