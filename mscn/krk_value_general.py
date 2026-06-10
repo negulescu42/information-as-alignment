@@ -133,7 +133,7 @@ class _HybridAgent(KRKClosedLoopAgent):
             term = afterstates[-1]
             self._td_abs.append(abs(reward - self.V[term]))
             self.V[term] = reward
-            self.visits[term] = min(self.visits[term] + 1, 255)
+            self.visits[term] = min(int(self.visits[term]) + 1, 255)   # no uint8 wrap
             if self.Z is not None:
                 self._general_update(term, reward)
             G = self.gamma * reward
@@ -141,7 +141,7 @@ class _HybridAgent(KRKClosedLoopAgent):
         for s in reversed(rest):
             d = G - self.V[s]
             self.V[s] += self.alpha * d
-            self.visits[s] = min(self.visits[s] + 1, 255)
+            self.visits[s] = min(int(self.visits[s]) + 1, 255)
             self._td_abs.append(abs(d))
             if self.Z is not None:
                 self._general_update(s, G)
@@ -188,14 +188,43 @@ class TileRelativeAgent(_HybridAgent):
 
 
 class KernelAbsoluteAgent(_HybridAgent):
-    """Gaussian-kernel delta-R memory over the 6-D absolute embedded state."""
+    """Gaussian-kernel delta-R memory over the 6-D absolute embedded state.
+
+    The bandwidth is NOT hand-tuned: once enough centres exist it is calibrated
+    by the Operating-Bandwidth principle (the manuscript's sigma_op =
+    d / sqrt(2 ln(N_eff/eps)); the chess_kernel.py implementation precedent):
+    d = median nearest-neighbour radius of the stored centres (the locality
+    radius of the embedded state space), N_eff = participation ratio of the
+    nonlocal weights at the reference width sigma_ref = d, eps = 0.05."""
 
     def __init__(self, max_centers: int = 800, sigma: float = 0.22,
-                 lr: float = 0.3, **kw) -> None:
+                 lr: float = 0.3, calibrate_at: int = 150,
+                 eps_tol: float = 0.05, **kw) -> None:
         super().__init__(**kw)
         self.max_centers, self.sigma, self.klr = max_centers, sigma, lr
+        self.calibrate_at, self.eps_tol = calibrate_at, eps_tol
+        self.calibrated = False
         self.cz = np.zeros((0, 6), dtype=np.float32)
         self.cv = np.zeros(0, dtype=np.float32)
+
+    def _calibrate(self) -> None:
+        D = np.sqrt(((self.cz[:, None, :] - self.cz[None]) ** 2).sum(axis=2))
+        np.fill_diagonal(D, np.inf)
+        d_shell = float(np.median(D.min(axis=1)))   # locality radius
+        sref = d_shell
+        neffs = []
+        for q in range(min(64, self.cz.shape[0])):  # nonlocal participation ratio
+            nl = D[q][np.isfinite(D[q]) & (D[q] > d_shell)]
+            if nl.size:
+                w = np.exp(-nl ** 2 / (2 * sref ** 2))
+                neffs.append((w.sum() ** 2) / max((w ** 2).sum(), 1e-12))
+        n_eff = float(np.mean(neffs)) if neffs else 1.0
+        n_eff = max(n_eff, self.eps_tol * 1.01 / 1.0)
+        self.sigma = d_shell / np.sqrt(2 * np.log(max(n_eff, 1.05) / self.eps_tol))
+        self.calibrated = True
+        self.embed_info["sigma_op"] = float(self.sigma)
+        self.embed_info["d_shell"] = d_shell
+        self.embed_info["n_eff"] = n_eff
 
     def _general(self, pids: np.ndarray) -> np.ndarray:
         if self.cz.shape[0] == 0:
@@ -217,6 +246,8 @@ class KernelAbsoluteAgent(_HybridAgent):
         if self.cz.shape[0] < self.max_centers:
             self.cz = np.vstack([self.cz, f[None]])
             self.cv = np.append(self.cv, np.float32(target))
+            if not self.calibrated and self.cz.shape[0] >= self.calibrate_at:
+                self._calibrate()                   # operating-bandwidth sigma*
 
 
 # ---------------------------------------------------------------------------
