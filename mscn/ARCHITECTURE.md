@@ -680,6 +680,40 @@ factorization and replay-consistency is the open follow-up.
 
 Run: `python -m mscn.chess_factor_discovery` (~6 min; all asserts green).
 
+### 3.21 The EM replay-consistency loop — a null with a mechanism (`chess_factor_em.py`)
+
+§3.20's named follow-up, pre-registered as a question: *does descending the
+prior-free self-consistency objective improve the ground-truth factorization?*
+Built properly: a comparable objective J = (misses + skips)/occurrences (a skipped
+transfer corrupts the state exactly like a miss — without this, coverage growth is
+unaccountable and J is incomparable across rounds, measured), three guarded
+M-moves (mutual-best location merges, bounded re-assignments, coverage
+assignments), every batch trial-and-reverted against J, exact (A)-vetoes
+throughout.
+
+**Result: a clean null with a sharp attribution.** J descends 30% (0.320 → 0.225,
+fixed point in 4 rounds) and coverage rises 0.74 → 0.84, but exact accuracy
+*dilutes* (0.503 → 0.447 — under J, a half-right assignment profitably beats a
+skip) and held-out change-MCC stays flat (0.115 → 0.110). Every proposed location
+merge was rejected by the guard. The attribution diagnostic (oracle-assisted,
+diagnosis only): **injecting TRUE assignments for 60 wrongly-assigned tokens makes
+J slightly *worse* (+0.004)** — the objective, not the search, is the binding
+limit.
+
+**Reading.** Replay-consistency separates factorization *classes* (true 0.017 /
+discovered 0.081 / shuffled 0.369) but is **truth-blind within the neighbourhood
+of a partial solution**: below a correctness threshold, the corrupted majority
+defines local consistency, so truth looks deviant against the noise it sits in —
+the objective locks in the noise. This is a general caution for self-supervised
+consistency objectives in error-amplifying replay systems. The named next
+mechanism is therefore not a better optimiser but a better *state to score
+against*: a trust-region bootstrap that replays only the high-confidence core
+(pair-precision 0.87 tokens), scores candidates against that cleaner partial
+state, and extends the core gradually.
+
+Run: `python -m mscn.chess_factor_em` (~6 min; asserts green — J descends, ground
+truth not degraded; the null is the registered answer).
+
 ---
 
 ## 4. Theory connections (what instantiates what)
