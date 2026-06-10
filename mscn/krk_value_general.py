@@ -207,6 +207,12 @@ class KernelAbsoluteAgent(_HybridAgent):
         self.cz = np.zeros((0, 6), dtype=np.float32)
         self.cv = np.zeros(0, dtype=np.float32)
 
+    def _on_embed(self) -> None:
+        # precompute phi for ALL placements once (262144 x 6 = 6 MB): kernel
+        # distances then reduce to one small GEMM per move instead of per-call
+        # broadcasting (the naive form cost ~40 min/seed; this is ~free).
+        self.PHI = _phi(self.Z, np.arange(64 * 64 * 64))
+
     def _calibrate(self) -> None:
         D = np.sqrt(((self.cz[:, None, :] - self.cz[None]) ** 2).sum(axis=2))
         np.fill_diagonal(D, np.inf)
@@ -229,14 +235,15 @@ class KernelAbsoluteAgent(_HybridAgent):
     def _general(self, pids: np.ndarray) -> np.ndarray:
         if self.cz.shape[0] == 0:
             return np.zeros(pids.size, dtype=np.float32)
-        f = _phi(self.Z, pids)                                  # [n, 6]
-        d2 = ((f[:, None, :] - self.cz[None]) ** 2).sum(axis=2)
-        K = np.exp(-d2 / (2 * self.sigma ** 2))
+        f = self.PHI[pids]                                      # [n, 6]
+        d2 = ((f ** 2).sum(axis=1)[:, None] + self._c2[None]
+              - 2.0 * (f @ self.cz.T))                          # GEMM distances
+        K = np.exp(-np.maximum(d2, 0.0) / (2 * self.sigma ** 2))
         s = K.sum(axis=1)
         return np.where(s > 1e-6, (K @ self.cv) / np.maximum(s, 1e-6), 0.0)
 
     def _general_update(self, pid: int, target: float) -> None:
-        f = _phi(self.Z, np.array([pid]))[0]
+        f = self.PHI[pid]
         if self.cz.shape[0]:
             d2 = ((self.cz - f) ** 2).sum(axis=1)
             j = int(np.argmin(d2))
@@ -246,6 +253,7 @@ class KernelAbsoluteAgent(_HybridAgent):
         if self.cz.shape[0] < self.max_centers:
             self.cz = np.vstack([self.cz, f[None]])
             self.cv = np.append(self.cv, np.float32(target))
+            self._c2 = (self.cz ** 2).sum(axis=1)
             if not self.calibrated and self.cz.shape[0] >= self.calibrate_at:
                 self._calibrate()                   # operating-bandwidth sigma*
 
