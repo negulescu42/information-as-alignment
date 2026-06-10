@@ -1355,3 +1355,48 @@ yardstick: closing the optimality gap needs a generalising value substrate
 
 Run: `python -m mscn.krk_world` (build + validate the oracle) ·
 `python -m mscn.krk_closed_loop [--episodes 150000 --seeds 3]` (~45 min full).
+
+### 9.5 Generalising value on KRK — the technique ceiling broken (`krk_value_general.py`)
+
+§9.4's named residual: tabular value gets *safe* (win-preservation 0.999) but not
+*fast* (DTM-optimality ~0.25) — the scalable-representation problem on an exact
+yardstick. Attacked prior-free, pre-registered:
+
+**Emergent geometry from the agent's own movement model.** The learned legality
+tables double as the geometry source: the king-tag's acceptance graph (which tag
+is king-like is itself decided by smaller out-degree) is the adjacency graph of
+the 64 opaque squares; its Laplacian eigenmaps recover the board at **Procrustes
+0.013** — an order of magnitude tighter than the offline Stage-2 result (0.10),
+produced *inside the acting loop*.
+
+**Two generalising substrates** on those emergent coordinates, both trained by the
+same TD-as-MODIFY updates, both count-shrinkage hybrids over the exact table
+(a one-visit Monte-Carlo entry must not override the prior): *tile-relative*
+(linear tile-code over the three relative displacements + one pairwise-conjunction
+plane — one generic relational bias) and *kernel-absolute* (the Layer-1 Gaussian
+memory over the 6-D absolute embedded state, σ **self-calibrated by the
+operating-bandwidth principle** — measured d_shell, nonlocal N_eff, ε — no
+hand-tuning, GEMM-vectorised).
+
+**Pre-registered criterion — MET on every axis** (50k episodes × 3 seeds, paired
+CIs, mean of last 3 windows):
+
+| vs tabular | tile-relative | kernel-absolute |
+|---|---|---|
+| DTM-optimality | **+0.082 [+0.046, +0.118] sig** | +0.019 ns |
+| plies-to-mate | **−7.6 [−9.7, −5.5] sig** | −2.4 ns |
+| mate rate | **+0.218 [+0.169, +0.266] sig** | +0.074 ns |
+| endpoint | **0.923 mate / 32.5 plies / 0.338 optimal** | 0.773 / 38.4 / 0.271 |
+
+**Reading.** One generic relational inductive bias over self-derived coordinates
+breaks the tabular technique ceiling decisively — mate rate 0.70 → 0.92 (most of
+the 80-ply timeouts eliminated), mates 8 plies faster, optimality up a third. The
+kernel-absolute arm is directionally positive everywhere but ns: the
+**dimensionality wall reproduces at the value-learning level** even with
+principled bandwidth calibration (which did move it from harmful-when-hand-tuned
+to competitive) — relational *structure*, not smoothing, is what buys
+generalisation. §8.10's "structure buys data-efficiency" theme, now measured in
+value space; and a third in-the-loop validation of the Operating-Bandwidth
+calibration as the correct no-tuning default for kernel memories.
+
+Run: `python -m mscn.krk_value_general [--episodes 50000 --seeds 3]` (~45 min).
