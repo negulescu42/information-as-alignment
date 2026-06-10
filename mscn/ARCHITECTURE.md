@@ -1153,6 +1153,64 @@ depth +0.61) — and does not bind in continuous fields, where Boltzmann
 exploration channels dominate and barriers either yield to diffusion or hide
 their prize. This sharpens the §8.3 honest caveat ("global jumps already supply
 most exploration") into a structural statement about the PLAN stage's validity
-domain. The planner stays in the agent (fuzz-covered, eval-parity, no harmful
-cells); the named follow-up is to bind it on the discrete substrate (corridor /
-K+R-vs-K), where the U7 conditions hold.
+domain.
+
+**The positive side, pre-registered and MET (the `corridor` regime).** U7's
+corridor was then built *inside* the integrated agent (1-D: start mound,
+deceptive trap, wide low valley, higher goal; locomotion-constrained for all
+arms). Two further mechanisms had to be measured into existence:
+
+1. **δR-selection structurally vetoes unrealized frontiers.** Instrumented: the
+   planning agent crossed the whole valley and was yanked home from **one cell
+   short of the goal** — the coarse warm-jump candidate carries the trap's
+   δR-inflated value (R_eff ≈ 6 vs the unconsolidated goal slope ≈ 2). The same
+   memory that wins V1 (homing, shock recovery) is the anti-exploration force.
+2. **U8 option-commitment is the cure**: an embarked plan is a macro-action —
+   homing candidates are suspended until arrival/expiry, and the U3 gate is
+   applied symmetrically (neither the planner nor warm jumps interrupt an
+   ascent).
+
+**Result: +1.41 [+1.37, +1.45] — goal reached 10/10 vs trap-locked 10/10**, the
+tightest significant interval in the codebase; in the final 8×7 matrix the
+(model-plan, corridor) cell is **+1.40\***, the only starred positive planning
+cell, while the old rollout operator is significantly *harmful* there (−0.08\*).
+Both sides of the boundary are now measured. Isolation footnote (honest): a
+memory-less Boltzmann walker crosses this corridor by 1-D diffusion 10/10 — the
+corridor's binding difficulty *inside the full agent* is the agent's own memory;
+planning + commitment is what defeats it.
+
+### 9.3 Full-capacity benchmark (`ibf_asi_benchmark.py`)
+
+The integrated agent vs external baselines across all eight regimes —
+eval-budget matched on a **common world clock** (time advances per 16 senses for
+every agent type; locomotion regimes bound everyone's step scale; shocks damage
+every memory agent's fast modes) — plus capacity scaling. 8 seeds, paired CIs.
+
+| agent | clean | noisy | drift | shocked | deceptive | moat | moat-local | corridor | **AGG** |
+|---|---|---|---|---|---|---|---|---|---|
+| **full IBF-ASI** | 3.48 | 3.09 | 3.00 | 3.00 | 3.89 | 2.36 | 2.10 | **2.84** | 2.97 |
+| layer-1 IBFLearner | **3.84** | **3.49** | **3.69** | **3.63** | **4.41** | **2.87** | 1.75 | 1.35 | **3.13** |
+| CMA-ES (restarts) | 2.46 | 3.08 | 1.44 | 2.42 | 2.78 | 1.53 | 1.53 | n/a | 2.18 |
+| reactive | 2.63 | 2.45 | 2.45 | 2.31 | 3.55 | 1.65 | 1.80 | 1.35 | 2.27 |
+| random | 0.74 | 0.51 | 0.65 | 0.68 | 0.97 | 0.31 | 0.54 | 0.83 | 0.65 |
+
+**Honest verdicts.** (1) The full agent decisively beats random (+2.32 [+1.95,
++2.69] sig), beats reactive in 6/8 regimes (sig), and beats CMA-ES on the
+drifting/structured worlds (CMA collapses to 1.44 under drift — its static-world
+assumptions, noted). (2) **The Layer-1 IBFLearner sig-beats the full agent in 4
+open-landscape regimes and wins the aggregate (3.13 vs 2.97)** — the 9-stage
+apparatus does *not* dominate its own ancestor at free-roaming optimisation
+(layer-1's annealed wide steps + jumps are better tuned for it); its edge is
+**structural competence**: the corridor (+1.49\* where layer-1 is trap-locked at
+1.35) and moat-local (+0.35 ns). This is the §1 finding (IBF < CMA-ES on raw
+black-box) reproduced one level up, with the same shape: generality costs
+raw-landscape speed and buys regime robustness. (3) **Capacity scaling** (drift
+regime): performance saturates at tiny memory budgets (Γ=8; flat to Γ=240 —
+capacity-bounded, the v_cap/projection design), extra scales mildly cost
+(S=1: 3.06 → S=4: 2.72, consistent with the multiscale nulls), experience keeps
+paying (2.70 → 3.07 from 2k → 18k evals, unsaturated), and **cost/tick is flat**
+(~4.6 ms, 40–70 centres — decay + capacity projection self-bound the memory, so
+the O(M) kernel concern only bites at the 10⁵-centre scale where
+`correction_field.py` pruning is the named remedy).
+
+Run: `python -m mscn.ibf_asi_benchmark [--seeds 8]` (numpy+scipy+cma; ~20 min).

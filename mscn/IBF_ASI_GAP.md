@@ -129,15 +129,23 @@ Design corrections found *en route* (each measured before/after):
   null) — harder allocation-bound worlds might discriminate them; that is a
   measurement target, not a claim. 6.4's advantage exists and is regime-scoped
   (information scarcity), now CI-significant.
-- ~~A planning operator worthy of the moat regime~~ **Done and measured
-  (ARCHITECTURE §9.2): the pre-registered criterion was NOT met, and the failure
-  maps a boundary** — a model-based planner (learned cell map, R_eff-scale
-  frontier optimism, U3 arbitration, calibrated satiation) adds no CI-measurable
-  value anywhere in continuous 2-D: shallow barriers yield to Boltzmann diffusion
-  (planning unnecessary), deep barriers hide their prize (planning insufficient —
-  needle-in-a-haystack). Planning binds in discrete, low-branching state spaces
-  (the §3.18 chess search gains); the named follow-up is the discrete substrate
-  (corridor / K+R-vs-K) inside the closed loop.
+- ~~A planning operator worthy of the moat regime~~ **Done and measured, both
+  sides (ARCHITECTURE §9.2)**: in continuous 2-D the pre-registered criterion was
+  NOT met and the failure maps a boundary (shallow barriers yield to diffusion;
+  deep barriers hide their prize). On the discrete substrate the second
+  pre-registration was **MET decisively**: planning + **U8 option-commitment**
+  binds at **+1.40\*** in the corridor (goal 10/10 vs trap-locked 10/10), after
+  the corridor exposed that δR-selection structurally vetoes unrealized frontiers
+  (the agent was yanked home one cell short of the goal by its own warm jumps).
+  The remaining discrete target is K+R-vs-K (the full closed loop with an exact
+  tablebase oracle).
+- **Full-capacity benchmark (ARCHITECTURE §9.3)**: vs external baselines on a
+  common world clock — full agent ≫ random (sig everywhere), > reactive (6/8
+  sig), > CMA-ES on drifting/structured worlds; **honest loss: the Layer-1
+  IBFLearner wins the aggregate (3.13 vs 2.97) on open landscapes** — the
+  apparatus buys structural competence (corridor, where layer-1 is trap-locked)
+  and robustness, not raw landscape speed. Capacity: saturates at tiny Γ,
+  experience unsaturated (2.70→3.07 at 18k evals), cost/tick flat (~4.6 ms).
 
 Run: `python -m mscn.ibf_asi` · `python -m mscn.ibf_asi_fuzz` ·
 `python -m mscn.ibf_asi_regimes` (numpy+scipy; all asserts green).

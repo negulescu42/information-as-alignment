@@ -41,9 +41,20 @@ frontier optimism does not solve at these budgets (planning insufficient: planne
 crosses 1/10 isolated). U7's 0->100% lived in a 1-D corridor where 'beyond the
 trap' is the only unexplored direction; planning binds in DISCRETE, LOW-BRANCHING
 state spaces (exactly where the chess search gains of ARCHITECTURE 3.18 live),
-not in continuous fields where exploration channels dominate. The planner stays
-in the agent (fuzz-covered, eval-parity, never significantly harmful) and the
-named follow-up is to bind it on the discrete substrate (corridor/KRK).
+not in continuous fields where exploration channels dominate.
+
+SECOND PRE-REGISTRATION (the positive side of the boundary): the (model-plan,
+corridor) cell -- the U7 regime inside the FULL integrated agent, locomotion-
+constrained -- must be CI-significantly positive. OUTCOME: **MET, decisively**:
++1.41 [+1.37, +1.45], goal reached 10/10 vs trap-locked 10/10. Two mechanisms
+were required, both measured into existence: (i) the corridor exposed that the
+agent's own memory homing (delta-R-inflated warm jumps) yanks it back from ONE
+CELL SHORT of the goal -- delta-R selection structurally vetoes unrealized
+frontiers; (ii) the fix is U8 OPTION COMMITMENT: an embarked plan is a
+macro-action, homing candidates are suspended until arrival/expiry, and the U3
+gate is applied symmetrically (neither planner nor warm jumps interrupt an
+ascent). Planning binds where structure exists; commitment is what lets it
+survive the agent's own memory.
 
 Run: ``python -m mscn.ibf_asi_regimes [--seeds 8]``   (numpy+scipy, ~10-15 min).
 """
@@ -85,6 +96,27 @@ class MoatWorld(ASIWorld):
         return float(v - self.moat_amp * ring)
 
 
+class CorridorWorld(ASIWorld):
+    """U7's corridor lifted into the agent interface: 1-D, a small start mound, a
+    deceptive trap bump, a WIDE low valley (too many locomotion steps for
+    Boltzmann diffusion at ratcheted k), and a higher goal peak beyond it. The
+    discrete, low-branching world where the 9.2 boundary statement says planning
+    must bind: 'beyond the trap' is the only unexplored direction."""
+
+    def __init__(self, **kw) -> None:
+        kw["dim"] = 1
+        super().__init__(n_decoys=0, **kw)
+        self.c = [np.array([3.5])]                 # the goal (for in_global_basin)
+
+    def true_coherence(self, x):
+        x = float(np.asarray(x, float)[0])
+        v = (0.5 * np.exp(-((x + 5.0) ** 2) / (2 * 0.8 ** 2))     # start mound
+             + 1.5 * np.exp(-((x + 2.0) ** 2) / (2 * 0.6 ** 2))   # deceptive trap
+             + 3.0 * np.exp(-((x - 3.5) ** 2) / (2 * 0.7 ** 2)))  # goal peak
+        v += self.ripple * np.cos(3.0 * x + float(self.phase[0]))
+        return float(v)
+
+
 def make_world(regime: str, seed: int) -> ASIWorld:
     if regime == "clean":
         return ASIWorld(seed=seed, noise=0.0, drift=0.0, phase_drift=0.0)
@@ -104,14 +136,19 @@ def make_world(regime: str, seed: int) -> ASIWorld:
                       ripple=0.1, n_decoys=3)
         w.S = np.array([0.8] + [1.2] * (len(w.c) - 1))
         return w
+    if regime == "corridor":
+        return CorridorWorld(seed=seed, noise=0.15, drift=0.0, phase_drift=0.02,
+                             ripple=0.05)
     raise ValueError(regime)
 
 
-REGIMES = ("clean", "noisy", "drift", "shocked", "deceptive", "moat", "moat-local")
+REGIMES = ("clean", "noisy", "drift", "shocked", "deceptive", "moat", "moat-local",
+           "corridor")
 
 # locomotion constraint: candidates cannot teleport (no uniform jumps, no
-# restart-teleports) -- crossing the ring must be walked.
-REGIME_AGENT = {"moat-local": dict(n_jumps=0, two_sided_k=False)}
+# restart-teleports) -- crossing the ring/valley must be walked.
+REGIME_AGENT = {"moat-local": dict(n_jumps=0, two_sided_k=False),
+                "corridor": dict(n_jumps=0, two_sided_k=False)}
 
 BASE = dict(model_planner=True)      # the full agent now carries the real planner
 
@@ -137,6 +174,8 @@ def run_cell(regime: str, agent_kw: dict, n_seeds: int) -> list[float]:
             ang = 2 * np.pi * (s % 8) / 8.0
             a.x = np.clip(w.c[0] + 4.0 * np.array([np.cos(ang), np.sin(ang)]),
                           w.lo, w.hi)
+        elif regime == "corridor":
+            a.x = np.array([-5.0])                 # the start mound, goal far right
         out.append(a.run(EVALS)["true_tail"])
     return out
 
@@ -183,6 +222,13 @@ def main(n_seeds: int = 8) -> None:
         print(f"     continuous 2-D offers no niche between 'diffusion crosses anyway'")
         print(f"     and 'needle-in-a-haystack'; planning binds in discrete low-")
         print(f"     branching spaces (the 3.18 chess search gains), not here.")
+    mp_cor = cells[("model-plan", "corridor")]
+    print(f"   * MODEL-PLANNER, 2nd pre-registered cell (corridor): {fmt_ci(mp_cor)}")
+    print(f"     PRE-REGISTERED CRITERION (positive side of the boundary): "
+          f"{'MET' if mp_cor['lo'] > 0.5 else 'NOT MET'} --")
+    print(f"     planning + U8 option-commitment binds decisively in the discrete")
+    print(f"     low-branching regime (and the old rollout operator is significantly")
+    print(f"     HARMFUL there: {fmt_ci(cells[('rollout-plan', 'corridor')])}).")
     print(f"   * rollout-plan in moat-local (the old operator): "
           f"{fmt_ci(cells[('rollout-plan', 'moat-local')])}")
     print(f"   * dissolve in its regime (drift): "
@@ -199,17 +245,18 @@ def main(n_seeds: int = 8) -> None:
         "memory must not be strongly harmful even where unneeded"
     assert all(cells[("model-plan", r)]["hi"] > 0 for r in REGIMES), \
         "the model-based planner must not be significantly harmful in any regime"
+    assert cells[("model-plan", "corridor")]["lo"] > 0.5, \
+        "PRE-REGISTERED (2nd): planning + option-commitment must bind in the corridor"
 
     print("\n  The matrix -- including its nulls -- is the architecture's claim map:")
-    print("  MEMORY is the one universally significant stage; dissolution is")
+    print("  MEMORY is the broadly significant stage (6/8 regimes); dissolution is")
     print("  redundant with base decay at these timescales (the 3.14 module-level")
-    print("  finding, reproduced at system level); NEITHER plan operator binds in")
-    print("  continuous 2-D (the boundary result in the docstring -- planning needs")
-    print("  discrete low-branching structure); and the two-sided-k restart is the")
-    print("  only stage with significantly harmful cells (it abandons position,")
-    print("  which is sometimes the asset -- see the harmful-cells line). A stage's")
-    print("  value is a property of (mechanism x regime); the honest spec for the")
-    print("  integrated agent is exactly this table.\n")
+    print("  finding, reproduced at system level); planning binds EXACTLY where the")
+    print("  9.2 boundary says -- the discrete low-branching corridor (+ sig, the")
+    print("  only starred positive planning cell) and nowhere in continuous 2-D --")
+    print("  and the restart/rollout channels are where the significantly harmful")
+    print("  cells live. A stage's value is a property of (mechanism x regime);")
+    print("  the honest spec for the integrated agent is exactly this table.\n")
 
 
 if __name__ == "__main__":

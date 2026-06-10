@@ -225,6 +225,12 @@ class IBFASI:
         self.reff_seen_max = -np.inf
         self._last_improve = 0.0                   # explore/exploit arbitration
         self._fv_n, self._fv_mean, self._fv_M2 = 0, 0.0, 0.0   # first-visit stats
+        # U8 option-commitment: an embarked plan is a MACRO-ACTION -- homing
+        # candidates are suspended until arrival/expiry, or the agent's own
+        # remembered peaks yank it back mid-journey (measured: reached one cell
+        # short of the corridor goal, then teleported home).
+        self.option_target: tuple | None = None
+        self.option_ttl = 0
 
     def memory_best(self, scale_idx: int | None = None) -> ArrayF | None:
         """The de-noised record: the location of the highest-QUALITY centre (EWMA of
@@ -262,22 +268,24 @@ class IBFASI:
         self.v_seen_max = max(self.v_seen_max, val)
 
     def _optimism_value(self) -> float:
-        """What an unvisited cell is worth. Bold while the map is genuinely unknown
-        (< 30% visited); afterwards EMPIRICALLY CALIBRATED -- the observed
-        first-visit distribution's mean + 2 sigma -- so exploration self-satiates
-        from honest statistics instead of claiming forever that the unknown beats
-        the best place ever seen (measured failure: a perpetual sweep). Volume-based
-        satiation is a known limitation in high dim (density-based would be next)."""
-        frac = len(self.vmap) / float(self.plan_res ** self.w_.dim)
-        if frac < 0.3 or self._fv_n < 8:
+        """What an unvisited cell is worth. Bold while genuinely unexplored
+        (< 30 first-visits -- in small/discrete maps the frontier then exhausts
+        naturally, which IS the satiation); afterwards EMPIRICALLY CALIBRATED --
+        the observed first-visit distribution's mean + 2 sigma -- so exploration
+        self-satiates from honest statistics instead of claiming forever that the
+        unknown beats the best place ever seen (measured failure: a perpetual
+        sweep in 100-cell 2-D maps)."""
+        if self._fv_n < 30:
             return self.reff_seen_max + self.plan_optimism
         return self._fv_mean + 2.0 * float(np.sqrt(self._fv_M2 / self._fv_n))
 
-    def _plan_move(self) -> tuple[ArrayF, float] | None:
+    def _plan_move(self, target: tuple | None = None
+                   ) -> tuple[ArrayF, float, tuple] | None:
         """BFS over the learned discrete model to the best-scoring UNVISITED cell
-        within H_plan grid steps. Paths may cross low/unknown cells -- that is the
-        point: the intermediate dip must not veto the move. Returns
-        (first-step point, planned value on the R_eff scale)."""
+        within H_plan grid steps (or to a COMMITTED option target). Paths may
+        cross low/unknown cells -- that is the point: the intermediate dip must
+        not veto the move. Returns (first-step point, planned value on the R_eff
+        scale, target cell)."""
         if not self.vmap or not np.isfinite(self.reff_seen_max):
             return None
         start = self._cell(self.x)
@@ -293,7 +301,13 @@ class IBFASI:
                         continue
                     parent[nb] = c
                     nxt.append(nb)
-                    if nb not in self.vmap:          # informative frontier only
+                    if target is not None:
+                        if nb == target:
+                            best_score = self._optimism_value() - self.plan_travel * d
+                            best_cell = nb
+                            frontier, nxt = [], []
+                            break
+                    elif nb not in self.vmap:        # informative frontier only
                         score = self._optimism_value() - self.plan_travel * d
                         if score > best_score:
                             best_score, best_cell = score, nb
@@ -317,7 +331,7 @@ class IBFASI:
         if n > cell_size:
             direction = direction / n * cell_size
         return (np.clip(self.x + direction, self.w_.lo, self.w_.hi),
-                float(best_score))
+                float(best_score), best_cell)
 
     def _neighbour_offsets(self):
         d = self.w_.dim
@@ -336,26 +350,34 @@ class IBFASI:
         step = 0.5 + 1.2 * (self.boost_ticks > 0)
         cands = [self.x.copy()]
         # memory-guided warm jumps: best fine centre + best coarse (regional) centre.
-        # SUSPENDED during an exploration phase -- otherwise the warm jump teleports
-        # the agent straight home one tick after a stall restart, silently undoing
-        # exploration (measured: restarts fired but trajectories re-converged).
-        if self.explore_ticks == 0:
+        # SUSPENDED (i) during an exploration phase (or the warm jump teleports the
+        # agent home one tick after a restart, undoing it -- measured); (ii) while
+        # an exploration OPTION is committed (U8: a plan is a macro-action; homing
+        # mid-journey vetoes every unrealized frontier -- measured); (iii) while
+        # CLIMBING (U3 symmetric gate: nothing interrupts an ascent).
+        if (self.explore_ticks == 0 and self.option_target is None
+                and self._last_improve <= self.deadband):
             for src in (self.memory_best(0),
                         self.memory_best(len(self.scales) - 1) if len(self.scales) > 1 else None):
                 if src is not None:
                     cands.append(np.clip(src + self.rng.normal(0, 0.2, self.w_.dim),
                                          self.w_.lo, self.w_.hi))
         plan_idx, plan_value = -1, 0.0
+        self._plan_target_cell = None
         n_local = self.n_cand
-        # U3 arbitration: do not interrupt an ascent -- the planner (exploration)
-        # speaks only when local improvement has stalled. Without this the sweep
-        # drags the agent off a freshly-found peak before it summits (measured:
-        # the agent crossed the moat at tick ~32 and still ended on a decoy).
-        if self.model_plan_on and self._last_improve <= self.deadband:
-            pm = self._plan_move()
+        # U3 arbitration: the planner (exploration) speaks at stalls, not during
+        # ascents -- EXCEPT while an option is committed (the journey continues
+        # through dips and slopes until arrival/expiry, U8 macro semantics).
+        if self.model_plan_on and (self.option_target is not None
+                                   or self._last_improve <= self.deadband):
+            pm = self._plan_move(target=self.option_target)
+            if pm is None and self.option_target is not None:
+                self.option_target, self.option_ttl = None, 0   # unreachable: drop
+                pm = self._plan_move()
             if pm is not None:
                 cands.append(pm[0])
                 plan_idx, plan_value = len(cands) - 1, pm[1]
+                self._plan_target_cell = pm[2]
                 n_local = max(self.n_cand - 1, 0)
         for _ in range(n_local):
             cands.append(np.clip(self.x + self.rng.normal(0, step, self.w_.dim),
@@ -406,6 +428,17 @@ class IBFASI:
         idx = int(self.rng.choice(len(cands), p=p))
         new_x, new_sensed = cands[idx], sensed[idx]
         policy_entropy = float(-(p * np.log(p + 1e-12)).sum())
+        # U8 option lifecycle: embark on selecting a fresh plan; terminate on
+        # arrival / target-consumed / budget expiry.
+        if idx == plan_idx and self.option_target is None \
+                and self._plan_target_cell is not None:
+            self.option_target = self._plan_target_cell
+            self.option_ttl = 3 * self.H_plan
+        if self.option_target is not None:
+            self.option_ttl -= 1
+            if (self._cell(new_x) == self.option_target
+                    or self.option_target in self.vmap or self.option_ttl <= 0):
+                self.option_target, self.option_ttl = None, 0
 
         # 4 ACT: move, then a short AUTONOMOUS ascent sub-segment (invariant I1)
         seg = [new_sensed + self.delta_R_total(new_x)]
