@@ -634,6 +634,43 @@ substrate — "we can do better" holds on the strength axis. It is still club-le
 ceiling is the **eval** (material+PST, no king-safety/mobility/strategy), which is the
 next lever (see the discrepancy-vs-oracle training, §3.19).
 
+### 3.19 Discrepancy-driven training vs an oracle (`chess_oracle.py`, `chess_oracle_train.py`)
+
+The user's program: train the IBF chess value by **reducing the discrepancy to a strong
+oracle** — IBF Postulate IV (`δR += α·(oracle − R) − μ·δR`, an LMS/Widrow-Hoff step) with
+the oracle's *per-position evaluation* as the target, a far richer signal than final game
+outcomes. The board **representation still emerges prior-free** (Route A occupancy state);
+only the **value (strategy)** is distilled. Stockfish is unavailable in-sandbox (no
+binary, apt/network blocked), so the oracle is a pure-Python alpha-beta engine
+(material + PST + mobility + king-safety + quiescence) — a real, stronger teacher,
+labelled honestly as a proxy (drop a UCI binary on the branch and it slots in).
+
+**Measured (5k games, oracle depth-3, 1500 train positions):**
+
+| signal | result |
+|---|---|
+| (1) discrepancy to oracle (cp) | **124 → 89** over 14 epochs (monotonic — the driver works) |
+| (2) emergent piece values (cp) | P 69 · N 104 · B 119 · R 113 · Q 173 — Q highest, P lowest (ordering ~right; cp-scaled, vs outcome-trained's tiny relative units) |
+| (3) generalisation | held-out **139** cp vs train 89 → **overfits** (material generalises; the many-param PST does not) |
+| (3) oracle-move coverage | oracle's best move is in the IBF's candidate set only **27%** of the time |
+| (4) strength: distilled vs outcome-trained | **0.55** (tie / slight edge) |
+| (4) strength: distilled vs the oracle | **0.00** (loses to the teacher) |
+
+**Honest result.** The **driver works**: discrepancy-driven modification reduces the
+value's gap to the oracle (124→89 cp) and the emergent piece values sharpen toward the
+true ratios. But translating that into a *clearly* stronger player is **bottlenecked**,
+and the full-data run is more sober than a 300-game pilot (which showed 0.65): the
+distilled player only **ties** the outcome-trained one (0.55), because (a) the value is
+**material+PST-linear** so it cannot express the oracle's mobility/king-safety (residual
+89 cp), (b) the PST **overfits** at this data scale (held-out 139 > train 89), and (c) the
+human-move generator proposes the oracle's engine move only **27%** of the time — so even
+a perfect value cannot pick the oracle's move two-thirds of the time. It still **loses
+0.00 to the oracle**. So: the *mechanism* (discrepancy as the driver, the user's idea) is
+real and reduces the gap; the *strength translation* needs the three deep levers —
+**richer emergent non-linear features** (mobility/king-safety from the occupancy state),
+**regularised/compositional value**, and a **stronger move generator** — exactly the D2/D3
+directions in `HANDOVER-FABLE5.md`. Reported faithfully, gains and bottlenecks both.
+
 ---
 
 ## 4. Theory connections (what instantiates what)
