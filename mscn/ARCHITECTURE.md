@@ -870,3 +870,40 @@ peak, so it does not win there; and to *refine* the best mode it must hand off t
 intended use is the explore/exploit blend. The mechanism is functional for its purpose.
 
 Run: `python -m mscn.agi_directed`.
+
+### 8.10 Research finding — the U1 barrier is bounded-suffix, not fundamental (`agi_state_merging.py`)
+
+A follow-up to U1 (§8.1) that **sharpens the §2.2-general claim**. U1's
+`LearnedSimulation` keys states on the last ≤ L tokens, so it stalls on long-range
+worlds (counter, flag). Is that the *estimation* barrier, or just the bounded-suffix
+design? Tested with **unbounded recurrent state-merging** (RPNI/EDSM): build the
+prefix-tree acceptor over *full* histories, greedily merge state-classes with compatible
+futures, folding transitions deterministically — merging deep nodes into shallow ones
+**creates cycles**, so the machine generalizes beyond observed depth (unbounded memory).
+
+| world | true | suffix-CSSR (U1) | RPNI merge |
+|---|---|---|---|
+| even | 2 | 7 / 0.94 | 43 / 0.95 |
+| toggle | 2 | 13 / 0.98 | 27 / 0.92 |
+| flag (long-range, stochastic) | 2 | 80 / **0.98** | 39 / **0.84** |
+| counter (long-range, deterministic) | 4 | 7 / **0.90** | 61 / **0.99** |
+
+mod-4 counter, data sweep: **50 seqs → 4 states, purity 1.000**; 150→25/0.98; 900→92/0.98.
+
+**Finding (genuinely sharper than "windows are insufficient").**
+1. **The bounded-suffix ceiling is a design artifact, not a hard wall.** RPNI **crosses
+   the counter** suffix-CSSR could not (0.90→0.99) and recovers the **exact 4-state
+   machine (purity 1.000) from modest data** — it learns unbounded memory by merging
+   prefixes into cycles. So the U1 barrier *moves*.
+2. **The true residual is noise-robust *estimation* of the merge, not history length.**
+   RPNI's exact-legal-set merge is brittle: on the *stochastic* flag world it over-splits
+   and **loses** to suffix-CSSR (0.84 vs 0.98), and on the counter **more** data over-splits
+   it (1.00@50 → 0.98@900). A statistical merge test (ALERGIA) or domain structure fixes this.
+3. **Structure buys noise-robustness/data-efficiency, not expressivity in principle.**
+   Chess's from-to token decomposition is a *deterministic, noise-free* factorization —
+   exactly what RPNI lacks. Unbounded merging crosses the barrier *in principle but
+   brittly*; structure crosses it *cheaply*. The next step on §2.2-general is therefore an
+   ALERGIA-style statistical merge or a learned factored (register) decomposition — not a
+   longer history.
+
+Run: `python -m mscn.agi_state_merging`.

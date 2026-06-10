@@ -165,10 +165,14 @@ Prioritised; all are theory-grounded and reuse existing modules.
 **Still open:**
 1. **Wide-Elo / scale-up acc@1** (highest-leverage chess lever): user commits a larger
    PGN slice (50k+); rerun `run_pgn` and the acc@1-vs-data curve. *Blocked only on data via git.*
-2. **§2.2-general, the hard residue**: a *latent-state* simulation learner (HMM/RNN-style,
-   still IBF/non-neural in spirit) for dependencies beyond the suffix horizon — where
-   `agi_simulation`'s CSSR hits its ceiling (the flag/counter worlds). Apply it to chess
-   atomic tokens and compare to the from-to Route A (0.998 purity).
+2. **§2.2-general, the hard residue** — *sharpened* (ARCHITECTURE §8.10,
+   `agi_state_merging.py`): unbounded recurrent state-merging (RPNI/EDSM) **crosses** the
+   long-range counter U1's bounded-suffix learner could not (recovers the exact 4-state
+   machine, purity 1.0), so the ceiling was a *design artifact*. The real residual is
+   **noise-robust estimation of the merge** (RPNI is brittle on the stochastic flag world;
+   more data over-splits). Next step: an **ALERGIA-style statistical merge** or a **learned
+   factored (register) decomposition** — *not* longer history; then apply to chess atomic
+   tokens and compare to the from-to Route A (0.998 purity).
 3. **Upgrade chess instantiations**: wire the AGI mechanisms into the chess agent
    (planning over the learned sim for move choice; hierarchical sim = piece→material→
    strategic layers) and re-measure acc@1 / strength.
