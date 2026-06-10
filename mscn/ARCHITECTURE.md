@@ -1116,3 +1116,43 @@ itself.
 
 Run: `python -m mscn.ibf_asi_fuzz [--n 150]` · `python -m mscn.ibf_asi_regimes
 [--seeds 8]`.
+
+### 9.2 The planning-boundary result (a pre-registered failure, mapped)
+
+The matrix indicted the rollout planner, so a **real model-based planner** was
+built into the agent (`model_planner=True`): a learned discrete cell map fed by
+already-paid senses (exact eval parity), frontier-directed optimism (U4) scored on
+the **R_eff scale** (a raw-scale plan is vetoed by the agent's own δR at
+remembered peaks — measured), BFS through low/unknown cells (U7), U3
+ascent-arbitration (don't interrupt a climb — without it the sweep drags the agent
+off a freshly-found peak before it summits), and empirically-calibrated satiation
+(optimism = first-visit mean + 2σ once 30% of the map is seen — a fixed bonus
+sweeps forever). A locomotion-constrained regime (`moat-local`: no jump
+candidates, no restart teleports, spawn outside the ring, decoys cleared off the
+ring after a measured bridge-leak) was built as the planner's pre-registered
+proving ground: **the (model-plan, moat-local) cell must be CI-significantly
+positive.**
+
+**Outcome: NOT MET — and the failure maps a boundary.** Measured along the way
+(isolated arms, shallow→deep moats, 8–10 seeds each):
+
+- **shallow moat** (−2.5, ~2 steps wide): reactive Boltzmann *diffusion* crosses
+  anyway (3/10 end inside; downhill picks at `e^(−kΔ)` accumulate over ~250
+  ticks) — planning unnecessary;
+- **deep moat** (−4): nothing observable signals what is behind the barrier, so
+  the crossing is a needle-in-a-haystack *exploration* problem — the undirected
+  frontier sweep finds the hidden basin 1/10 isolated — planning insufficient;
+- between them, no niche: the integrated and isolated paired differences are ~0
+  at every depth tried; the final matrix row is −0.17…+0.27, all ns, never
+  significantly harmful.
+
+**Reading.** U7's 0→100% lived in a 1-D corridor where "beyond the trap" is the
+*only* unexplored direction. Planning binds in **discrete, low-branching state
+spaces** — exactly where the chess search gains live (§3.18: quiescence +0.64,
+depth +0.61) — and does not bind in continuous fields, where Boltzmann
+exploration channels dominate and barriers either yield to diffusion or hide
+their prize. This sharpens the §8.3 honest caveat ("global jumps already supply
+most exploration") into a structural statement about the PLAN stage's validity
+domain. The planner stays in the agent (fuzz-covered, eval-parity, no harmful
+cells); the named follow-up is to bind it on the discrete substrate (corridor /
+K+R-vs-K), where the U7 conditions hold.

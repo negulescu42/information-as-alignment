@@ -129,9 +129,15 @@ Design corrections found *en route* (each measured before/after):
   null) — harder allocation-bound worlds might discriminate them; that is a
   measurement target, not a claim. 6.4's advantage exists and is regime-scoped
   (information scarcity), now CI-significant.
-- A planning operator worthy of the moat regime: BFS/value-iteration over a
-  *learned discrete* simulation (U1/U7 style) inside the ASI loop, replacing the
-  stochastic rollout.
+- ~~A planning operator worthy of the moat regime~~ **Done and measured
+  (ARCHITECTURE §9.2): the pre-registered criterion was NOT met, and the failure
+  maps a boundary** — a model-based planner (learned cell map, R_eff-scale
+  frontier optimism, U3 arbitration, calibrated satiation) adds no CI-measurable
+  value anywhere in continuous 2-D: shallow barriers yield to Boltzmann diffusion
+  (planning unnecessary), deep barriers hide their prize (planning insufficient —
+  needle-in-a-haystack). Planning binds in discrete, low-branching state spaces
+  (the §3.18 chess search gains); the named follow-up is the discrete substrate
+  (corridor / K+R-vs-K) inside the closed loop.
 
 Run: `python -m mscn.ibf_asi` · `python -m mscn.ibf_asi_fuzz` ·
 `python -m mscn.ibf_asi_regimes` (numpy+scipy; all asserts green).

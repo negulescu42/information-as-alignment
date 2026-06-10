@@ -56,6 +56,8 @@ from .stats import fmt_ci, paired_ci, verdict
 
 ArrayF = np.ndarray
 
+_NEIGHBOUR_CACHE: dict[int, list] = {}
+
 
 # ===========================================================================
 #  The spec's target regime: a noisy, multi-scale, drifting world with shocks
@@ -171,6 +173,8 @@ class IBFASI:
                  boost: float = 3.0, stall_patience: int = 25,
                  reflect: bool = True, dissolve: bool = True, adapt_w: bool = True,
                  honest_reserve: bool = True, two_sided_k: bool = True,
+                 model_planner: bool = False, plan_res: int = 10, H_plan: int = 6,
+                 plan_optimism: float = 0.5, plan_travel: float = 0.05,
                  selfmodel_res: int = 24, seed: int = 0) -> None:
         self.w_ = world
         self.rng = np.random.default_rng(seed)
@@ -204,6 +208,23 @@ class IBFASI:
         self.given = self.received = 0             # reciprocity ledger (EC-4)
         self.credit_limit = 2                      # net unreciprocated gifts tolerated
         self._probe_grid = world.rng.uniform(world.lo, world.hi, size=(64, world.dim))
+        # model-based planner (U7 + U4 composed): a learned DISCRETE internal model
+        # -- a sparse cell-grid map fed by already-paid senses (exact eval parity).
+        # It is a DIRECTED-EXPLORATION operator: it targets only unvisited frontier
+        # cells, scored on the R_eff scale (max observed R_eff + optimism bonus -
+        # travel cost), because selection is Boltzmann in R_eff and a raw-scale
+        # plan value is crushed by the agent's own delta-R at remembered peaks
+        # (measured failure: memory-homing vetoes raw-valued plans). Optimism is
+        # consumed on first visit, so the sweep self-terminates; known goods are
+        # the warm-jump machinery's job, not the planner's.
+        self.model_plan_on = model_planner
+        self.plan_res, self.H_plan = plan_res, H_plan
+        self.plan_optimism, self.plan_travel = plan_optimism, plan_travel
+        self.vmap: dict[tuple, list] = {}          # cell -> [ewma raw value, count]
+        self.v_seen_max = -np.inf
+        self.reff_seen_max = -np.inf
+        self._last_improve = 0.0                   # explore/exploit arbitration
+        self._fv_n, self._fv_mean, self._fv_M2 = 0, 0.0, 0.0   # first-visit stats
 
     def memory_best(self, scale_idx: int | None = None) -> ArrayF | None:
         """The de-noised record: the location of the highest-QUALITY centre (EWMA of
@@ -222,8 +243,96 @@ class IBFASI:
     def R_eff_sensed(self, y: ArrayF) -> float:
         return self.w_.sense(y) + self.delta_R_total(y)
 
+    # ----- the learned discrete internal model (model-based PLAN) -----
+    def _cell(self, x: ArrayF) -> tuple:
+        return tuple(np.clip(((x - self.w_.lo) / (self.w_.hi - self.w_.lo)
+                              * self.plan_res).astype(int), 0, self.plan_res - 1))
+
+    def _vmap_update(self, x: ArrayF, val: float) -> None:
+        c = self._cell(x)
+        if c in self.vmap:
+            self.vmap[c][0] = 0.8 * self.vmap[c][0] + 0.2 * val
+            self.vmap[c][1] += 1
+        else:
+            self.vmap[c] = [val, 1]
+            self._fv_n += 1                        # Welford over first-visit values
+            d = val - self._fv_mean
+            self._fv_mean += d / self._fv_n
+            self._fv_M2 += d * (val - self._fv_mean)
+        self.v_seen_max = max(self.v_seen_max, val)
+
+    def _optimism_value(self) -> float:
+        """What an unvisited cell is worth. Bold while the map is genuinely unknown
+        (< 30% visited); afterwards EMPIRICALLY CALIBRATED -- the observed
+        first-visit distribution's mean + 2 sigma -- so exploration self-satiates
+        from honest statistics instead of claiming forever that the unknown beats
+        the best place ever seen (measured failure: a perpetual sweep). Volume-based
+        satiation is a known limitation in high dim (density-based would be next)."""
+        frac = len(self.vmap) / float(self.plan_res ** self.w_.dim)
+        if frac < 0.3 or self._fv_n < 8:
+            return self.reff_seen_max + self.plan_optimism
+        return self._fv_mean + 2.0 * float(np.sqrt(self._fv_M2 / self._fv_n))
+
+    def _plan_move(self) -> tuple[ArrayF, float] | None:
+        """BFS over the learned discrete model to the best-scoring UNVISITED cell
+        within H_plan grid steps. Paths may cross low/unknown cells -- that is the
+        point: the intermediate dip must not veto the move. Returns
+        (first-step point, planned value on the R_eff scale)."""
+        if not self.vmap or not np.isfinite(self.reff_seen_max):
+            return None
+        start = self._cell(self.x)
+        best_cell, best_score, parent = None, -np.inf, {start: None}
+        frontier = [start]
+        expansions = 0
+        for d in range(1, self.H_plan + 1):
+            nxt = []
+            for c in frontier:
+                for off in self._neighbour_offsets():
+                    nb = tuple(np.clip(np.array(c) + off, 0, self.plan_res - 1))
+                    if nb in parent or nb == c:
+                        continue
+                    parent[nb] = c
+                    nxt.append(nb)
+                    if nb not in self.vmap:          # informative frontier only
+                        score = self._optimism_value() - self.plan_travel * d
+                        if score > best_score:
+                            best_score, best_cell = score, nb
+                    expansions += 1
+                    if expansions > 4000:            # fuzz-safety cap (high dim)
+                        nxt = []
+                        break
+            frontier = nxt
+            if not frontier:
+                break
+        if best_cell is None:                        # frontier consumed: exploit
+            return None
+        step = best_cell                          # walk back to the first step
+        while parent[step] is not None and parent[step] != start:
+            step = parent[step]
+        centre = self.w_.lo + (np.array(step) + 0.5) / self.plan_res * \
+            (self.w_.hi - self.w_.lo)
+        direction = centre - self.x
+        n = np.linalg.norm(direction)
+        cell_size = float(np.mean((self.w_.hi - self.w_.lo) / self.plan_res))
+        if n > cell_size:
+            direction = direction / n * cell_size
+        return (np.clip(self.x + direction, self.w_.lo, self.w_.hi),
+                float(best_score))
+
+    def _neighbour_offsets(self):
+        d = self.w_.dim
+        if d not in _NEIGHBOUR_CACHE:
+            from itertools import product
+            _NEIGHBOUR_CACHE[d] = [np.array(o) for o in product((-1, 0, 1), repeat=d)
+                                   if any(o)]
+        return _NEIGHBOUR_CACHE[d]
+
     # ----- stage 2-3: PLAN (H-step lookahead) + SELECT (Boltzmann in k) -----
-    def _candidates(self) -> list[ArrayF]:
+    def _candidates(self) -> tuple[list[ArrayF], int, float]:
+        """Candidate points; returns (cands, plan_idx, plan_value) where plan_idx
+        indexes the model-planner's move (-1 if none). The plan candidate REPLACES
+        one local candidate, so the sensed-eval count is identical with the
+        planner on or off (exact eval parity)."""
         step = 0.5 + 1.2 * (self.boost_ticks > 0)
         cands = [self.x.copy()]
         # memory-guided warm jumps: best fine centre + best coarse (regional) centre.
@@ -236,12 +345,24 @@ class IBFASI:
                 if src is not None:
                     cands.append(np.clip(src + self.rng.normal(0, 0.2, self.w_.dim),
                                          self.w_.lo, self.w_.hi))
-        for _ in range(self.n_cand):
+        plan_idx, plan_value = -1, 0.0
+        n_local = self.n_cand
+        # U3 arbitration: do not interrupt an ascent -- the planner (exploration)
+        # speaks only when local improvement has stalled. Without this the sweep
+        # drags the agent off a freshly-found peak before it summits (measured:
+        # the agent crossed the moat at tick ~32 and still ended on a decoy).
+        if self.model_plan_on and self._last_improve <= self.deadband:
+            pm = self._plan_move()
+            if pm is not None:
+                cands.append(pm[0])
+                plan_idx, plan_value = len(cands) - 1, pm[1]
+                n_local = max(self.n_cand - 1, 0)
+        for _ in range(n_local):
             cands.append(np.clip(self.x + self.rng.normal(0, step, self.w_.dim),
                                  self.w_.lo, self.w_.hi))
         for _ in range(self.n_jumps):
             cands.append(self.rng.uniform(self.w_.lo, self.w_.hi))
-        return cands
+        return cands, plan_idx, plan_value
 
     def _plan_value(self, y: ArrayF, sensed_y: float) -> float:
         """Imagined H-step value from y: greedy short rollout on R_eff (counted)."""
@@ -259,9 +380,16 @@ class IBFASI:
     def step(self) -> None:
         w = self.w_
         # 1 SENSE + 2 PLAN over candidates
-        cands = self._candidates()
+        cands, plan_idx, plan_value = self._candidates()
         sensed = [w.sense(c) for c in cands]
+        if self.model_plan_on:                     # the model learns from every
+            for c, s in zip(cands, sensed):        # already-paid sense (eval parity)
+                self._vmap_update(c, s)
         values = [self._plan_value(c, s) for c, s in zip(cands, sensed)]
+        if plan_idx >= 0:
+            # the plan candidate is valued by its PLANNED destination value -- the
+            # myopic sensed value at a moat crossing is exactly what must not veto it
+            values[plan_idx] = max(values[plan_idx], plan_value)
         # per-scale usefulness: does the scale's field rank-agree with raw sensing?
         if self.adapt_w_on and len(cands) >= 4:
             for s in self.scales:
@@ -285,12 +413,15 @@ class IBFASI:
         for _ in range(2):
             probe = np.clip(new_x + self.rng.normal(0, 0.18, w.dim), w.lo, w.hi)
             pr = w.sense(probe)
+            if self.model_plan_on:
+                self._vmap_update(probe, pr)
             v = pr + self.delta_R_total(probe)
             if v > seg[-1]:
                 new_x, raw_final = probe, pr
                 seg.append(v)
         assert all(b >= a - 1e-9 for a, b in zip(seg, seg[1:])), \
             "I1: R_eff must be non-decreasing along the autonomous ascent segment"
+        self.reff_seen_max = max(self.reff_seen_max, seg[-1])
 
         # 5 LEARN: RAW-improvement discrepancy (prevents self-manufactured traps).
         # Direct writes go to the FINE scale only; coarser scales are filled
@@ -406,6 +537,7 @@ class IBFASI:
 
         self.x = new_x
         self.best_sensed = max(self.best_sensed, raw_final)
+        self._last_improve = raw_improve
         self.tick_no += 1
 
         # telemetry (the spec's 8 channels)

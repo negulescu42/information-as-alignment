@@ -66,6 +66,11 @@ def sample_config(rng: np.random.Generator) -> tuple[dict, dict, bool, bool]:
         adapt_w=bool(rng.random() < 0.8),
         honest_reserve=bool(rng.random() < 0.8),
         two_sided_k=bool(rng.random() < 0.8),
+        model_planner=bool(rng.random() < 0.5),
+        plan_res=int(rng.integers(4, 20)),
+        H_plan=int(rng.integers(1, 9)),
+        plan_optimism=float(rng.uniform(0.0, 2.0)),
+        plan_travel=float(rng.uniform(0.0, 0.3)),
         selfmodel_res=int(rng.integers(4, 41)),
         seed=int(rng.integers(10_000)),
     )
