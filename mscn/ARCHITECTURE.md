@@ -634,6 +634,52 @@ substrate — "we can do better" holds on the strength axis. It is still club-le
 ceiling is the **eval** (material+PST, no king-safety/mobility/strategy), which is the
 next lever (see the discrepancy-vs-oracle training, §3.19).
 
+### 3.20 D2c — discovering the from-to factorization from ATOMIC tokens (`chess_factor_discovery.py`)
+
+Route A was *given* the from-to decomposition; §8.10/§8.11 sharpened why (structure
+buys estimability). The deepest remaining representation question: is the structure
+itself statistically recoverable from atomic opaque tokens? Protocol: thresholds
+frozen on a 1000-game dev audit; discovery on 3500 games; all evaluation (ground
+truth, probes) on 800 held-out games.
+
+**Signals** (audited first): same-player +2 *continuation* pairs (to(x)=from(u),
+precision 0.76 at the frozen gate); co-neighbourhood edges (tokens sharing ≥3
+continuation successors are same-TO, 0.977; sharing ≥3 predecessors are same-FROM,
+0.942); and two **exact impossibility relations** (0 violations in 153k events)
+used as hard cannot-link constraints. **Method lessons, each measured**: plain
+union-find cascades (at 0.977 edge precision, ~30 wrong edges chain true squares
+together — pair precision collapsed to 0.02); the avalanche-proof rule is
+support-based agglomeration (≥2 independent edges between clusters). Grouping
+**purity is not a valid headline metric** here — at this sample size most states
+are singletons, and a *shuffled* factorization scores 0.97; the honest probe is
+Matthews correlation of occupancy *changes* (a garbage state scores ≈0).
+
+**Results (held-out):**
+
+| metric | discovered | given from-to (bound) | shuffled control |
+|---|---|---|---|
+| from+to both correct (occurrence-weighted, best bijection) | **0.503** | 1.0 | ~0.0002 |
+| to-square co-clustering precision / recall (top-400) | 0.871 / 0.703 | — | — |
+| stream coverage (tokens factored: 757) | 0.737 | 1.0 | — |
+| occupancy change-MCC (the functional probe) | **0.107** | 0.946 | −0.03 |
+| prior-free self-inconsistency (transfers from empty source) | **0.081** | 0.017 | 0.369 |
+
+**Reading (a partially-positive result with a sharp structural finding).** Half of
+all token occurrences get their full (from, to) factorization exactly right,
+discovered from co-occurrence statistics alone — the structure *is* substantially
+recoverable. But the functional payoff is small (change-MCC 0.11 vs 0.95): **the
+occupancy replay is an error amplifier** — a position's reconstruction is a long
+product of per-move correctness, so board-state sufficiency demands *near-perfect*
+per-token accuracy. Route A's given structure was structurally necessary, not a
+convenience: §8.10's "structure buys it cheaply" is now quantified at the
+functional level. The named next mechanism is visible in the table: the
+**prior-free self-inconsistency diagnostic** separates discovered from garbage by
+4.6× *with no oracle* — an EM refinement (re-assign tokens to minimise
+transfers-from-empty) has a gradient to descend; closing the loop between
+factorization and replay-consistency is the open follow-up.
+
+Run: `python -m mscn.chess_factor_discovery` (~6 min; all asserts green).
+
 ---
 
 ## 4. Theory connections (what instantiates what)
