@@ -137,8 +137,15 @@ Design corrections found *en route* (each measured before/after):
   binds at **+1.40\*** in the corridor (goal 10/10 vs trap-locked 10/10), after
   the corridor exposed that δR-selection structurally vetoes unrealized frontiers
   (the agent was yanked home one cell short of the goal by its own warm jumps).
-  The remaining discrete target is K+R-vs-K (the full closed loop with an exact
-  tablebase oracle).
+  ~~The remaining discrete target is K+R-vs-K~~ **Done (ARCHITECTURE §9.4)**:
+  the closed online loop on KRK — movement legality from rejections, value via
+  TD-as-IBF-modification from terminal outcomes only, Boltzmann-k policy — with
+  an exact, python-chess-cross-validated tablebase as live oracle. Measured
+  online over 150k episodes × 3 seeds: mate rate 0.008→**0.732** (sig), win
+  preservation 0.853→**0.999**, TD discrepancy rise-then-fall, movement rules
+  emerged (legal@1 0.95). Honest ceiling quantified: DTM-optimality ~0.26 — the
+  agent gets safe long before it gets fast; the technique gap is the
+  scalable-representation open problem on an exact yardstick.
 - **Full-capacity benchmark (ARCHITECTURE §9.3)**: vs external baselines on a
   common world clock — full agent ≫ random (sig everywhere), > reactive (6/8
   sig), > CMA-ES on drifting/structured worlds; **honest loss: the Layer-1

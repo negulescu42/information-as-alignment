@@ -1214,3 +1214,64 @@ the O(M) kernel concern only bites at the 10⁵-centre scale where
 `correction_field.py` pruning is the named remedy).
 
 Run: `python -m mscn.ibf_asi_benchmark [--seeds 8]` (numpy+scipy+cma; ~20 min).
+
+### 9.4 The closed online loop on K+R-vs-K (`krk_world.py`, `krk_closed_loop.py`)
+
+The original handover's D1+D4: **one agent, one stream** — representation
+(movement legality), value, and policy all learned *while acting*,
+discrepancy-driven, with strength rising and gap-to-oracle falling measured
+**online** against an exact anchor. KRK is the tractable world where this is
+fully measurable.
+
+**The oracle/referee** (`krk_world.py`, teacher-side like `chess_oracle.py`): a
+vectorised KRK rules engine + retrograde DTM tablebase over 524,288 states (built
++ solved in ~5 s). Correctness chain: **exact** cross-validation against
+python-chess on sampled positions (position legality, complete move sets,
+mate/stalemate flags incl. targeted terminal samples), Bellman consistency on the
+solved table, and the known KRK bound reproduced exactly (**max DTM = 16
+moves**). Cached at `data/krk_dtm.npz`.
+
+**The agent** (strict no-priors): sees three piece locations (its two pieces as
+opaque persistent tags) and terminal signals only — no movement rules, no notion
+of check/mate. Learns online, in one stream: (i) **movement legality** from
+referee rejections (the §3.9 arena protocol: full ranked proposals, the referee
+plays the highest legal one, everything above it is revealed illegal); (ii)
+**value over afterstates** from terminal outcomes only, by `V += α·(G − V)` —
+literally the IBF modification step (`tdError'`, `td_is_modification_step`,
+AGIFoundations §11), with terminal-exact updates and truncation bootstrapping;
+(iii) **policy** = Boltzmann-k over (legality coherence + k·value), realised as
+Plackett-Luce ranking, k adapted on improvement (episode-level Thm 8c agency).
+
+**Measured online (3 seeds × 150k episodes; paired CIs; random-black opponent):**
+
+| episode window | mate rate | legal@1 | TD-err | win-preserving | DTM-optimal | k |
+|---|---|---|---|---|---|---|
+| 2k | 0.008 | 0.684 | 0.006 | 0.853 | 0.104 | 2.0 |
+| 16k | 0.526 | 0.916 | 0.212 | 0.944 | 0.210 | 5.0 |
+| 58k | 0.708 | 0.906 | 0.144 | 0.995 | 0.254 | 11.7 |
+| 150k | **0.732** | **0.952** | 0.136 | **0.999** | 0.261 | 12.0 |
+
+- **Strength rises online**: mate rate 0.008 → **0.732** (+0.72 [+0.70, +0.75]
+  sig; random baseline 0.007; legality-only ablation 0.006 — the value loop *is*
+  the strength, +0.73 sig).
+- **The gap to the exact oracle falls online**: win-preserving moves 0.853 →
+  **0.999** — by the end the agent virtually never throws away a tablebase-won
+  position.
+- **TD discrepancy shows the predicted shape**: rises to 0.212 as reward signal
+  arrives into an empty table, then falls to 0.136 as the value coherence
+  converges — the MODIFY driver doing exactly what Postulate IV says.
+- Movement rules **emerge from rejections alone** (legal@1 0.68 → 0.95; the rook
+  lines and king steps exist nowhere but in the learned acceptance tables).
+
+**Honest ceilings (the finding, not a footnote).** DTM-optimality plateaus at
+**~0.26** and mates take ~40 plies (optimal ≈ 16–32): the agent becomes
+*safe* (never loses a won game) long before it becomes *fast* — the residual
+~27% of episodes are 80-ply cap timeouts while still in won positions, not
+losses. Tabular value over 262k afterstates is visited too sparsely to refine
+technique beyond "preserve and shuffle toward mate". This is the roadmap's #2
+open problem (**scalable representation**) made quantitative on an exact
+yardstick: closing the optimality gap needs a generalising value substrate
+(learned state geometry / kernel over emergent coordinates), not more episodes.
+
+Run: `python -m mscn.krk_world` (build + validate the oracle) ·
+`python -m mscn.krk_closed_loop [--episodes 150000 --seeds 3]` (~45 min full).

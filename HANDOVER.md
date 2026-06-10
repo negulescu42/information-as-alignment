@@ -205,4 +205,6 @@ python -m mscn.ibf_asi [--quick]          # IBF-ASI coupled 9-stage agent, CI-gr
 python -m mscn.ibf_asi_fuzz               # invariant fuzzing of the ASI mechanism (§9.1)
 python -m mscn.ibf_asi_regimes            # regimes × mechanisms claim map (§9.1-9.2)
 python -m mscn.ibf_asi_benchmark          # full-capacity benchmark vs baselines (§9.3)
+python -m mscn.krk_world                  # exact KRK tablebase oracle, validated (§9.4)
+python -m mscn.krk_closed_loop            # D1+D4: the closed online loop on KRK (§9.4)
 ```
