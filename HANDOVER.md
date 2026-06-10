@@ -98,6 +98,7 @@ exploratory addition under `mscn/`.
 - `chess_value_ibf.py` / `chess_positional_ibf.py` — value & positional coherence (emergent piece values, PST).
 - `chess_search_ibf.py` — negamax search (context move-gen + value leaves).
 - `chess_arena.py` — head-to-head referee + SEE; strength comparison.
+- `chess_mscn_player.py` — **the end-to-end MSCN player** (board sim-state + value + positional + planning composed) + honest benchmark vs published Maia/LLM/Karvonen (ARCHITECTURE §3.16).
 - `correction_field.py` — Interface-Principle pruned field eval (O(M)→O(M_boundary)).
 - `nonstationary.py` — adaptive-μ evaluation on drift streams.
 
@@ -191,6 +192,7 @@ python -m mscn.demo                       # MSCN guided tour
 python -m mscn.benchmark [--quick]        # optimiser/strong/cooperation/hierarchy/scaling
 python -m mscn.chess_world --figures      # emergent rules + board geometry (generated games)
 python -m mscn.chess_strategy --pgn data/elite_2024-01_5k.pgn   # Stages 1-3 on real games
+python -m mscn.chess_mscn_player --pgn data/elite_2024-01_5k.pgn  # end-to-end player + Maia/LLM benchmark
 python -m mscn.correction_field           # Interface-Principle pruning scaling
 python -m mscn.nonstationary              # adaptive-μ on drift streams
 python -m mscn.hierarchical_sigma         # RG flow as a σ*-sequence (roadmap 2.1/3.1)
