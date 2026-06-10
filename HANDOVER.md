@@ -193,6 +193,8 @@ python -m mscn.benchmark [--quick]        # optimiser/strong/cooperation/hierarc
 python -m mscn.chess_world --figures      # emergent rules + board geometry (generated games)
 python -m mscn.chess_strategy --pgn data/elite_2024-01_5k.pgn   # Stages 1-3 on real games
 python -m mscn.chess_mscn_player --pgn data/elite_2024-01_5k.pgn  # end-to-end player + Maia/LLM benchmark
+python -m mscn.chess_tournament --pgn data/elite_2024-01_5k.pgn   # IBF strength tournament (quiescence/depth)
+python -m mscn.chess_vs_llm --emit /tmp/pos.json                 # IBF-vs-Haiku positional benchmark (2-phase)
 python -m mscn.correction_field           # Interface-Principle pruning scaling
 python -m mscn.nonstationary              # adaptive-μ on drift streams
 python -m mscn.hierarchical_sigma         # RG flow as a σ*-sequence (roadmap 2.1/3.1)

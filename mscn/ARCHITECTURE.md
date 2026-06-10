@@ -583,6 +583,42 @@ substrate caps out), *not* the architecture — composing every upgrade end-to-e
 §3.10 cleanly. (Methodological note: deterministic agents collapse self-play to two
 repeated lines; the strength numbers use randomised openings to be statistically real.)
 
+### 3.17 IBF vs an LLM (Haiku) — positional head-to-head (`chess_vs_llm.py`)
+
+The user asked for an IBF-vs-LLM tournament. A full-game tournament needs a model call
+per move; this sandbox's only channel to Haiku is the Agent tool (no subprocess API
+key), impractical per-move — so we run the tractable form: on **30 real Elite positions**
+(10 per phase) compare the move chosen by the IBF player, by **Haiku** (batched Agent
+call, given the FENs), and by the human, on **legality / human-match / cp quality**.
+
+| mover | legal@1 | acc@1 | move quality (cp) |
+|---|---|---|---|
+| human (Elite 2400+) | 100% | 100% | −101 |
+| **IBF end-to-end player** | **100%** | **23%** | −101 |
+| **Haiku (LLM)** | **37%** | 10% | −67* |
+
+**Result.** On identical real positions the **grounded IBF player is the more reliable
+mover**: **100% legal** (its learned board model masks illegal moves) and 23% human-match,
+vs **Haiku's 37% legal / 10% match** — Haiku emits **null moves** (`d4d4`), impossible
+piece moves, and non-UCI tokens because it has **no reliable board model from FEN**.
+(*Haiku's −67 cp is **survivorship-biased**: averaged over only its 37% legal moves,
+mostly easy opening positions; its illegal moves are real-game forfeits.) So the LLM has
+genuine book/tactical knowledge but is **ungrounded**, while the prior-free IBF player is
+**grounded but shallow** — and both are far below human. Honest caveat: a *chess-tuned*
+or board-API-equipped LLM (gpt-3.5-turbo-instruct is ~99.8% legal) would erase this
+legality gap; small general Haiku from raw FEN is the weak case. The interesting, real
+finding is that a non-neural state machine **wins the grounding axis outright** against a
+general LLM.
+
+### 3.18 IBF strength tournament — does stronger search help a weak eval? (`chess_tournament.py`)
+
+Pushing strength: added **quiescence search** (extend captures at leaves, the horizon-
+effect fix), **MVV capture-ordering**, and a **depth knob** to the search agent
+(`StrongSearchIBFAgent`) — no new priors. Round-robin (referee-judged, randomised
+openings) among context-only, value+SEE, search-d2, search-d2+quiescence, search-d3+q.
+*[Results pending the full 14-game/pair run; the question is whether deeper search /
+quiescence amplify a material+PST eval or hit diminishing returns — logged on completion.]*
+
 ---
 
 ## 4. Theory connections (what instantiates what)
