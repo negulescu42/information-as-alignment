@@ -65,6 +65,10 @@ class KRKClosedLoopAgent:
         # referee ground truth: legal (tag, dest) per placement, built lazily rows
         self._td_abs: list[float] = []
 
+    def _value(self, pids: np.ndarray) -> np.ndarray:
+        """Value of afterstates -- overridable by generalising substrates."""
+        return self.V[pids]
+
     # ----- proposal ranking (Plackett-Luce at temperature 1/k) -----
     def rank_moves(self, wk: int, bk: int, wr: int) -> tuple[np.ndarray, ...]:
         dests = np.arange(64)
@@ -73,8 +77,8 @@ class KRKClosedLoopAgent:
         after_r = (wk * 64 + bk) * 64 + dests          # tag 1 (wr piece) -> dest
         logp_k = np.log((self.A[0, wk] + 1.0) / (self.A[0, wk] + self.R[0, wk] + 2.0))
         logp_r = np.log((self.A[1, wr] + 1.0) / (self.A[1, wr] + self.R[1, wr] + 2.0))
-        score = np.concatenate([logp_k + self.k * self.V[after_k] * self.value_on,
-                                logp_r + self.k * self.V[after_r] * self.value_on])
+        vals = self._value(np.concatenate([after_k, after_r])) * self.value_on
+        score = np.concatenate([logp_k, logp_r]) + self.k * vals
         gumbel = -np.log(-np.log(self.rng.uniform(1e-12, 1.0, 128)))
         order = np.argsort(-(score + gumbel / max(self.k, 1e-6)))
         tags = (order >= 64).astype(np.int32)
@@ -114,9 +118,9 @@ class KRKClosedLoopAgent:
 
 def run_agent(n_episodes: int, *, seed: int = 0, value_on: bool = True,
               random_rank: bool = False, max_plies: int = 80,
-              window: int = 2000) -> dict:
+              window: int = 2000, agent: "KRKClosedLoopAgent | None" = None) -> dict:
     T = tables()
-    ag = KRKClosedLoopAgent(seed=seed, value_on=value_on)
+    ag = agent if agent is not None else KRKClosedLoopAgent(seed=seed, value_on=value_on)
     rng = np.random.default_rng(1000 + seed)
     starts = np.flatnonzero(T.legal_w)
     # referee legality lookup: (tag, dest) legal per placement, derived from w_succ
