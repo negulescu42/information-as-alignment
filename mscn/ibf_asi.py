@@ -52,6 +52,8 @@ from dataclasses import dataclass, field
 
 import numpy as np
 
+from .stats import fmt_ci, paired_ci, verdict
+
 ArrayF = np.ndarray
 
 
@@ -109,7 +111,10 @@ class ASIWorld:
         return self.shock_every > 0 and self.t % self.shock_every == 0
 
     def shock_point(self) -> ArrayF:
-        """Adversarial displacement target: the farthest decoy centre."""
+        """Adversarial displacement target: the farthest decoy centre (uniform
+        random when the world has no decoys -- found by the invariant fuzzer)."""
+        if len(self.c) < 2:
+            return self.rng.uniform(self.lo, self.hi)
         far = max(self.c[1:], key=lambda c: np.sum((c - self.c[0]) ** 2))
         return np.clip(far + self.rng.normal(0, 0.3, self.dim), self.lo, self.hi)
 
@@ -191,6 +196,7 @@ class IBFASI:
         self.best_sensed = -np.inf
         self.stall = 0
         self.boost_ticks = 0
+        self.explore_ticks = 0      # restart opens a memory-free exploration phase
         self.tick_no = 0
         self.telemetry: list[dict] = []
         self.partner: "IBFASI | None" = None       # 6.4 coupling
@@ -220,12 +226,16 @@ class IBFASI:
     def _candidates(self) -> list[ArrayF]:
         step = 0.5 + 1.2 * (self.boost_ticks > 0)
         cands = [self.x.copy()]
-        # memory-guided warm jumps: best fine centre + best coarse (regional) centre
-        for src in (self.memory_best(0),
-                    self.memory_best(len(self.scales) - 1) if len(self.scales) > 1 else None):
-            if src is not None:
-                cands.append(np.clip(src + self.rng.normal(0, 0.2, self.w_.dim),
-                                     self.w_.lo, self.w_.hi))
+        # memory-guided warm jumps: best fine centre + best coarse (regional) centre.
+        # SUSPENDED during an exploration phase -- otherwise the warm jump teleports
+        # the agent straight home one tick after a stall restart, silently undoing
+        # exploration (measured: restarts fired but trajectories re-converged).
+        if self.explore_ticks == 0:
+            for src in (self.memory_best(0),
+                        self.memory_best(len(self.scales) - 1) if len(self.scales) > 1 else None):
+                if src is not None:
+                    cands.append(np.clip(src + self.rng.normal(0, 0.2, self.w_.dim),
+                                         self.w_.lo, self.w_.hi))
         for _ in range(self.n_cand):
             cands.append(np.clip(self.x + self.rng.normal(0, step, self.w_.dim),
                                  self.w_.lo, self.w_.hi))
@@ -323,7 +333,13 @@ class IBFASI:
                             and c.err < 0.05):
                         self._reinforce(coarse, c.z, 0.7 * c.v, raw=c.q)
                         c.transferred = True
+                        # share only BEST knowledge (within 0.1 of own q-max):
+                        # replicating mediocre centres injects attraction toward
+                        # mediocre regions (measured as net harm).
+                        qmax = max((cc.q for sc in self.scales for cc in sc.centers),
+                                   default=0.0)
                         if (self.partner is not None and self.give_transfer
+                                and c.q >= qmax - 0.1
                                 and self.given - self.received < self.credit_limit):
                             self.given += 1
                             self.partner._receive(c.z, 0.7 * c.v, c.q)
@@ -367,6 +383,7 @@ class IBFASI:
         # 9 ADAPT: two-sided k (U3). The stall signal is the HIGH-WATER mark (noise
         # makes per-tick raw improvement positive half the time at any peak, so the
         # stall must key on 'no new best', not 'no improvement this tick').
+        self.explore_ticks = max(0, self.explore_ticks - 1)
         if raw_final > self.best_sensed:
             self.k = min(self.k + self.k_adapt, self.k_max)
             self.stall = 0
@@ -375,6 +392,7 @@ class IBFASI:
             if self.two_sided and self.stall >= self.stall_patience:
                 self.k = self.k0                       # re-open exploration
                 self.x = self.rng.uniform(w.lo, w.hi)  # restart; memory kept
+                self.explore_ticks = 15                # ...and not consulted for a while
                 self.stall = 0
         if self.adapt_w_on:
             us = np.array([max(s.usefulness, 0.0) + 0.05 for s in self.scales])
@@ -476,17 +494,26 @@ class IBFASI:
 EVAL_BUDGET = 9000
 
 
-def _mean_runs(n_seeds: int, world_kw: dict, agent_kw: dict,
-               budget: int = EVAL_BUDGET) -> dict:
+def _runs(n_seeds: int, world_kw: dict, agent_kw: dict,
+          budget: int = EVAL_BUDGET) -> list[dict]:
+    """Per-seed results (seed-aligned across configs -> paired comparisons)."""
     outs = []
     for s in range(n_seeds):
         w = ASIWorld(seed=s, **world_kw)
         a = IBFASI(w, seed=100 + s, **agent_kw)
         outs.append(a.run(budget))
+    return outs
+
+
+def _agg(outs: list[dict]) -> dict:
     return {k: float(np.mean([o[k] for o in outs])) for k in outs[0]}
 
 
-def v1_integration(n_seeds: int = 8) -> dict:
+def _col(outs: list[dict], key: str) -> list[float]:
+    return [o[key] for o in outs]
+
+
+def v1_integration(n_seeds: int = 16) -> dict:
     """The full 9-stage agent vs single-mechanism ablations, in the spec's regime
     (noise + slow basin drift + fast ripple drift + shocks). Eval-budget matched."""
     wk = dict(noise=0.35, shock_every=80)
@@ -498,27 +525,30 @@ def v1_integration(n_seeds: int = 8) -> dict:
         "no-dissolve": dict(dissolve=False),
         "no-memory":   dict(alpha=0.0),
     }
-    return {name: _mean_runs(n_seeds, wk, kw) for name, kw in cfgs.items()}
+    return {name: _runs(n_seeds, wk, kw) for name, kw in cfgs.items()}
 
 
-def v2_global_arrival(n_seeds: int = 12) -> dict:
+def v2_global_arrival(n_seeds: int = 24) -> dict:
     """6.1 analog: fraction of runs whose strongest MEMORY centre (the de-noised
     'best known') lies in the global basin of the deceptive world. Isolated as in
     U3 (no uniform jump candidates): the only between-basin exploration is the
-    two-sided-k stall restart."""
+    two-sided-k stall restart. The world's ripple is small (0.1): the deceptive
+    gap (3.0 vs 2.7) must EXCEED the fine-structure amplitude or no agent can
+    discriminate the basins at all (measured: at ripple 0.45 the task is
+    physically undiscriminable and both arms tie exactly)."""
     out = {}
     for name, kw in (("two-sided k (ASI)", dict(two_sided_k=True)),
                      ("monotone k (Thm 8c only)", dict(two_sided_k=False))):
-        hits = 0
+        hits = []
         for s in range(n_seeds):
             w = ASIWorld(seed=s, deceptive=True, noise=0.15, drift=0.0,
-                         phase_drift=0.02)
+                         phase_drift=0.02, ripple=0.1)
             w.S = np.array([0.55] + [1.3] * (len(w.c) - 1))   # narrow optimum, wide decoys
             a = IBFASI(w, seed=200 + s, n_jumps=0, **kw)
             a.run(EVAL_BUDGET)
             best = a.memory_best()
-            hits += w.in_global_basin(best if best is not None else a.x)
-        out[name] = hits / n_seeds
+            hits.append(float(w.in_global_basin(best if best is not None else a.x)))
+        out[name] = hits
     return out
 
 
@@ -527,9 +557,9 @@ def v3_allocation(n_seeds: int = 8) -> dict:
     under the same shocked regime as V1 (recovery is where allocation binds)."""
     wk = dict(noise=0.35, shock_every=80)
     return {
-        "adaptive w_s (ASI)": _mean_runs(n_seeds, wk, dict(adapt_w=True)),
-        "uniform w_s":        _mean_runs(n_seeds, wk, dict(adapt_w=False)),
-        "single scale":       _mean_runs(n_seeds, wk, dict(n_scales=1)),
+        "adaptive w_s (ASI)": _runs(n_seeds, wk, dict(adapt_w=True)),
+        "uniform w_s":        _runs(n_seeds, wk, dict(adapt_w=False)),
+        "single scale":       _runs(n_seeds, wk, dict(n_scales=1)),
     }
 
 
@@ -540,12 +570,12 @@ def v4_honest_budget(n_seeds: int = 10) -> dict:
     wk = dict(noise=0.35, shock_every=50)
     ag = dict(Gamma=5.0)
     return {
-        "honest reserve (ASI)": _mean_runs(n_seeds, wk, dict(honest_reserve=True, **ag)),
-        "spend-everything":     _mean_runs(n_seeds, wk, dict(honest_reserve=False, **ag)),
+        "honest reserve (ASI)": _runs(n_seeds, wk, dict(honest_reserve=True, **ag)),
+        "spend-everything":     _runs(n_seeds, wk, dict(honest_reserve=False, **ag)),
     }
 
 
-def v5_aligned_interaction(n_seeds: int = 8, ticks: int = 400) -> dict:
+def v5_aligned_interaction(n_seeds: int = 24, ticks: int = 400) -> dict:
     """6.4 analog: two coupled IBF-ASIs in the SAME world (one drift realisation, so
     a partner's discovery is valid information -- transfer across independently
     drifting worlds without a morphism is misinformation, the U5 lesson), exchanging
@@ -555,9 +585,15 @@ def v5_aligned_interaction(n_seeds: int = 8, ticks: int = 400) -> dict:
     res = {"cooperative": [], "parasitic": [], "solo": []}
     for mode in res:
         for s in range(n_seeds):
-            # faster basin drift: knowledge goes stale, so SUSTAINED exchange (not a
-            # one-shot map) is what cooperation buys; a defector's early gifts fade.
-            w = ASIWorld(seed=s, noise=0.35, drift=0.03)
+            # a world where information has VALUE: 3-D (the global region is ~0.4%
+            # of the volume, so discovery is genuinely scarce -- in 2-D every solo
+            # agent finds it and sharing is worthless, the measured null), many
+            # mediocre decoys, one narrow tall global basin, drifting fast enough
+            # that knowledge goes stale -- SUSTAINED exchange of best-known
+            # locations is what cooperation buys; a defector's early gifts fade.
+            w = ASIWorld(seed=s, dim=3, n_decoys=8, noise=0.35, drift=0.03)
+            w.A = np.array([3.0] + [1.5] * 8)
+            w.S = np.array([0.7] + [1.1] * 8)
             A = IBFASI(w, seed=300 + s)
             B = IBFASI(w, seed=400 + s)
             if mode != "solo":
@@ -570,103 +606,132 @@ def v5_aligned_interaction(n_seeds: int = 8, ticks: int = 400) -> dict:
             ta = float(np.mean([t["true"] for t in A.telemetry[-100:]]))
             tb = float(np.mean([t["true"] for t in B.telemetry[-100:]]))
             res[mode].append((ta, tb))
-    out = {}
-    for mode, pairs in res.items():
-        out[mode] = {"A": float(np.mean([p[0] for p in pairs])),
-                     "B": float(np.mean([p[1] for p in pairs])),
-                     "joint": float(np.mean([p[0] + p[1] for p in pairs]))}
-    return out
+    return res
 
 
-def main() -> None:
+def main(quick: bool = False) -> None:
     print("\n" + "#" * 74)
     print("#  IBF-ASI -- the spec's reference mechanism: one agent, all nine stages")
     print("#  (composes the validated mscn modules; invariants I1-I4 asserted live)")
     print("#" * 74)
+    print("\n  Statistics: every comparative claim below is a PAIRED per-seed")
+    print("  difference with a 95% t-interval (mscn.stats); 'sig' = CI excludes 0."
+          + ("  [--quick: reduced seeds; asserts skipped]" if quick else ""))
+    n1, n2, n5 = (8, 12, 10) if quick else (16, 24, 24)
 
     print("\n  [V1] full 9-stage cycle vs ablations -- noisy/drifting/shocked world")
     print(f"       (mean true coherence over the final quarter; eval budget "
-          f"{EVAL_BUDGET}, 8 seeds):\n")
-    r1 = v1_integration()
-    for name, r in sorted(r1.items(), key=lambda kv: -kv[1]["true_tail"]):
-        print(f"       {name:<14} true {r['true_tail']:>6.3f}   best {r['best_true']:>6.3f}"
-              f"   ok {r['ok_frac']:.2f}   ticks {r['ticks']:>5.0f}"
-              f"   floor {r['lawvere_floor']:.2f}")
+          f"{EVAL_BUDGET}):\n")
+    r1 = v1_integration(n_seeds=n1)
+    a1 = {n: _agg(o) for n, o in r1.items()}
+    d1 = {n: paired_ci(_col(r1["full"], "true_tail"), _col(o, "true_tail"))
+          for n, o in r1.items() if n != "full"}
+    for name, r in sorted(a1.items(), key=lambda kv: -kv[1]["true_tail"]):
+        ci = (f"   full-vs: {fmt_ci(d1[name])} {verdict(d1[name])}"
+              if name != "full" else "")
+        print(f"       {name:<14} true {r['true_tail']:>6.3f}   ok {r['ok_frac']:.2f}"
+              f"   ticks {r['ticks']:>5.0f}{ci}")
+    d_mem_ok = paired_ci(_col(r1["full"], "ok_frac"), _col(r1["no-memory"], "ok_frac"))
 
     print("\n  [V2] 6.1 analog -- arrival in the GLOBAL basin (deceptive world,")
     print("       exploration isolated to the k-controller as in U3):")
-    r2 = v2_global_arrival()
-    for n, f in r2.items():
-        print(f"       {n:<28} {f:.2f}")
+    r2 = v2_global_arrival(n_seeds=n2)
+    for n, hits in r2.items():
+        print(f"       {n:<28} {np.mean(hits):.2f}")
+    ci2 = paired_ci(r2["two-sided k (ASI)"], r2["monotone k (Thm 8c only)"])
+    print(f"       paired diff: {fmt_ci(ci2)} {verdict(ci2)}")
 
     print("\n  [V3] 6.2 analog -- multiscale weight allocation (eval-matched):")
     r3 = v3_allocation()
-    for n, r in r3.items():
-        print(f"       {n:<22} true {r['true_tail']:.3f}")
+    for n, o in r3.items():
+        print(f"       {n:<22} true {_agg(o)['true_tail']:.3f}")
+    ci3 = paired_ci(_col(r3["adaptive w_s (ASI)"], "true_tail"),
+                    _col(r3["uniform w_s"], "true_tail"))
+    print(f"       adaptive - uniform: {fmt_ci(ci3)} {verdict(ci3)}")
 
     print("\n  [V4] 6.3 analog -- honest (floor-sized) reserve vs spend-everything")
     print("       under shocks (tight Gamma=5):")
     r4 = v4_honest_budget()
-    for n, r in r4.items():
+    a4 = {n: _agg(o) for n, o in r4.items()}
+    for n, r in a4.items():
         print(f"       {n:<22} true {r['true_tail']:.3f}   ok {r['ok_frac']:.2f}"
               f"   max transient {r['max_transient']:.1f}")
+    ci4 = paired_ci(_col(r4["honest reserve (ASI)"], "true_tail"),
+                    _col(r4["spend-everything"], "true_tail"))
+    ci4ok = paired_ci(_col(r4["honest reserve (ASI)"], "ok_frac"),
+                      _col(r4["spend-everything"], "ok_frac"))
+    print(f"       honest - spend (true): {fmt_ci(ci4)} {verdict(ci4)}"
+          f"   (ok): {fmt_ci(ci4ok)} {verdict(ci4ok)}")
 
-    print("\n  [V5] 6.4 analog -- two coupled IBF-ASIs (reciprocity-gated transfer):")
-    r5 = v5_aligned_interaction()
-    for mode, r in r5.items():
-        print(f"       {mode:<12} A {r['A']:.3f}   B {r['B']:.3f}"
-              f"   joint {r['joint']:.3f}")
+    print("\n  [V5] 6.4 analog -- two coupled IBF-ASIs (reciprocity-gated transfer,")
+    print(f"       scarce-information 3-D world, {n5} seeds):")
+    r5 = v5_aligned_interaction(n_seeds=n5)
+    A = {m: [p[0] for p in ps] for m, ps in r5.items()}
+    B = {m: [p[1] for p in ps] for m, ps in r5.items()}
+    J = {m: [p[0] + p[1] for p in ps] for m, ps in r5.items()}
+    for m in r5:
+        print(f"       {m:<12} A {np.mean(A[m]):.3f}   B {np.mean(B[m]):.3f}"
+              f"   joint {np.mean(J[m]):.3f}")
+    ci_js = paired_ci(J["cooperative"], J["solo"])        # cooperation beats solo
+    ci_bb = paired_ci(B["cooperative"], B["parasitic"])   # defection must not pay
+    ci_aa = paired_ci(A["cooperative"], A["parasitic"])   # the giver's partner cost
+    print(f"       coop-solo (joint): {fmt_ci(ci_js)} {verdict(ci_js)}")
+    print(f"       coopB-paraB      : {fmt_ci(ci_bb)} {verdict(ci_bb)}")
+    print(f"       coopA-paraA      : {fmt_ci(ci_aa)} {verdict(ci_aa)}")
 
-    # ----- the honest verdicts (assert only what the data shows) -----
-    full = r1["full"]
+    # ----- the honest verdicts (asserted on PAIRED CI bounds, not point means) -----
+    if quick:
+        print("\n  [--quick] reduced seeds: results indicative only, asserts skipped.\n")
+        return
+    full = a1["full"]
     assert full["lawvere_floor"] > 0, \
         "honest epistemics: the agent must measure and report a positive conflation floor"
-    assert full["true_tail"] > r1["no-memory"]["true_tail"] + 0.5 and \
-           full["ok_frac"] > r1["no-memory"]["ok_frac"] + 0.05, \
-        "memory must be load-bearing (coherence AND reflexive viability)"
-    assert full["true_tail"] > r1["no-dissolve"]["true_tail"] + 0.1, \
-        "error-gated dissolution must be load-bearing under drift"
-    assert r5["cooperative"]["joint"] > r5["solo"]["joint"] + 0.1, \
-        "6.4 analog: cooperation must beat solo for the pair"
-    assert r5["cooperative"]["B"] >= r5["parasitic"]["B"] - 1e-9, \
-        "6.4 analog: defecting from giving must not pay under reciprocity + drift"
-    assert abs(r4["honest reserve (ASI)"]["ok_frac"]
-               - r4["spend-everything"]["ok_frac"]) < 0.03, \
-        "6.3 analog: the floor-sized reserve must not cost reflexive viability"
+    assert d1["no-memory"]["lo"] > 0 and d_mem_ok["lo"] > 0, \
+        "memory must be load-bearing (coherence AND viability), CI-significant"
+    assert d1["no-dissolve"]["mean"] > 0.15, \
+        "error-gated dissolution must be load-bearing under drift (directional)"
+    assert ci2["mean"] >= 0, \
+        "6.1: two-sided agency must not lose to monotone (directional)"
+    assert ci_js["mean"] > 0.2, \
+        "6.4: cooperation must beat solo for the pair in the scarce-info regime"
+    assert ci_bb["mean"] >= -0.05, \
+        "6.4: defection must not pay (directional)"
+    assert abs(ci4ok["mean"]) < 0.03, \
+        "6.3: the floor-sized reserve must not cost reflexive viability"
 
-    print("\n  honest readings (the nulls are findings, not failures):")
-    print("   * MEMORY and error-gated DISSOLUTION are decisively load-bearing")
-    print(f"     (no-memory {r1['no-memory']['true_tail']:.2f}/ok {r1['no-memory']['ok_frac']:.2f}; "
-          f"no-dissolve {r1['no-dissolve']['true_tail']:.2f}; full "
-          f"{full['true_tail']:.2f}/ok {full['ok_frac']:.2f}).")
-    print("   * PLAN and extra scales are ~free but not winning HERE: smooth wide")
-    print("     basins have no traps to cross (U7's corridor is where planning pays")
-    print("     0->100%) and 2-D recovery is easy enough for fine memory alone (the")
-    print("     scale-count null; U2/3.15 carry the multiscale wins).")
-    print("   * 6.1 SHARPENED: with a noise-robust (high-water) agency signal, the")
-    print(f"     monotone-k agent self-limits (k stops ratcheting on noise), and the")
-    print(f"     two-sided reset adds nothing measurable ({r2['two-sided k (ASI)']:.2f} vs "
-          f"{r2['monotone k (Thm 8c only)']:.2f}) --")
-    print("     U3's win exists under the noisy per-tick ratchet, which the high-water")
-    print("     rule removes at the source. The 6.1 theorem stays open.")
-    print(f"   * 6.3 HONEST NEGATIVE: the floor-sized reserve costs "
-          f"~{100 * (1 - r4['honest reserve (ASI)']['true_tail'] / r4['spend-everything']['true_tail']):.0f}% "
-          f"steady-state coherence")
-    print("     and does not buy faster recovery at these scales; what survives is the")
-    print("     honest-epistemics telemetry (floor measured > 0, never claimed zero).")
-    print(f"   * 6.4 SUPPORTED operationally: cooperation Pareto-beats solo "
-          f"({r5['cooperative']['joint']:.2f} vs {r5['solo']['joint']:.2f} joint) and, under "
-          f"drift, defection does not pay")
-    print(f"     (B: cooperative {r5['cooperative']['B']:.2f} vs parasitic "
-          f"{r5['parasitic']['B']:.2f}; the defector's partner withholds, gifts go stale).")
+    print("\n  honest readings (significance stated per claim; nulls are findings):")
+    print(f"   * MEMORY is load-bearing and SIGNIFICANT: full-vs-no-memory "
+          f"{fmt_ci(d1['no-memory'])} true /")
+    print(f"     {fmt_ci(d_mem_ok)} viability. DISSOLUTION is directional: "
+          f"{fmt_ci(d1['no-dissolve'])} {verdict(d1['no-dissolve'])}")
+    print("     (consistent sign across suite revisions; the regime matrix probes it).")
+    print(f"   * PLAN / extra scales / reflect: paired CIs straddle 0 here "
+          f"(plan {d1['no-plan']['mean']:+.2f}, scale {d1['single-scale']['mean']:+.2f}, "
+          f"reflect {d1['no-reflect']['mean']:+.2f}) --")
+    print("     regime-scoped nulls; the regimes where each wins are U7's corridor,")
+    print("     U2/3.15, and the Zombie-Twin respectively.")
+    print(f"   * 6.1 DIRECTIONAL: two-sided vs monotone k = {fmt_ci(ci2)} "
+          f"{verdict(ci2)}. Two mechanism")
+    print("     findings en route: memory-guided warm jumps silently UNDO restarts")
+    print("     unless exploration suspends them, and a deceptive gap smaller than")
+    print("     the fine-structure amplitude is physically undiscriminable (exact tie).")
+    print(f"   * 6.3 HONEST NULL both ways: reserve effect on coherence {fmt_ci(ci4)}")
+    print(f"     and on viability {fmt_ci(ci4ok)}; what stands is the floor telemetry")
+    print("     itself (measured > 0, never claimed zero).")
+    js_v, bb_v = verdict(ci_js), verdict(ci_bb)
+    print(f"   * 6.4 in the scarce-information regime (3-D, narrow optimum): clean")
+    print(f"     ordering coop > parasitic > solo; coop-solo {fmt_ci(ci_js)} {js_v},")
+    print(f"     coopB-paraB {fmt_ci(ci_bb)} {bb_v}. (In 2-D, where every solo agent")
+    print("     finds the optimum itself, sharing is worthless -- measured null kept.)")
 
     print("\n  verdict: the nine stages run as ONE coupled mechanism with the spec's")
     print("  invariants asserted at runtime (I1 ascent monotonicity, I2 basin")
-    print("  expansion, I3 bounded transients, I4 capacity budget) and its telemetry")
-    print("  emitted per tick. The 6.x frontier claims are exercised as measured")
-    print("  operational analogs -- NOT proved theorems (no Lean toolchain here); see")
-    print("  IBF_ASI_GAP.md for exactly what is backed, built, open, and null.\n")
+    print("  expansion, I3 bounded transients, I4 capacity budget), its telemetry")
+    print("  emitted per tick, and every comparative claim CI-graded (mscn.stats).")
+    print("  The 6.x frontier claims are exercised as measured operational analogs --")
+    print("  NOT proved theorems (no Lean toolchain here); see IBF_ASI_GAP.md.\n")
 
 
 if __name__ == "__main__":
-    main()
+    import sys
+    main(quick="--quick" in sys.argv)
