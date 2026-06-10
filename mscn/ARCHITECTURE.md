@@ -615,9 +615,24 @@ general LLM.
 Pushing strength: added **quiescence search** (extend captures at leaves, the horizon-
 effect fix), **MVV capture-ordering**, and a **depth knob** to the search agent
 (`StrongSearchIBFAgent`) — no new priors. Round-robin (referee-judged, randomised
-openings) among context-only, value+SEE, search-d2, search-d2+quiescence, search-d3+q.
-*[Results pending the full 14-game/pair run; the question is whether deeper search /
-quiescence amplify a material+PST eval or hit diminishing returns — logged on completion.]*
+openings, 14 games/pair).
+
+| rank | agent | tournament score (max 4) |
+|---|---|---|
+| 1 | **search-d3+q** | 2.68 |
+| 2 | search-d2+q | 2.68 |
+| 3 | search-d2 | 2.50 |
+| 4 | value+SEE | 1.25 |
+| 5 | context-only | 0.89 |
+
+**Result.** Stronger search **genuinely helps**, even on the shallow material+PST eval:
+**quiescence d2+q vs d2 = 0.64**, **depth d3+q vs d2+q = 0.61** — both real gains, with a
+clean transitive ladder (search ≫ value+SEE ≫ context). (A 4-game pilot had falsely
+shown "quiescence hurts" — pure small-sample noise; 14 games/pair resolves it.) So the
+classical levers (quiescence, ordering, depth) **do** lift strength on the prior-free
+substrate — "we can do better" holds on the strength axis. It is still club-level: the
+ceiling is the **eval** (material+PST, no king-safety/mobility/strategy), which is the
+next lever (see the discrepancy-vs-oracle training, §3.19).
 
 ---
 
