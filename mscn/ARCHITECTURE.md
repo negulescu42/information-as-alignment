@@ -996,3 +996,40 @@ mod-4 counter, data sweep: **50 seqs → 4 states, purity 1.000**; 150→25/0.98
    longer history.
 
 Run: `python -m mscn.agi_state_merging`.
+
+### 8.11 D2 — statistical state-merging crosses the estimation barrier (`agi_alergia.py`)
+
+§8.10 left a precise target: a **noise-robust** merge test. Implemented: same red-blue
+frame and unbounded recurrent fold as RPNI (cycles = unbounded memory), with the exact
+legal-set equality replaced by a **statistical compatibility decision**. A per-node
+Hoeffding test (classic ALERGIA) is *not* enough — measured: on the flag world the
+mode-distinguishing evidence lives in rare-token subtrees (~2% of histories), so every
+single node pair is statistically marginal and the modes collapse (purity 0.77). The
+working fix is the MDI move: a **G-test pooled across the entire speculative fold**
+(2·Σ O·ln(O/E) summed over every folded node pair, accepted iff below the chi-square
+critical value at the pooled degrees of freedom; pairs with < 4 observations on either
+side carry no evidence — the G-test is anti-conservative there), plus EDSM ordering
+(most-evidenced blue first, merge into the best-fitting red by G/df, not the first
+compatible one).
+
+**Result (legal-set purity, mean over 3 data seeds, 400 train sequences):**
+
+| world | true states | suffix-CSSR | RPNI (exact) | **statistical** |
+|---|---|---|---|---|
+| even | 2 | 7 / 0.94 | 43 / 0.95 | **4 / 1.00** |
+| toggle | 2 | 13 / 0.98 | 27 / 0.90 | **4 / 1.00** |
+| flag (stochastic, long-range) | 2 | 89 / 0.98 | 39 / 0.79 | **2 / 1.00** |
+| counter (deterministic, long-range) | 4 | 7 / 0.90 | 71 / 0.98 | **5 / 1.00** |
+
+Data sweeps (the two named §8.10 failures): counter **1.000 at every size 50→900**
+(4–5 states; RPNI decays 1.00→0.98); flag **1.000 at every size** (2–3 states; RPNI
+wobbles 0.72→0.77). More data now *helps*; the learned machines are exact or
+near-minimal everywhere (RPNI's were 27–71 states).
+
+**Reading.** Both §8.10 residuals — noise-robustness and data monotonicity — are
+removed by one principled change, and the §8.10 crossing (unbounded memory via merge
+cycles) is kept. On worlds with enumerable causal states the estimation barrier is now
+**fully crossed**: prior-free, observation-only, exact recovery. What remains for
+chess-from-atomic-tokens is **combinatorial state growth** (the flat ε-machine of chess
+does not fit any merge table), which needs a *factored* state — the factor-discovery
+study (§8.12) — not a better merge test.
