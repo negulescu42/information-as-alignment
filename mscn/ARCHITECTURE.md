@@ -1031,5 +1031,48 @@ removed by one principled change, and the §8.10 crossing (unbounded memory via 
 cycles) is kept. On worlds with enumerable causal states the estimation barrier is now
 **fully crossed**: prior-free, observation-only, exact recovery. What remains for
 chess-from-atomic-tokens is **combinatorial state growth** (the flat ε-machine of chess
-does not fit any merge table), which needs a *factored* state — the factor-discovery
-study (§8.12) — not a better merge test.
+does not fit any merge table), which needs a *factored* state — a factor-discovery
+study — not a better merge test.
+
+---
+
+## 9. IBF-ASI — the coupled single-agent mechanism (`ibf_asi.py`, spec §8)
+
+The IBF-ASI specification (audited clause-by-clause in `IBF_ASI_GAP.md` — its cited
+Lean library is **not** in this repo; the ✅ rows map to the mscn behavioural
+validations) asks for one agent running the full 9-stage cognitive cycle over the
+whole state tuple `(x, R̂, {δR̂ₛ, wₛ}, k, monitor, self-model, Γ)` with runtime
+invariants and telemetry. Every stage existed here as a separate validated module;
+**the coupled mechanism did not**. Built: `IBFASI` — SENSE (multiscale kernel
+memory) → PLAN (H-step lookahead) → SELECT (Boltzmann-k) → ACT (monotone ascent
+segment) → LEARN (raw-improvement discrepancy writes, fine scale) → TRANSFER
+(crystallised, error-surviving centres consolidate to coarser scales / replicate to a
+partner under a reciprocity ledger) → DISSOLVE (error-gated extra decay, scale-aware)
+→ REFLECT (θ-monitor + boost; self-model with a measured **conflation floor** > 0 —
+the Lawvere gap reported, never claimed zero) → ADAPT (two-sided k, wₛ, capacity
+projection to Γ). Invariants asserted **every tick**: I1 ascent monotonicity, I2
+δR ≥ 0 (basin expansion over baseline), I3 bounded below-θ transients, I4 Σ|δR| ≤ Γ.
+
+**Measured (noisy + slow-coarse/fast-fine drift + fast-mode-damaging shocks;
+eval-matched, 8–12 seeds):**
+
+| claim | outcome |
+|---|---|
+| memory load-bearing | **yes, decisive**: no-memory 2.09 / reflexive-ok 0.78 vs full **3.52 / 1.00** |
+| error-gated dissolution | **yes**: no-dissolve 3.16 vs 3.52 |
+| planning / extra scales / reflect | ties — honest nulls *in this regime* (wins live in U7's corridor, U2/§3.15, Zombie-Twin) |
+| 6.1 (global-basin agency) | **sharpened null**: a noise-robust high-water agency signal removes the k-ratchet pathology for both variants (0.42 = 0.42); U3's win presupposed the noisy ratchet |
+| 6.3 (honest budget reserve) | **honest negative**: floor-sized reserve costs ~3% coherence, buys no recovery; the floor telemetry itself stands |
+| 6.4 (aligned interaction) | **supported**: cooperation Pareto-beats solo (joint 7.18 vs 6.77, both partners better) and defection does not pay under drift (B: 3.61 coop > 3.48 parasitic) — credit-ledger reciprocity + stale gifts |
+
+Five design corrections were forced by measurement (each logged in
+`IBF_ASI_GAP.md` §3): reinforce on **raw** sensed improvement (reinforcing R_eff
+self-manufactures traps — the system-level re-confirmation of the learner.py rule);
+coarse scales fill **only by consolidation**; the world's scale-stability ordering
+must be physical (coarse slow, fine fast — and adversarial shocks damage the fast
+modes, which is what consolidation is *for*); the agent's "best known" is the
+de-noised per-centre quality EWMA, not the raw high-water mark; reciprocity is a
+ledger, not a time-window, and transfer across independently-drifting worlds without
+a morphism is misinformation (U5 at system level).
+
+Run: `python -m mscn.ibf_asi` (numpy only; all asserts green).
