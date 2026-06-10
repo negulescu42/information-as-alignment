@@ -212,7 +212,8 @@ def run(pgn_path: str, max_games: int = 5000, n_train_games: int = 1500,
     print(f"     it still loses to the oracle ({vs_oracle:.2f}). Richer EMERGENT features")
     print(f"     (mobility, king exposure from the occupancy state) are the next lever to")
     print(f"     'improve in all areas'. But the driver (discrepancy) and the gain are real.\n")
-    return {"curve": curve, "agree": (agr_d, agr_o), "vs_outcome": vs_outcome, "vs_oracle": vs_oracle}
+    return {"curve": curve, "held_discrepancy": held_d, "coverage": cov,
+            "vs_outcome": vs_outcome, "vs_oracle": vs_oracle}
 
 
 if __name__ == "__main__":
