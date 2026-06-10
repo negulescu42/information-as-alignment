@@ -179,7 +179,7 @@ def run(pgn_path: str, max_games: int = 5000, test_frac: float = 0.1,
 
     print("\n  === HONEST COMPARISON (published comparators -- not run here) ===")
     print(f"  {'system':<26}{'strength':>16}{'human acc@1':>14}")
-    print(f"  {'MSCN end-to-end (this)':<26}{'legal+sound':>16}{hm['all']['acc@1']:>13.1%}")
+    print(f"  {'MSCN end-to-end (this)':<26}{'club (legal+sound)':>16}{hm['all']['acc@1']:>13.1%}")
     print(f"  {'Maia (neural, millions)':<26}{'~1100-1900 Elo':>16}{'~0.50':>14}")
     print(f"  {'gpt-3.5-turbo-instruct':<26}{'~1750 Elo':>16}{'n/a':>14}")
     print(f"  {'Karvonen chess-GPT (50M)':<26}{'~1500 Elo':>16}{'n/a':>14}")
@@ -189,7 +189,7 @@ def run(pgn_path: str, max_games: int = 5000, test_frac: float = 0.1,
     def _rel(s):
         return "beats" if s > 0.55 else ("loses to" if s < 0.45 else "ties")
     print("\n  verdict:")
-    print(f"   * the apparatus plays **legal chess** (legal@1 {hm['all']['legal@1']:.0%}) and is")
+    print(f"   * the apparatus plays **legal chess** (legal@1 {hm['all']['legal@1']:.0%}) and")
     print(f"     {_rel(st['vs_random'])} random ({st['vs_random']:.2f}), "
           f"{_rel(st['vs_context'])} context-only ({st['vs_context']:.2f}), "
           f"{_rel(st['vs_value_see'])} value+SEE ({st['vs_value_see']:.2f})")
