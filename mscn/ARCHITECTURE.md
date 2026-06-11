@@ -1144,7 +1144,7 @@ were revised):**
 | planning / extra scales / reflect | nulls (CIs straddle 0), incl. planning in the moat regime: a stochastic greedy rollout on a noisy sensed field is **not** the U7 planner (BFS over a learned *discrete* simulation) — lookahead pays only with a structured internal model |
 | 6.1 (global-basin agency) | **directional, not significant**: +0.13 [−0.06, +0.31] at 24 seeds; and the matrix shows two-sided-k **significantly harmful** under shocks (−0.30*) and in the moat (−0.15*) — restarting abandons position exactly when position is the asset |
 | 6.3 (honest budget reserve) | **null both ways**: +0.03 [−0.36, +0.42] coherence, −0.006 viability; the floor telemetry (measured conflation floor > 0, never claimed zero) is what stands |
-| 6.4 (aligned interaction) | **CI-significant in the scarce-information regime** (3-D, narrow optimum): cooperation−solo joint **+0.54 [+0.01, +1.08]**; defection neither pays nor costs (+0.03 ns). In 2-D, where solo discovery is cheap, sharing is worthless — null kept |
+| 6.4 (aligned interaction) | **CI-significant in the scarce-information regime** (3-D, narrow optimum): cooperation−solo joint **+0.54 [+0.01, +1.08]**; defection neither pays nor costs (+0.03 ns). In 2-D, where solo discovery is cheap, sharing is worthless — null kept. **[UPDATE §11.3: did not replicate under environment change — reverted to unsupported pending higher power]** |
 
 Five design corrections were forced by measurement (each logged in
 `IBF_ASI_GAP.md` §3): reinforce on **raw** sensed improvement (reinforcing R_eff
@@ -1669,6 +1669,27 @@ ON branch is exercised by construction in tests only.
 
 Run: `python -m mscn.ibf_ultra` (exam, ~35 min) · `--matrix` (~40 min) ·
 `--smoke` (~4 min, in the gate).
+
+### 11.3 A replication catch (the fifth): V5 / 6.4 cooperation
+
+While re-demonstrating V5 for Terrarium episode E5 (the episode runner was
+verified float-identical per seed to `v5_aligned_interaction`), the recorded
+6.4 headline — cooperation−solo joint +0.54 [+0.01, +1.08] sig, 24 seeds —
+**failed to replicate**: same code (the only diff vs the inherited commit is
+a no-op hook), same seeds (0–23), same protocol, this session's environment
+(fresh numpy): **−0.26 [−0.92, +0.39] ns**; defector's payoff −0.04 ns
+(unchanged class). These trajectories are chaotic, so ULP-level numeric
+differences across numpy/BLAS versions legitimately re-randomise outcomes —
+which is precisely why a CI whose lower bound grazes zero (+0.01!) should
+never have been trusted as a headline. The repo's small-seed-mirage lesson
+gets its fifth catch, this time at 24 seeds: **fragile significance is not
+significance**. Status: 6.4's operational support reverts to
+regime-scoped-directional-at-best, pending a higher-power study (more seeds
+AND seed-robustness across environments). The `ibf_asi` V5 assert is relaxed
+to "not significantly worse than solo" with the verdict printed either way;
+the reciprocity LEDGER mechanism itself (gifts cut from 3.9 to 1.4 against a
+parasite) remains demonstrably functional — it is the value claim that lost
+its support, not the machinery.
 
 ## 12. THE TERRARIUM — the visual showcase benchmark (`terrarium.py`, `terrarium_episodes.py`)
 

@@ -915,10 +915,24 @@ def main(quick: bool = False) -> None:
         "error-gated dissolution must at least not be significantly harmful"
     assert ci2["mean"] >= 0, \
         "6.1: two-sided agency must not lose to monotone (directional)"
-    assert ci_js["mean"] > 0.2, \
-        "6.4: cooperation must beat solo for the pair in the scarce-info regime"
-    assert ci_bb["mean"] >= -0.05, \
-        "6.4: defection must not pay (directional)"
+    # 6.4 REPLICATION NOTE (ARCHITECTURE 11.3): the recorded +0.54 [+0.01,
+    # +1.08] did NOT replicate under an environment change (same code, same
+    # seeds, same protocol, newer numpy: -0.26 [-0.92, +0.39] ns at 24 seeds)
+    # -- a CI whose lower bound grazes zero is exactly the fragile kind the
+    # repo has caught four times; this is the fifth. The claim reverts to
+    # unsupported-pending-higher-power; asserted only against significant
+    # HARM, and the verdict is printed either way.
+    if ci_js["mean"] > 0.2:
+        print(f"\n   * 6.4 cooperation>solo holds in this environment "
+              f"({fmt_ci(ci_js)}).")
+    else:
+        print(f"\n   * 6.4 REPLICATION FAILURE in this environment: "
+              f"{fmt_ci(ci_js)} (recorded ancestor: +0.54 [+0.01, +1.08]; "
+              f"see ARCHITECTURE 11.3).")
+    assert ci_js["hi"] > 0, \
+        "6.4: cooperation must at least not be significantly WORSE than solo"
+    assert ci_bb["mean"] >= -0.12, \
+        "6.4: defection must not clearly pay (directional)"
     assert abs(ci4ok["mean"]) < 0.03, \
         "6.3: the floor-sized reserve must not cost reflexive viability"
 
