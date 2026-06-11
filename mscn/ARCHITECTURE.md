@@ -1706,9 +1706,9 @@ episode pre-registers its §9–§10 ancestor and reports MET/NOT MET.
 | E2 Earthquake | §9 V1 / shocked cell | **MET**: tail +1.042 [+0.741, +1.344] sig; post-quake recovery 3 vs 8 ticks, −4.7 [−8.6, −0.9] sig (presentation metric, CI'd) |
 | E3 Mirage Field | §10.2 null + §10.1 sig | the tripwire episode: its first full run FLAGGED ITSELF (net coherence sig-negative "contradicts ancestor"); investigation: the pair is matched on ULTRA's no-restart policy, NOT the ancestor's restart-enabled protocol — a NEW fact, recorded: signed organ costs −0.41 [−0.68, −0.14] on the deceptive tail vs nonneg under matched no-restart policy (attribution open); dwell registration **NOT MET** (+0.03 ns); evaluator arena re-demonstrated: nonneg extra forgetting +0.32 [+0.13, +0.51] sig |
 | E4 Canyon | §9.2 corridor +1.40* | **MET**: +1.432 [+1.345, +1.520] sig; goal 10/10 vs trap-locked 0/10 |
-| E5 Trade | §9 V5 / 6.4 (24 seeds) | re-run at ancestor power; assert at suite level (mean > 0.2); 2-D null carried in the panel |
-| E6 Chess Garden | §9.4 (30k re-demo) | fresh 30k×3 curve (mate ≥0.4, legal@1 ≥0.85, preserve ≥0.9 registered); 150k asymptote, value-ablation, DTM ceiling and G4 collapse CITED not re-run; learned-legality halo rendered on the board |
-| E7 Grand Tour | §11 | ULTRA through seasons/quake/mirage with NO bell; acts scored vs ancestors |
+| E5 Trade | §9 V5 / 6.4 (24 seeds) | **REPLICATION FAILURE staged as the exhibit** (§11.3): −0.263 [−0.921, +0.394] ns at the ancestor's own seeds/protocol vs recorded +0.54 [+0.01, +1.08]; defection-null class unchanged (−0.04 ns); the reciprocity ledger itself demonstrates (gifts 3.9 → 1.4 vs a parasite) |
+| E6 Chess Garden | §9.4 (30k re-demo) | **MET on every registered bar**: mate 0.008 → 0.665 [0.644, 0.685] (ancestor curve: 0.526@16k, 0.708@58k), legal@1 0.68 → 0.91, preserve 0.99, DTM-opt 0.24; 150k asymptote, value-ablation, ceiling and G4 collapse CITED not re-run; learned-legality halo rendered on the board |
+| E7 Grand Tour | §11 | ULTRA, one unbelled life (seasons + mid-winter quake): A2 3.26 [1.90, 4.62] over 8 lives (asymptote class held), full detect+recognise signature 5/8, zero false events; P1's weakness carried in the panel |
 
 Report generator: `terrarium_report/README.md` with embedded GIFs, novice
 scoreboard (= the measured means), and the "what doesn't help, and why"

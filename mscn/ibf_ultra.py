@@ -25,15 +25,19 @@ it. The agent must *detect* that the world's character changed, and must
        fit; the archive is hundreds of ticks stale) -- the passive contrast
        never opens. So ULTRA probes: it redirects one of its uniform-jump
        candidates (exact eval parity -- a directed jump instead of a random
-       one) to an archived context's BEST-KNOWN cell, where that model makes
-       its most falsifiable prediction and the models maximally disagree, and
-       lets the sensed value arbitrate. Probes run round-robin over archived
-       contexts at a calm cadence, accelerate when the discrepancy stream is
-       mildly elevated (alert) or a surge opened a PROBATION window, and feed
-       per-context evidence (hit: the old model's prediction lands within its
-       own archived tolerance AND clearly beats the current model at a cell
-       where they disagree; miss: an informative probe that fails). Evidence
-       of >= 2 net hits re-binds; a probation that ends unrecognised splits.
+       one) to an archived context's LANDMARKS (up to three quarantine-
+       protected champion points >= 2 apart, each with a de-noised value --
+       the model's most falsifiable predictions), and lets the sensed value
+       arbitrate against the prober's own SITE reference at that exact point
+       (coarse cell averages mistake within-cell spread for disagreement --
+       measured false re-bind). Probes run round-robin at a calm cadence,
+       accelerate on alert / probation / suspicion (a hit is itself
+       alarming) / post-split due diligence, and feed per-(context,landmark)
+       evidence. Re-binding requires hits at TWO distinct landmarks (one can
+       be faked by a correlated fine-structure swing -- measured), or a
+       stricter time-spread single-landmark rule; persistent agreement at
+       every landmark with no informative disagreement ever MERGES a false
+       split back into its elder. A probation that ends unrecognised splits.
 
   U-2  EQUIPMENT (each engagement logged, visible in the Terrarium):
        lean economics always (horizon=1 + annealed steps: 9.7 -- unused
