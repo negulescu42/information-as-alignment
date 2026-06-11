@@ -11,7 +11,7 @@ CI-grade, and **the show never outruns the measurements**.
 ## 0. Orient (~20 min)
 
 ```bash
-git fetch origin <this branch> && git merge origin/<this branch>
+git fetch origin claude/wizardly-dirac-fzi0ma && git merge origin/claude/wizardly-dirac-fzi0ma
 pip install -U setuptools && pip install numpy scipy matplotlib cma chess zstandard pillow
 python -m mscn.testall          # now 10 suites, ~30 min, must be GREEN
 ```

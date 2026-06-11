@@ -1,0 +1,16 @@
+{
+ "title": "Episode 4 \u2014 The Canyon",
+ "caption": "It walks DOWN into the canyon because it knows what's beyond.",
+ "novice": [
+  "reached the far side: with a plan 10/10 journeys; without 0/10 (stuck on the tempting little hill)"
+ ],
+ "backstage": [
+  "planner-vs-none tail coherence, paired: +1.411 [+1.372, +1.451] + (sig) \u2014 ancestor \u00a79.2 corridor cell (+1.40*, the only starred positive planning cell in the matrix)",
+  "honest scope (ancestor kept): planning binds ONLY in this discrete low-branching structure \u2014 in open 2-D terrain both pre-registered planning criteria came back null (\u00a79.2); see the \u201cwhat doesn\u2019t help\u201d panel."
+ ],
+ "assets": [
+  "terrarium_report/assets/e4_canyon.gif",
+  "terrarium_report/assets/e4_canyon_final.png"
+ ],
+ "mechanism": "model-based planning + U8 option commitment"
+}

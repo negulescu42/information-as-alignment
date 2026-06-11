@@ -1,0 +1,19 @@
+{
+ "title": "Episode 5 \u2014 The Trade",
+ "caption": "They trade maps \u2014 until one stops giving.",
+ "novice": [
+  "the big lesson this episode taught US: a result we once celebrated did not survive a fresh re-run \u2014 so we say so, in the show itself",
+  "the bookkeeping still works: an honest pair trades 3.9 maps; a freeloader gets cut off after 1.4",
+  "does trading make the pair richer? not reliably: 4.59 together vs 4.85 alone (a coin-flip difference)"
+ ],
+ "backstage": [
+  "REPLICATION CATCH (\u00a711.3, the fifth): ancestor \u00a79 V5 / 6.4 recorded +0.54 [+0.01, +1.08] sig; this re-run (verified float-identical runner, same seeds/protocol, fresh numpy): -0.263 [-0.921, +0.394] 0 (ns) \u2014 fragile significance is not significance; the claim reverts to unsupported pending higher power.",
+  "defector's payoff: -0.036 [-0.396, +0.324] 0 (ns) \u2014 defection still does not pay (class unchanged)",
+  "what stands: the reciprocity LEDGER mechanism \u2014 credit-gated giving measurably cuts a parasite off \u2014 and the 2-D null (sharing is worthless where discovery is cheap)."
+ ],
+ "assets": [
+  "terrarium_report/assets/e5_trade.gif",
+  "terrarium_report/assets/e5_trade_final.png"
+ ],
+ "mechanism": "reciprocity-ledgered transfer (6.4, EC-4)"
+}

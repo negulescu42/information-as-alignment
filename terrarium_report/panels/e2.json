@@ -1,0 +1,17 @@
+{
+ "title": "Episode 2 \u2014 The Earthquake",
+ "caption": "Knocked across the map, it walks straight home.",
+ "novice": [
+  "life quality in quake country: keeper 3.14 vs amnesiac 2.09",
+  "ticks to walk home after a quake: keeper 3 vs amnesiac 8"
+ ],
+ "backstage": [
+  "tail coherence, paired over 8 seeds: +1.042 [+0.741, +1.344] + (sig) \u2014 ancestor \u00a79 V1 (+1.18 sig) / shocked matrix cell",
+  "recovery-time diff (presentation metric, no ancestor): -4.742 [-8.556, -0.928] - (sig)"
+ ],
+ "assets": [
+  "terrarium_report/assets/e2_earthquake.gif",
+  "terrarium_report/assets/e2_earthquake_final.png"
+ ],
+ "mechanism": "consolidation + warm-jump homing (memory under shocks)"
+}

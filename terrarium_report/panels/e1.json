@@ -1,0 +1,18 @@
+{
+ "title": "Episode 1 \u2014 The Two Twins",
+ "caption": "Winter came. The forgetful twin lost the map; ours kept it.",
+ "novice": [
+  "home quality after winter: keeper 3.33 vs amnesiac 2.11 (coherence, higher better)",
+  "time living in the best meadow after winter: keeper 55% vs amnesiac 30%"
+ ],
+ "backstage": [
+  "recovered asymptote (A2 tail), paired over 8 seeds: +1.221 [+0.583, +1.860] + (sig) \u2014 ancestor \u00a79.6 G2 (+sig)",
+  "home-basin occupancy diff: +0.246 [-0.145, +0.636] 0 (ns)",
+  "honest note (ancestor kept): keeper's own relearning savings -12 [-76, +51] ticks \u2014 memory buys the recovered asymptote, NOT relearning speed; the winter residue slows the first re-climb."
+ ],
+ "assets": [
+  "terrarium_report/assets/e1_two_twins.gif",
+  "terrarium_report/assets/e1_two_twins_final.png"
+ ],
+ "mechanism": "continual memory (the one universally significant stage)"
+}

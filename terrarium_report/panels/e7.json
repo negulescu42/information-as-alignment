@@ -1,0 +1,18 @@
+{
+ "title": "Episode 7 \u2014 The Grand Tour (no bells)",
+ "caption": "No one rings a bell when winter comes. It notices.",
+ "novice": [
+  "life quality after an unannounced winter and an earthquake: 3.26 \u2014 the same class as an agent that was TOLD the seasons (3.4-3.6)",
+  "it noticed winter within ~4 ticks and recognised the returned summer in 5/8 of its lives \u2014 and never once hallucinated a season that wasn't there"
+ ],
+ "backstage": [
+  "A2 tail over 8 unbelled lives: 3.26 [1.90, 4.62] \u2014 \u00a711.1 P4 MET (vs canonical Unified \u22120.105 [\u22120.587, +0.378] ns)",
+  "detection: split latency ~4 ticks (11/12), re-bind 8/12 lives @ ~18 ticks, ZERO false events in 24 stationary runs (P3 MET)",
+  "carried weakness (\u00a711.1 P1 NOT MET, \u2212235%): self-detection does NOT recover the given-bell transplant's relearning-SPEED savings \u2014 missed recognitions are costly; what memory actually buys (\u00a79.6), the recovered asymptote, is kept without any bell."
+ ],
+ "assets": [
+  "terrarium_report/assets/e7_grand_tour.gif",
+  "terrarium_report/assets/e7_tour_final.png"
+ ],
+ "mechanism": "U-1 self-detected contexts + U-2 equipment, end to end"
+}

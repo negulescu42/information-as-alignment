@@ -90,11 +90,20 @@ def check_finite(agent: IBFASI) -> None:
 
 
 def fuzz_one(wk: dict, ak: dict, coupled: bool, parasite: bool,
-             eval_budget: int = 1800) -> dict:
-    """Run one configuration; the per-tick I1/I2/I4 asserts + finiteness checks
-    fire inside. Returns summary stats (max transient etc.)."""
+             eval_budget: int = 1800, ultra: bool = False) -> dict:
+    """Run one configuration; the per-tick I1/I2'/I4 asserts + finiteness
+    checks fire inside (I2' = bounded signed modification for ULTRA, whose
+    memory organ is the signed engine). Returns summary stats."""
     w = ASIWorld(**wk)
-    a = IBFASI(w, **ak)
+    if ultra:
+        from .ibf_ultra import UltraASI
+        uk = {k: v for k, v in ak.items()
+              if k not in ("n_scales", "alpha", "horizon", "anneal_steps",
+                           "two_sided_k", "model_planner")}
+        a = UltraASI(w, **uk)
+        coupled = False                  # the ULTRA leg fuzzes self-detection
+    else:
+        a = IBFASI(w, **ak)
     agents = [a]
     if coupled:
         b = IBFASI(w, **{**ak, "seed": ak["seed"] + 1})
@@ -121,16 +130,19 @@ def main(n_configs: int = 150, seed: int = 0) -> None:
     rng = np.random.default_rng(seed)
     failures: list[tuple[int, dict, dict, str]] = []
     transients = []
-    n_coupled = 0
+    n_coupled = n_ultra = 0
     for i in range(n_configs):
         wk, ak, coupled, parasite = sample_config(rng)
-        n_coupled += coupled
+        ultra = rng.random() < 0.25      # a quarter of legs run UltraASI
+        n_coupled += coupled and not ultra
+        n_ultra += ultra
         try:
-            r = fuzz_one(wk, ak, coupled, parasite)
+            r = fuzz_one(wk, ak, coupled, parasite, ultra=ultra)
             transients.append(r["max_transient"])
         except (AssertionError, Exception) as e:   # noqa: BLE001 -- a fuzzer catches all
             failures.append((i, wk, ak, f"{type(e).__name__}: {e}"))
-    print(f"\n  configs: {n_configs} ({n_coupled} coupled pairs)  |  "
+    print(f"\n  configs: {n_configs} ({n_coupled} coupled pairs, "
+          f"{n_ultra} ULTRA self-detection legs)  |  "
           f"violations: {len(failures)}")
     if failures:
         for i, wk, ak, err in failures[:10]:

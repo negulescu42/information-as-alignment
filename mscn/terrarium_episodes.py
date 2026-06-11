@@ -1202,9 +1202,11 @@ result (paired CIs in `mscn/ARCHITECTURE.md`), kept on stage:
 - **Restart teleports (two-sided k)** (§9.1): the only stage with
   significantly HARMFUL cells (shocked −0.30*, moat −0.15*) — ULTRA carries
   a “restarts never” policy.
-- **Trading maps in an easy world** (§9 V5): in 2-D, cooperation is a NULL —
-  solo discovery is cheap, sharing is worthless. It pays only where
-  information is scarce (3-D narrow optimum: +0.54 [+0.01, +1.08] sig).
+- **Trading maps** (§9 V5 / §11.3): in 2-D a NULL (solo discovery is cheap);
+  and the 3-D scarce-regime significance (+0.54 [+0.01, +1.08]) **failed
+  replication** in this environment (−0.26 ns, same code/seeds/protocol) —
+  the fifth fragile-significance catch. What stands is the ledger mechanism,
+  not the value claim.
 - **The crucible under shared input regions** (§10): cross-context
   verification ERODES home truth when contexts revisit the same places
   (+0.217 forgetting vs gating-only +0.012); ULTRA enables it only on
@@ -1212,7 +1214,9 @@ result (paired CIs in `mscn/ARCHITECTURE.md`), kept on stage:
 - **X-marks in the open desert** (E3, §10.2): signed memory visibly marks
   checked mirages, but in open navigation it buys no significant net
   coherence (ns) and not even lower mirage-dwell (registration NOT MET);
-  its load-bearing habitat is the evaluator arena (+0.42 [+0.18, +0.66] sig).
+  its load-bearing habitat is the evaluator arena (+0.32 [+0.13, +0.51] sig)
+  — and under the no-restart policy the signed organ measurably COSTS on the
+  deceptive tail (−0.41 [−0.68, −0.14], a new fact from the matched pair).
 - **Self-detection’s relearning speed** (§11.1): P1 NOT MET (−235% of the
   given-bell repair) — missed recognitions are expensive; the recovered
   asymptote is what survives bell-free (P4 MET).
