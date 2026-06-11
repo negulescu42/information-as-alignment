@@ -9,22 +9,20 @@ showcase says so too (see the “what doesn’t help” panel).
 
 Reproduce: `python -m mscn.terrarium_episodes --episode all --render`
 
-## Episode 1 — The Two Twins
+## Episode 4 — The Canyon
 
-> *“Winter came. The forgetful twin lost the map; ours kept it.”*
+> *“It walks DOWN into the canyon because it knows what's beyond.”*
 
-![Episode 1 — The Two Twins](assets/e1_two_twins.gif)
-![Episode 1 — The Two Twins](assets/e1_two_twins_final.png)
+![Episode 4 — The Canyon](assets/e4_canyon.gif)
+![Episode 4 — The Canyon](assets/e4_canyon_final.png)
 
-**Mechanism made visible:** continual memory (the one universally significant stage)
+**Mechanism made visible:** model-based planning + U8 option commitment
 
 **Novice scoreboard** (these ARE the measured means):
 
-- home quality after winter: keeper 3.33 vs amnesiac 2.11 (coherence, higher better)
-- time living in the best meadow after winter: keeper 55% vs amnesiac 30%
+- reached the far side: with a plan 10/10 journeys; without 0/10 (stuck on the tempting little hill)
 
 **Backstage (the real benchmark):**
 
-- recovered asymptote (A2 tail), paired over 8 seeds: +1.221 [+0.583, +1.860] + (sig) — ancestor §9.6 G2 (+sig)
-- home-basin occupancy diff: +0.246 [-0.145, +0.636] 0 (ns)
-- honest note (ancestor kept): keeper's own relearning savings -12 [-76, +51] ticks — memory buys the recovered asymptote, NOT relearning speed; the winter residue slows the first re-climb.
+- planner-vs-none tail coherence, paired: +1.411 [+1.372, +1.451] + (sig) — ancestor §9.2 corridor cell (+1.40*, the only starred positive planning cell in the matrix)
+- honest scope (ancestor kept): planning binds ONLY in this discrete low-branching structure — in open 2-D terrain both pre-registered planning criteria came back null (§9.2); see the “what doesn’t help” panel.

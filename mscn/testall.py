@@ -1,7 +1,7 @@
 """One-command verification gate: runs the fast layers of the test pyramid and
 exits non-zero on the first failure.
 
-Layers covered (~12-15 min total):
+Layers covered (~25-30 min total):
   0  the 24 behavioural guarantee checks            (mscn.tests)
   1  the 9 AGI-upgrade validations + sigma*         (mscn.agi_all)
      statistical state-merging (8.11)               (mscn.agi_alergia)
@@ -9,6 +9,9 @@ Layers covered (~12-15 min total):
      operating-bandwidth manuscript checks          (mscn.opband_check)
      the IBF-ASI suite, reduced seeds               (mscn.ibf_asi --quick)
      invariant fuzzing, reduced                     (mscn.ibf_asi_fuzz --n 60)
+     ULTRA detector smoke (11.1)                    (mscn.ibf_ultra --smoke)
+     terrarium render stack self-check (12)         (mscn.terrarium)
+     terrarium gate episodes E1+E4+E6 quick (12)    (mscn.terrarium_episodes)
 
 The heavy layers (regime matrix, gauntlets, KRK runs, benchmark) are run
 separately; see ARCHITECTURE.md sections 9-10 for their entry points.
@@ -30,6 +33,10 @@ GATE = [
     ("operating-bandwidth checks", [sys.executable, "-m", "mscn.opband_check"]),
     ("IBF-ASI suite (quick)", [sys.executable, "-m", "mscn.ibf_asi", "--quick"]),
     ("invariant fuzz (60)", [sys.executable, "-m", "mscn.ibf_asi_fuzz", "--n", "60"]),
+    ("ULTRA smoke", [sys.executable, "-m", "mscn.ibf_ultra", "--smoke"]),
+    ("terrarium render self-check", [sys.executable, "-m", "mscn.terrarium"]),
+    ("terrarium gate episodes", [sys.executable, "-m", "mscn.terrarium_episodes",
+                                 "--episode", "gate"]),
 ]
 
 

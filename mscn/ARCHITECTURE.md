@@ -1572,3 +1572,127 @@ signed-correction necessity), and the unified form makes them one agent — the
 general machine of which everything measured this session is a special case.
 
 Run: `python -m mscn.ibf_unified` (~13 min; asserts green).
+
+---
+
+## 11. IBF ULTRA — self-detected contexts + regime-aware equipment (`ibf_ultra.py`)
+
+The preprint names task-incremental context signalling as its simplification;
+ULTRA removes it. `UltraASI` (extends `UnifiedASI`: engine memory organ, local
+k, lean economics) detects its own regime boundaries and re-binds to
+recognised old regimes, with the U-2 equipment policy from the §9–§10 claim
+map (planner+options auto-engaged on learned low-branching maps; crucible/
+verification only on separated context clouds; restart teleports never).
+
+### 11.1 U-1 self-detection — the mechanism, and the pre-registered exam
+
+**Mechanism (final form, after seven measured design iterations on held-out
+calibration seeds 100–105 — each iteration forced by an instrumented failure,
+logged in the module docstring):**
+
+- **SPLIT**: per-tick prediction discrepancy of the always-learning cell
+  world-model at known cells, z-scored against the current context's own
+  running statistics; boundary = k-of-m window (4 of 6 above z=3) where a
+  surging tick must ALSO be large in raw scale (pe ≥ 1.6× baseline — the
+  guard that separates layout switches from drift's high-z-tiny-pe
+  coincidences). **The epistemic rule that made it work: anomalous ticks
+  teach nothing permanent** — baseline, world-model cells, and landmarks all
+  freeze during an anomaly run (entry z≥2.5 ∧ pe≥1.45×, 10-tick timeout):
+  without it the baseline absorbed the anomaly (mean crept 0.59→0.83 across
+  an undetected boundary) and the cell EWMAs erased the surge in ~3 ticks.
+- **RE-BIND**: recognition by **active probing** — passive scoring of recent
+  samples against archived models is structurally biased toward the current,
+  always-adapting model (measured: the contrast closes in ~20 ticks), so the
+  agent redirects one uniform-jump candidate (exact eval parity) to an
+  archived context's **landmark** (champion point + de-noised value; up to
+  three, ≥2 apart; champions quarantined 6 calm ticks — the detection
+  latency itself otherwise poisons the old context's landmark with new-world
+  values, measured). A probe is informative only against the prober's own
+  **site reference** at that exact point (coarse cell averages mistake
+  within-cell spread for model disagreement — measured false re-bind);
+  confirmation needs hits at two distinct landmarks (a correlated ripple
+  swing fakes one landmark for tens of ticks — measured), or a stricter
+  single-landmark rule; agreement-merge folds false splits back; a fresh
+  split runs 40 ticks of fast due-diligence probing.
+
+**Pre-registered exam** (criteria frozen before the first acceptance run;
+acceptance seeds 0–11 G2 / 0–7 stationary never used in calibration; THREE
+rounds run — rounds 1–2 failed, diagnosed, mechanism fixed, re-run; round 3 =
+the frozen-design record):
+
+| criterion | round 3 verdict |
+|---|---|
+| P1 savings repair ≥ 70% of the given-bell transplant's | **NOT MET** (−235%: ULTRA −58.6 mean savings vs transplant +28.9, canonical +4.0; ULTRA−gated −83.5 [−147.3, −19.7] sig) |
+| P2 recognition quality (1 split + 1 correct re-bind, ≥10/12) | **NOT MET** (8/12 correct re-binds; split latency 4 ticks (11/12), re-bind latency 18 (8/12); zero FALSE binds) |
+| P3 zero false context events on stationary worlds (24 runs) | **MET** (0 events: clean 0, noisy 0, drift 0) |
+| P4 G2 asymptote not significantly below canonical Unified | **MET** (A2 −0.105 [−0.587, +0.378] ns; ULTRA A2 3.38 ≈ gated 3.42) |
+
+**Honest decomposition of P1.** (a) Substrate: even GIVEN the bell, the
+engine-memory unified agent earns +11.2 savings vs the Scale-memory
+transplant's +28.9 (the §10.2 finding reproduced — the savings metric never
+favoured the unified substrate). (b) Detection: self − given = −65.8
+[−134.3, +2.6] ns, driven by the 4/12 lives whose re-bind never fires (each
+catastrophic on the time-to-threshold metric: the agent re-learns phase A in
+a fresh context) plus the ~18-tick recognition latency tax on success lives.
+The G2 gauntlet's own conclusion (§9.6) was that memory buys the recovered
+**asymptote**, not relearning speed — and the asymptote is exactly what
+self-detection keeps without any bell (P4 MET). The savings economics of
+self-detection remain open; the named residual is **recognition recall**
+(landmark informativeness is seed-dependent: an old context whose landmarks
+happen to be value-ambiguous against the new world cannot be re-recognised
+by point probes; richer fingerprints — more landmarks, distributional
+probes — are the next move).
+
+**What stands at CI grade:** self-detected SPLITS are reliable (11/12 within
+~4 ticks of the boundary), and the detector is **false-positive-free** across
+every stationary regime tried (24/24 runs, plus zero false binds in 36 G2
+lives) — the safety half of the claim, fully held. Self-detected RE-BINDING
+works in 2/3 of lives with zero false binds. `--smoke` (gate-sized) asserts
+the calibration signature, zero FP, and the corridor level.
+
+### 11.2 U-2 equipment matrix (ULTRA vs lean, 8 regimes × 8 seeds)
+
+No significantly harmful cell (pre-registered: held). Directional costs
+everywhere (aggregate 3.04 vs lean 3.25; worst drift −0.48 [−1.00, +0.05] and
+moat-local −0.49 [−1.10, +0.13], both ns) — the unified organ set is not free
+on open landscapes at 8-seed power; attribution (engine memory vs no-restart
+policy) not yet isolated. Corridor: ULTRA 2.91 ≈ lean 2.92 (−0.007 ns) — the
+auto-engaged planner equipment keeps the structural win, with every
+engagement logged. The corridor ATTRIBUTION pre-registration (ULTRA vs
+ULTRA-no-planner, lo > 0.5) came back **NOT MET** (+0.50 [−0.05, +1.06] ns)
+for a mechanism reason worth the price: **the signed memory organ partially
+substitutes for planning in the corridor** — negative writes at the trap
+push the agent off it without lookahead, something the non-negative ancestor
+structurally could not do. Crucible policy: stays OFF in G2 (context clouds
+overlap — consistent with §10's shared-region finding); the separated-cloud
+ON branch is exercised by construction in tests only.
+
+Run: `python -m mscn.ibf_ultra` (exam, ~35 min) · `--matrix` (~40 min) ·
+`--smoke` (~4 min, in the gate).
+
+## 12. THE TERRARIUM — the visual showcase benchmark (`terrarium.py`, `terrarium_episodes.py`)
+
+One visual language (terrain heatmap, signed memory particles with
+crystallization rings, trust halo = local k_eff, option flags, fog, event
+banners), rendered headlessly to PNG/GIF with hard size budgets; every
+episode doubles as a scoring run without `--render` (the gate runs them
+quick). Front-stage numbers are EXACTLY the backstage paired-CI means; each
+episode pre-registers its §9–§10 ancestor and reports MET/NOT MET.
+
+| episode | ancestor | backstage outcome (8+ seeds unless noted) |
+|---|---|---|
+| E1 Two Twins (seasons+fog) | §9.6 G2 asymptote | **MET**: A2 keeper−amnesiac +1.221 [+0.583, +1.860] sig (3.33 vs 2.11 — the ancestor numbers to the digit); honest note kept: keeper's own savings −12 [−76, +51] |
+| E2 Earthquake | §9 V1 / shocked cell | **MET**: tail +1.042 [+0.741, +1.344] sig; post-quake recovery 3 vs 8 ticks, −4.7 [−8.6, −0.9] sig (presentation metric, CI'd) |
+| E3 Mirage Field | §10.2 null + §10.1 sig | the tripwire episode: its first full run FLAGGED ITSELF (net coherence sig-negative "contradicts ancestor"); investigation: the pair is matched on ULTRA's no-restart policy, NOT the ancestor's restart-enabled protocol — a NEW fact, recorded: signed organ costs −0.41 [−0.68, −0.14] on the deceptive tail vs nonneg under matched no-restart policy (attribution open); dwell registration **NOT MET** (+0.03 ns); evaluator arena re-demonstrated: nonneg extra forgetting +0.32 [+0.13, +0.51] sig |
+| E4 Canyon | §9.2 corridor +1.40* | **MET**: +1.432 [+1.345, +1.520] sig; goal 10/10 vs trap-locked 0/10 |
+| E5 Trade | §9 V5 / 6.4 (24 seeds) | re-run at ancestor power; assert at suite level (mean > 0.2); 2-D null carried in the panel |
+| E6 Chess Garden | §9.4 (30k re-demo) | fresh 30k×3 curve (mate ≥0.4, legal@1 ≥0.85, preserve ≥0.9 registered); 150k asymptote, value-ablation, DTM ceiling and G4 collapse CITED not re-run; learned-legality halo rendered on the board |
+| E7 Grand Tour | §11 | ULTRA through seasons/quake/mirage with NO bell; acts scored vs ancestors |
+
+Report generator: `terrarium_report/README.md` with embedded GIFs, novice
+scoreboard (= the measured means), and the "what doesn't help, and why"
+panel (planner in open 2-D, dissolution, restarts, 2-D trade, crucible under
+shared regions, E3's navigator null).
+
+Run: `python -m mscn.terrarium` (render self-check) ·
+`python -m mscn.terrarium_episodes --episode all [--render] [--quick]`.

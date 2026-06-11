@@ -176,10 +176,13 @@ def _draw_overlays(ax, snap: Snap, world, trail: list, color: str,
         c = STYLE["pos_particle"] if v >= 0 else STYLE["neg_particle"]
         size = 14 + 70 * min(abs(v) / vmax_p, 1.0)
         alpha = 0.85 if readable else 0.18
-        marker = "o" if v >= 0 else "x"
-        edge = STYLE["ring"] if (ringed and v >= 0) else "none"
-        ax.scatter([z[0]], [z[1]], s=size, c=c, marker=marker, alpha=alpha,
-                   edgecolors=edge, linewidths=1.4 if ringed else 0.0, zorder=4)
+        if v >= 0:
+            ax.scatter([z[0]], [z[1]], s=size, c=c, marker="o", alpha=alpha,
+                       edgecolors=STYLE["ring"] if ringed else "none",
+                       linewidths=1.4 if ringed else 0.0, zorder=4)
+        else:
+            ax.scatter([z[0]], [z[1]], s=size, c=c, marker="x", alpha=alpha,
+                       linewidths=1.6, zorder=4)
     if snap.option_path_xy is not None:
         p = snap.option_path_xy
         ax.plot(p[:, 0], p[:, 1], ls=":", lw=1.6, color=STYLE["flag"], zorder=5)
@@ -251,11 +254,15 @@ def render_profile_frame(snap: Snap, world, *, title: str = "",
         if abs(v) < 1e-3:
             continue
         c = STYLE["pos_particle"] if v >= 0 else STYLE["neg_particle"]
-        ax.scatter([z[0]], [h(z[0]) + 0.12], s=12 + 50 * min(abs(v), 1.5),
-                   c=c, marker="o" if v >= 0 else "x",
-                   alpha=0.85 if readable else 0.2,
-                   edgecolors=STYLE["ring"] if (ringed and v >= 0) else "none",
-                   linewidths=1.2 if ringed else 0.0, zorder=4)
+        if v >= 0:
+            ax.scatter([z[0]], [h(z[0]) + 0.12], s=12 + 50 * min(abs(v), 1.5),
+                       c=c, marker="o", alpha=0.85 if readable else 0.2,
+                       edgecolors=STYLE["ring"] if ringed else "none",
+                       linewidths=1.2 if ringed else 0.0, zorder=4)
+        else:
+            ax.scatter([z[0]], [h(z[0]) + 0.12], s=12 + 50 * min(abs(v), 1.5),
+                       c=c, marker="x", alpha=0.85 if readable else 0.2,
+                       linewidths=1.4, zorder=4)
     if snap.option_cell is not None:
         ox = world.lo[0] + (snap.option_cell[0] + 0.5) / 10.0 * \
             (world.hi[0] - world.lo[0])
