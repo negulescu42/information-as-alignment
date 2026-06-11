@@ -605,9 +605,17 @@ class IBFASI:
             for s, u in zip(self.scales, us):
                 s.w = 0.9 * s.w + 0.1 * u
 
-        # I2: nonneg memory => pointwise basin expansion over the baseline
+        # I2: nonneg memory => pointwise basin expansion over the baseline.
+        # Under a SIGNED memory law (the unified agent: Postulate IV in full
+        # generality, of which nonneg is the Thm-8a special case) the invariant
+        # becomes bounded modification instead.
         g = self._probe_grid[self.rng.integers(len(self._probe_grid))]
-        assert self.delta_R_total(g) >= -1e-9, "I2: dR must stay non-negative"
+        dg = self.delta_R_total(g)
+        if getattr(self, "signed_memory", False):
+            assert np.isfinite(dg) and abs(dg) <= self._signed_bound(), \
+                "I2': signed modification must stay bounded"
+        else:
+            assert dg >= -1e-9, "I2: dR must stay non-negative"
 
         self.x = new_x
         self.best_sensed = max(self.best_sensed, raw_final)

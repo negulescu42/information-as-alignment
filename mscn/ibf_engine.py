@@ -145,6 +145,25 @@ class PaperEngine:
     def delta_R(self, z: np.ndarray) -> float:
         return float(self.delta_R_batch(z[None])[0])
 
+    def delta_k(self, z: np.ndarray, w_max: float = 3.0,
+                theta_w: float = 0.15) -> float:
+        """The responsiveness channel (paper eq. 8, INTENSIVE readout): local
+        trust from crystallized particles, driven by their discrepancy-history
+        VARIANCE -- low variance earns high responsiveness, high variance earns
+        caution. (Simplification noted: derived from the coherence population's
+        own histories rather than a separate homologous population.)"""
+        g = self._gamma() & self.CRY
+        if not g.any():
+            return 0.0
+        idx = np.flatnonzero(g)
+        K = np.exp(-((self.Z[idx] - z) ** 2).sum(axis=1) / (2 * self.sigma ** 2))
+        den = K.sum()
+        if den < 1e-6:
+            return 0.0
+        w = np.array([w_max * (1.0 - min(float(np.var(self.hist[i])) / theta_w, 1.0))
+                      if len(self.hist[i]) >= 4 else 0.0 for i in idx])
+        return float((K @ w) / den)
+
     def select(self, world: "MiniRRW", x: np.ndarray, base) -> int:
         Zq = np.stack([world.embed(x, a) for a in range(world.nA)])
         scores = np.array([base(zq) for zq in Zq]) + self.delta_R_batch(Zq)
