@@ -40,6 +40,14 @@ Layer 1  individual learning
 Integration
          mscn.py        couples all three layers into one running network
          demo.py        guided tour;  tests.py  guarantee checks
+Agents (ARCHITECTURE §9–§11)
+         ibf_asi.py     the nine-stage coupled agent (+ regimes/gauntlet/benchmark)
+         ibf_engine.py  the preprint's classic evaluator-corrector lifecycle
+         ibf_unified.py the three-ODE blend (engine as memory organ + local k)
+         ibf_ultra.py   self-detected contexts + equipment policy (§11)
+Showcase (ARCHITECTURE §12)
+         terrarium.py            render stack (headless PNG/GIF)
+         terrarium_episodes.py   the 7 scored episodes + report generator
 ```
 
 ## The four pilots

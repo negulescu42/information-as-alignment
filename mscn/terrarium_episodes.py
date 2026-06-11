@@ -958,7 +958,7 @@ def e6_chess_garden(out: str = REPORT_DIR, n_seeds: int = 3,
 
     assets = []
     if render:
-        assets = _render_e6(out, runs[0], render_seed)
+        assets = _render_e6(out, runs[0], render_seed, n_episodes)
     panel = {
         "title": "Episode 6 — The Chess Garden",
         "caption": "Nobody taught it the rules. Watch the legal-move halo grow.",
@@ -989,7 +989,7 @@ def e6_chess_garden(out: str = REPORT_DIR, n_seeds: int = 3,
     return {"panel": panel, "mate": (m0["mate"], m1["mate"])}
 
 
-def _render_e6(out: str, run: dict, seed: int) -> list[str]:
+def _render_e6(out: str, run: dict, seed: int, n_episodes: int) -> list[str]:
     import matplotlib.pyplot as plt
 
     from .krk_closed_loop import KRKClosedLoopAgent
@@ -1029,8 +1029,9 @@ def _render_e6(out: str, run: dict, seed: int) -> list[str]:
     newborn = KRKClosedLoopAgent(seed=seed)
     trained = run["agent"]
     board_frames = []
-    for ag, title, max_plies in ((newborn, "ACT 1: the newborn", 10),
-                                 (trained, "ACT 2: after 30,000 games", 40)):
+    for ag, title, max_plies in (
+            (newborn, "ACT 1: the newborn", 10),
+            (trained, f"ACT 2: after {n_episodes:,} games", 40)):
         for f in _replay_episode(ag, T, rng, max_plies=max_plies):
             note = ("CHECKMATE." if f.get("mate") else
                     (f"{f['illegal_above']} illegal ideas rejected first"
