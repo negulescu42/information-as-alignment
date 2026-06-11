@@ -360,6 +360,13 @@ class IBFASI:
         return (np.clip(self.x + direction, self.w_.lo, self.w_.hi),
                 float(best_score), best_cell)
 
+    def _planner_engaged(self) -> bool:
+        """Whether the model-planner candidate is generated this tick. The base
+        agent ties this to the `model_planner` flag; ULTRA's equipment policy
+        (ibf_ultra) overrides it with the measured claim map (the world-model
+        keeps LEARNING either way -- vmap updates key on `model_plan_on`)."""
+        return self.model_plan_on
+
     def _neighbour_offsets(self):
         d = self.w_.dim
         if d not in _NEIGHBOUR_CACHE:
@@ -401,8 +408,8 @@ class IBFASI:
         # U3 arbitration: the planner (exploration) speaks at stalls, not during
         # ascents -- EXCEPT while an option is committed (the journey continues
         # through dips and slopes until arrival/expiry, U8 macro semantics).
-        if self.model_plan_on and (self.option_target is not None
-                                   or self._last_improve <= self.deadband):
+        if self._planner_engaged() and (self.option_target is not None
+                                        or self._last_improve <= self.deadband):
             pm = self._plan_move(target=self.option_target)
             if pm is None and self.option_target is not None:
                 self.option_target, self.option_ttl = None, 0   # unreachable: drop

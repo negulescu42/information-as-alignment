@@ -295,6 +295,18 @@ def hstack_images(imgs: list[Image.Image], pad: int = 4) -> Image.Image:
     return out
 
 
+def vstack_images(imgs: list[Image.Image], pad: int = 4) -> Image.Image:
+    """Stacked composition (wide profile panels)."""
+    w = max(i.width for i in imgs)
+    h = sum(i.height for i in imgs) + pad * (len(imgs) - 1)
+    out = Image.new("RGB", (w, h), "#0c0c12")
+    y = 0
+    for i in imgs:
+        out.paste(i, ((w - i.width) // 2, y))
+        y += i.height + pad
+    return out
+
+
 # ---------------------------------------------------------------------------
 #  GIF assembly with a hard size budget (the files get committed)
 # ---------------------------------------------------------------------------
