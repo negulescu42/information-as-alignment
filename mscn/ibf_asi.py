@@ -137,6 +137,7 @@ class _Center:
     err: float = 0.0          # error-gated dissolution EWMA (stage 7)
     age: int = 0
     transferred: bool = False
+    ctx: int = 0              # birth context (paper-engine gating, 10)
 
 
 @dataclass
@@ -147,11 +148,13 @@ class Scale:
     centers: list = field(default_factory=list)
     usefulness: float = 0.0   # EWMA rank-agreement with sensed reality (stage 9)
 
-    def delta_R(self, y: ArrayF) -> float:
-        if not self.centers:
+    def delta_R(self, y: ArrayF, ctx: int | None = None) -> float:
+        cs = self.centers if ctx is None else \
+            [c for c in self.centers if c.ctx == ctx]
+        if not cs:
             return 0.0
-        Z = np.array([c.z for c in self.centers])
-        V = np.array([c.v for c in self.centers])
+        Z = np.array([c.z for c in cs])
+        V = np.array([c.v for c in cs])
         return float(np.sum(V * np.exp(-np.sum((Z - y) ** 2, axis=1) / (2 * self.sigma ** 2))))
 
     def mass(self) -> float:
@@ -215,6 +218,11 @@ class IBFASI:
         self.give_transfer = True                  # parasite ablation: False
         self.given = self.received = 0             # reciprocity ledger (EC-4)
         self.credit_limit = 2                      # net unreciprocated gifts tolerated
+        # paper-engine context gating (10): when a context signal is provided
+        # (task-incremental, as in the preprint), reads see only same-context
+        # centres -- the mechanism whose retention the engine ablation proved.
+        self.gate_contexts = False
+        self.ctx = 0
         self._probe_grid = world.rng.uniform(world.lo, world.hi, size=(64, world.dim))
         # model-based planner (U7 + U4 composed): a learned DISCRETE internal model
         # -- a sparse cell-grid map fed by already-paid senses (exact eval parity).
@@ -240,19 +248,30 @@ class IBFASI:
         self.option_target: tuple | None = None
         self.option_ttl = 0
 
+    def switch_context(self, new_ctx: int) -> None:
+        """Context signal (task-incremental, as in the preprint). With gating on,
+        reads/writes see only same-context centres; the high-water re-anchors so
+        the agent re-engages its home memory immediately."""
+        self.ctx = new_ctx
+        if self.gate_contexts:
+            self.best_sensed = -np.inf
+            self.stall = 0
+
     def memory_best(self, scale_idx: int | None = None) -> ArrayF | None:
         """The de-noised record: the location of the highest-QUALITY centre (EWMA of
         raw value over reinforcement visits, optionally of one scale). This -- not
         the noisy raw max -- is the agent's 'best known'."""
         pool = (self.scales if scale_idx is None else [self.scales[scale_idx]])
-        cs = [c for s in pool for c in s.centers]
+        cs = [c for s in pool for c in s.centers
+              if not self.gate_contexts or c.ctx == self.ctx]
         if not cs:
             return None
         return max(cs, key=lambda c: c.q).z
 
     # ----- stage 1: SENSE (multiscale effective coherence on a sensed baseline) -----
     def delta_R_total(self, y: ArrayF) -> float:
-        return float(sum(s.w * s.delta_R(y) for s in self.scales))
+        ctx = self.ctx if self.gate_contexts else None
+        return float(sum(s.w * s.delta_R(y, ctx) for s in self.scales))
 
     def R_eff_sensed(self, y: ArrayF) -> float:
         return self.w_.sense(y) + self.delta_R_total(y)
@@ -613,13 +632,15 @@ class IBFASI:
         if driving <= 0:
             return
         for c in s.centers:
-            if np.sum((c.z - z) ** 2) < (0.5 * s.sigma) ** 2:
+            if np.sum((c.z - z) ** 2) < (0.5 * s.sigma) ** 2 and \
+                    (not self.gate_contexts or c.ctx == self.ctx):
                 c.v = min(c.v + driving, self.v_cap)
                 if raw is not None:
                     c.q = 0.6 * c.q + 0.4 * raw if c.q else raw
                 return
         s.centers.append(_Center(z=z.copy(), v=min(driving, self.v_cap),
-                                 q=raw if raw is not None else 0.0))
+                                 q=raw if raw is not None else 0.0,
+                                 ctx=self.ctx))
 
     def _receive(self, z: ArrayF, v: float, q: float) -> None:
         """6.4: accept a replicated (transferred) memory from a coupled partner."""

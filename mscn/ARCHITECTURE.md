@@ -1495,3 +1495,41 @@ architecture lesson for the ASI agent: adopt context-gated reading for continual
 regimes; treat crucible/verification as regime-conditional equipment.
 
 Run: `python -m mscn.ibf_engine` (~2 min; asserts green).
+
+### 10.1 IBF classic vs IBF-ASI — head to head, each in the other's arena (`ibf_classic_vs_asi.py`)
+
+The direct comparison the engine ablations only proxied. **Arena 1** — the
+classic's home (mini-RRW, A → B=exact reversal → C): the ASI's memory substrate
+is ported as an evaluator-corrector under its *actual* laws (multiscale,
+non-negative corrections, error-gated dissolution, capacity projection, no
+contexts) and faces the classic engine. **Arena 2** — the ASI's home (the G2
+continual switching world): the classic's proven mechanism (context gating) is
+transplanted into the ASI (`gate_contexts`, phases signalled at boundaries,
+task-incremental as in the preprint) and faces the canonical agent.
+
+| Arena 1 (classic's home) | acc(A\|A) | acc(A\|B) | acc(B\|B) | forget(A) |
+|---|---|---|---|---|
+| classic (gating only) | **0.910** | **0.901** | **0.901** | **0.014** |
+| classic (full lifecycle) | 0.910 | 0.906 | 0.703 | 0.014 |
+| ASI memory substrate | 0.773 | 0.419 | 0.722 | 0.336 |
+
+| Arena 2 (ASI's home) | A1 tail | B tail | A2 tail | relearning savings |
+|---|---|---|---|---|
+| ASI canonical | 3.27 | 4.31 | 3.33 | **−12** |
+| **ASI + classic gating** | 3.29 | 4.31 | 3.42 | **+22** |
+| ASI no-memory | 2.42 | 3.05 | 2.11 | 0 |
+
+**Verdicts.** (1) **Each architecture dominates its home.** In the classic's
+arena the ASI substrate is doubly handicapped: its non-negative corrections
+cannot suppress wrong actions (lower asymptote 0.77 vs 0.91) and its lack of
+contexts makes B's reversal destroy A (0.419; forgetting +0.32 [+0.13, +0.51]
+sig vs the gated classic). (2) **The transplant works**: classic gating inside
+the ASI flips the G2 relearning savings from −12 to +22 ticks (**+34.6 [+3.3,
++65.9] sig**) — the measured continual pathology repaired — at zero cost to
+phase-B adaptation (+0.005 ns). (3) The architectures are **complementary, not
+rivals**: the classic is the continual/contextual evaluator (signed corrections
++ gating); the ASI is the embodied navigator (exploration, warm jumps, planning,
+options — none of which the classic carries); and the bridge between them is one
+mechanism that ports cleanly. `gate_contexts` is now a first-class ASI feature.
+
+Run: `python -m mscn.ibf_classic_vs_asi` (~8 min; asserts green).
