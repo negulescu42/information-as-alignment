@@ -1533,3 +1533,42 @@ options — none of which the classic carries); and the bridge between them is o
 mechanism that ports cleanly. `gate_contexts` is now a first-class ASI feature.
 
 Run: `python -m mscn.ibf_classic_vs_asi` (~8 min; asserts green).
+
+### 10.2 IBF Unified — the theory-prescribed blend (`ibf_unified.py`)
+
+The theory writes the agent as **three coupled ODEs** (paper §3 / spec §2.2):
+motion along `k·∇R_eff`; modification by **signed** discrepancy (the ASI's
+non-negative memory is the Thm-8a special case — §10.1 measured its cost: it
+cannot suppress); and **responsiveness itself modified**, locally. `UnifiedASI`
+is that decomposition made literal: the **ASI shell** keeps motion, exploration,
+warm jumps, the planner with U8 options, and the reflect loop; the **classic
+engine becomes the memory organ** (signed particles, crystallization Thm 3,
+crucible Thm 10, context gating, capacity control); and the engine's
+**responsiveness channel** — which *neither* architecture had wired — modulates
+selection spatially: `k_eff(x) = clip(k_base + δk(x))`, intensive readout, trust
+where local discrepancy variance is low. The I2 invariant generalizes with the
+law: non-negativity (basin expansion) for canonical agents, **bounded
+modification** for signed memory.
+
+**Pre-registered validation (8 seeds, paired CIs; asserts green):**
+
+| criterion | result |
+|---|---|
+| continual repair kept (G2) | **yes, positive-class**: savings +4 (canonical −12) — but *below* the pure gating transplant's +22 (−18 ns); B-tail 3.70 vs 4.31 |
+| deceptive gain (signed suppression) | **directional only**: +0.09 [−0.27, +0.45] ns |
+| open-regime sanity | **directionally better everywhere**: clean +0.15 [−0.00, +0.30], drift +0.23 ns — nothing worse anywhere |
+
+**Honest reading: generalization without regression.** The unified agent carries
+the full three-ODE law — signed corrections live from the first particles
+(learned avoidance operating), local trust modulation, the complete lifecycle —
+at **no measured cost in any regime**, with directional gains on every open
+regime. But at 8 seeds it produces no CI-significant win over the best
+*specialized* configuration in any single arena: the targeted gating transplant
+remains (ns) better on the continual metrics, and the signed-suppression
+hypothesis on deception is unconfirmed. The blend's value is **law-level
+unification**, not a benchmark headline: each component's significant win was
+already established in its own arena (§10.1's +34.6 gating repair, Arena 1's
+signed-correction necessity), and the unified form makes them one agent — the
+general machine of which everything measured this session is a special case.
+
+Run: `python -m mscn.ibf_unified` (~13 min; asserts green).
