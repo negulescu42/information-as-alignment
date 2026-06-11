@@ -3,6 +3,29 @@
 This file lets a new session resume the work with full context. Read it top to
 bottom, then skim `mscn/ARCHITECTURE.md` (the detailed log) before doing anything.
 
+> **Second-session addendum (2026-06, branch `claude/ecstatic-goodall-dmb5qt`).**
+> A major build-out happened on top of the state below; ARCHITECTURE §§3.20–3.21,
+> §8.11, §9.1–9.7 and §10 are its log, `mscn/IBF_ASI_GAP.md` its spec audit.
+> Headlines: (1) **the IBF-ASI coupled agent** — all nine stages in one loop, live
+> invariants, CI-graded claims; (2) **a testing apparatus** (paired CIs, invariant
+> fuzzing, the regimes×mechanisms matrix, compound/continual/adversarial
+> gauntlets, full-capacity benchmark with a *lean* mode) — memory is the one
+> universally significant stage; planning binds only in discrete low-branching
+> structure (pre-registered both ways: corridor MET +1.40*, continuous NOT MET);
+> (3) **the KRK closed loop** (D1+D4) against an exact self-built tablebase —
+> mate 0.008→0.73 online, technique ceiling broken by a generalising relational
+> substrate over self-derived geometry (0.92/32.5 plies, pre-registration MET) —
+> but **perfect defence collapses both agents to 0.03** (the optimality gap is
+> fatal under pressure: the discrete frontier); (4) **factor discovery from
+> atomic tokens** — 50.3% exact (from,to) recovery, replay is an error
+> amplifier, replay-consistency EM is truth-blind below a correctness threshold
+> (objective, not search — attribution-diagnosed); (5) **the paper engine**
+> (preprint §4) implemented + decomposed: context-gated reading alone is the
+> retention mechanism (forgetting 0.40→0.01); crucible/verification are
+> regime-conditional; (6) the Operating-Bandwidth manuscript independently
+> validated (S4 confirmed; S2/S3 verified; **S5 lead: monotone elasticity, with
+> a shelf-profile counterexample**). Gate: `python -m mscn.testall`.
+
 ---
 
 ## 0. TL;DR — what this is
@@ -207,4 +230,12 @@ python -m mscn.ibf_asi_regimes            # regimes × mechanisms claim map (§9
 python -m mscn.ibf_asi_benchmark          # full-capacity benchmark vs baselines (§9.3)
 python -m mscn.krk_world                  # exact KRK tablebase oracle, validated (§9.4)
 python -m mscn.krk_closed_loop            # D1+D4: the closed online loop on KRK (§9.4)
+python -m mscn.krk_value_general          # generalising value vs the tabular ceiling (§9.5)
+python -m mscn.krk_gauntlet               # KRK vs the tablebase-OPTIMAL defender (§9.6)
+python -m mscn.ibf_asi_gauntlet           # compound/continual/adversarial gauntlet (§9.6)
+python -m mscn.chess_factor_discovery     # from-to factor discovery from atomic tokens (§3.20)
+python -m mscn.chess_factor_em            # replay-consistency EM: the attributed null (§3.21)
+python -m mscn.ibf_engine                 # the preprint's engine + lifecycle ablations (§10)
+python -m mscn.opband_check               # operating-bandwidth manuscript validation + S5 lead
+python -m mscn.testall                    # the one-command verification gate (~15 min)
 ```

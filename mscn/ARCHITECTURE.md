@@ -1400,3 +1400,98 @@ value space; and a third in-the-loop validation of the Operating-Bandwidth
 calibration as the correct no-tuning default for kernel memories.
 
 Run: `python -m mscn.krk_value_general [--episodes 50000 --seeds 3]` (~45 min).
+
+### 9.6 The gauntlet — compound, continual, adversarial, and perfect defence
+
+Four benchmark dimensions the single-stressor matrix cannot see
+(`ibf_asi_gauntlet.py`, `krk_gauntlet.py`; 8 seeds, paired CIs, asserts green).
+
+**G1 — compound-stress ladder** (stressors stack L0 clean → L5 noise+drift+
+shocks+deception+moat all at once): the full agent degrades gracefully and beats
+no-memory significantly even at L5 (+0.60 sig); CMA-ES survives better than its
+drift-collapse in isolation suggested (restarts), never leads; **layer-1's
+robustness composes** — it stays on top at every level and sig-beats full at L5
+(−0.44). **G2 — continual A→B→A** (the world changes character and returns):
+memory buys the **recovered asymptote** (full A2≈A1 at 3.33/3.27; no-memory stuck
+at 2.11, CI-sig) but **not relearning speed** — time-to-threshold savings are
+*negative* (the B-residue slows the re-climb): a cleanly measured
+continual-learning cost. Dissolve-interference is directional (+0.52) but ns.
+**G3 — adversarial, memory-targeted shocks** (the world reads the agent's
+q-record and aims at it): the 2-seed "+0.65 sig" deflated to +0.22 ns at 8 seeds
+(the CI discipline's fourth catch); the robustness ordering — full's targeted
+damage ≈ half its ablations' (0.22 vs 0.37–0.38) — is directional, ns.
+
+**G4 — KRK vs the tablebase-optimal defender** (frozen 30k-episode policies,
+maximum distribution shift): the most sobering number of the campaign. Mate rate
+collapses **0.64 → 0.03** for tabular *and* tile — per-move win-preservation of
+0.97–0.98 cannot finish against a defender that forces the full DTM path inside
+the 80-ply cap, and the tile agent's technique advantage **vanishes** (−0.001
+ns; its preservation is even slightly worse, −0.009 sig). The §9.4/9.5
+"safe-but-slow" ceiling re-reads as: *wins only against weak defence*. The
+optimality gap (0.26–0.34) is not a cosmetic metric — under adversarial play it
+is the whole game. Closing it (deeper value refinement, search at move time) is
+the named frontier for the discrete substrate.
+
+### 9.7 The generality tax, located and removed (`lean` mode)
+
+The benchmark and the ladder both showed layer-1 beating the full agent on open
+landscapes. Hypothesis #1 (step-width schedule) was **wrong** — annealed
+candidate steps alone changed nothing (measured). The real cause: **eval
+overhead per decision** — the H=2 plan rollout burns 9 senses/tick for
+measured-nothing on open ground (its value lives in the corridor's model-planner
+candidate, which is rollout-independent), so eval-matching gives layer-1 ~2.5×
+more decisions. The **lean mode** (`horizon=1, anneal_steps=True`, registered as
+a benchmark contestant) doesn't just close the gap — at full benchmark power it
+**reverses it**:
+
+| agent | clean | noisy | drift | shocked | decept. | moat | moat-loc | corridor | **AGG** |
+|---|---|---|---|---|---|---|---|---|---|
+| **full ASI (lean)** | 3.64 | 3.23 | 3.67 | 3.13 | 4.27 | 2.40 | **2.73** | **2.92** | **3.25** |
+| layer-1 IBFLearner | 3.84 | 3.49 | 3.69 | 3.63 | 4.41 | 2.87 | 1.75 | 1.35 | 3.13 |
+| full IBF-ASI (canonical) | 3.48 | 3.09 | 3.00 | 3.00 | 3.89 | 2.36 | 2.10 | 2.84 | 2.97 |
+
+Lean wins the aggregate over its ancestor (3.25 vs 3.13) — within-ns on every
+open regime, decisively ahead in both locomotion regimes layer-1 cannot solve —
+and sig-beats the canonical config in 4/8 regimes. Generality is not
+intrinsically taxed; *unused machinery* is, and once the per-regime cost is
+measured, the integrated agent is strictly the better machine.
+
+---
+
+## 10. The paper engine — the preprint's continual-learning instantiation (`ibf_engine.py`)
+
+The "Information as Structural Alignment" preprint (repo root) validates one
+concrete engine across RRW / chess-with-Stockfish / Split-CIFAR-100 with
+replay-superior retention. Its lifecycle carries machinery the mscn/IBF-ASI
+memory lacked: **context-gated reading** (cross-context particles silent unless
+crystallized *and verified*), a **crystallization state machine**
+(convergence-triggered, μ_cryst ≪ μ_base), the **two-pass write** (cross-context
+validity *testing* separated from same-context *learning*), the **Crucible**
+(contradiction-triggered de-crystallization, phase-local verification), and an
+intensive-readout responsiveness channel. Implemented faithfully (vectorised),
+with a faithful mini Rotating-Rules World (phase B = the *exact reversal* of
+phase A's contextual component; contexts given — task-incremental, as in the
+paper), and **decomposed by ablation** (6 seeds):
+
+| arm | acc(A\|A) | acc(A\|B) | acc(B\|B) | forget(A) after C |
+|---|---|---|---|---|
+| full lifecycle | 0.898 | 0.884 | 0.834 | +0.217 |
+| **no-context-gating** (≈ the old mscn memory) | 0.898 | **0.469** | 0.908 | **+0.402** |
+| **no-crucible (gating only)** | 0.898 | 0.892 | 0.902 | **+0.012** |
+| no-verification | 0.898 | 0.889 | 0.902 | +0.022 |
+
+**Findings.** (1) **Context gating alone is the retention mechanism**: ungated
+memory loses 0.40 of phase-A accuracy under B's exact contradiction — the
+gauntlet's G2 poisoning pathology reproduced and CI-significantly attributed in
+its home domain (+0.19 [+0.09, +0.28]) — while gating-only forgetting is
+**+0.012, near zero, even with phases sharing one input region**. (2) The
+crucible *costs* retention here (+0.217) and verified broadcast pollutes rather
+than transfers (B|B 0.834 vs 0.902): when every phase revisits the same latent
+region, home-context truth is cross-tested constantly and dissolution erodes it.
+This is the paper's own regime-dependence theme applied to its own lifecycle:
+crucible/verification want **spatially separated contexts** (the CIFAR regime,
+where the paper's near-zero headline lives); gating works everywhere. (3) The
+architecture lesson for the ASI agent: adopt context-gated reading for continual
+regimes; treat crucible/verification as regime-conditional equipment.
+
+Run: `python -m mscn.ibf_engine` (~2 min; asserts green).
