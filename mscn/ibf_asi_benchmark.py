@@ -105,6 +105,15 @@ def contestant_full(regime: str, s: int) -> float:
     return run_asi(regime, s, dict())
 
 
+def contestant_lean(regime: str, s: int) -> float:
+    """The 'lean' operating mode found by the gap diagnosis: the open-landscape
+    deficit to layer-1 was EVAL OVERHEAD per decision (the H=2 rollout burns 9
+    senses/tick for measured-nothing on open ground), not capability. horizon=1
+    + annealed candidate steps closes the gap to ns while keeping the corridor
+    win fully (the planner candidate is rollout-independent)."""
+    return run_asi(regime, s, dict(horizon=1, anneal_steps=True))
+
+
 def contestant_reactive(regime: str, s: int) -> float:
     return run_asi(regime, s, dict(alpha=0.0, horizon=1, n_scales=1,
                                    model_planner=False, reflect=False,
@@ -173,6 +182,7 @@ def contestant_cma(regime: str, s: int, budget: int = EVALS) -> float | None:
 
 CONTESTANTS = {
     "full IBF-ASI": contestant_full,
+    "full ASI (lean)": contestant_lean,
     "layer-1 IBFLearner": contestant_layer1,
     "CMA-ES": contestant_cma,
     "reactive": contestant_reactive,

@@ -173,6 +173,7 @@ class IBFASI:
                  boost: float = 3.0, stall_patience: int = 25,
                  reflect: bool = True, dissolve: bool = True, adapt_w: bool = True,
                  honest_reserve: bool = True, two_sided_k: bool = True,
+                 anneal_steps: bool = False,
                  model_planner: bool = False, plan_res: int = 10, H_plan: int = 6,
                  plan_optimism: float = 0.5, plan_travel: float = 0.05,
                  selfmodel_res: int = 24, seed: int = 0) -> None:
@@ -188,6 +189,13 @@ class IBFASI:
         self.stall_patience = stall_patience
         self.reflect_on, self.dissolve_on = reflect, dissolve
         self.adapt_w_on, self.honest_on, self.two_sided = adapt_w, honest_reserve, two_sided_k
+        # annealed candidate steps (the Layer-1 ingredient the benchmarks said we
+        # lack): proposals start WIDE (0.2 * world size, sweeping) and anneal to
+        # the fine scale; stalls and shocks re-widen (the U3 spirit on step size).
+        self.anneal_on = anneal_steps
+        self.step_wide = 0.2 * float(np.mean(world.hi - world.lo))
+        self.step_fine = 0.35
+        self._step_progress = 0.0
         self.scales = [Scale(sigma=sigma0 * scale_factor ** s, alpha=alpha)
                        for s in range(n_scales)]
         # reflexive monitor + self-model (finite bucket table over x -> own E)
@@ -347,7 +355,13 @@ class IBFASI:
         indexes the model-planner's move (-1 if none). The plan candidate REPLACES
         one local candidate, so the sensed-eval count is identical with the
         planner on or off (exact eval parity)."""
-        step = 0.5 + 1.2 * (self.boost_ticks > 0)
+        if self.anneal_on:
+            step = (1.0 - self._step_progress) * self.step_wide \
+                + self._step_progress * self.step_fine
+            if self.boost_ticks > 0:
+                step = max(step, 0.5 * self.step_wide)   # shocks re-widen
+        else:
+            step = 0.5 + 1.2 * (self.boost_ticks > 0)
         cands = [self.x.copy()]
         # memory-guided warm jumps: best fine centre + best coarse (regional) centre.
         # SUSPENDED (i) during an exploration phase (or the warm jump teleports the
@@ -548,6 +562,14 @@ class IBFASI:
         # makes per-tick raw improvement positive half the time at any peak, so the
         # stall must key on 'no new best', not 'no improvement this tick').
         self.explore_ticks = max(0, self.explore_ticks - 1)
+        if self.anneal_on:
+            # progress anneals on improvement, partially re-opens on long stalls
+            if raw_final > self.best_sensed:
+                self._step_progress = min(1.0, self._step_progress + 0.02)
+            elif self.stall >= self.stall_patience:
+                self._step_progress = max(0.0, self._step_progress - 0.5)
+            else:
+                self._step_progress = min(1.0, self._step_progress + 0.004)
         if raw_final > self.best_sensed:
             self.k = min(self.k + self.k_adapt, self.k_max)
             self.stall = 0
