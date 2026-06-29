@@ -235,6 +235,29 @@
       "ACC_raw20D": 0.9195,
       "ACC_pca2D": 0.79,
       "ACC_random2D": 0.7404999999999999
+    },
+    {
+      "seed": 9,
+      "rho_struct": 0.8378897010777309,
+      "rho_nocryst": 0.9570949497312882,
+      "rho_shuffled": 0.8512428124481127,
+      "ACC_oracle": 0.9099999999999999,
+      "ACC_emergent": 0.9375,
+      "accuracy_gap": -0.02750000000000008,
+      "Acc_A_end_A": 0.965,
+      "Acc_A_after_B": 0.901,
+      "Acc_B_after_B": 0.974,
+      "BT_A_emergent": -0.06399999999999995,
+      "n_repr_particles": 214,
+      "n_repr_crystallized": 194,
+      "n_scale2_centers": 25,
+      "n_scale2_crystallized": 24,
+      "rho_pass": true,
+      "acc_pass": true,
+      "gate1_pass": true,
+      "ACC_raw20D": 0.9450000000000001,
+      "ACC_pca2D": 0.806,
+      "ACC_random2D": 0.764
     }
   ]
 }

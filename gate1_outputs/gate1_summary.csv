@@ -1,0 +1,2 @@
+n_seeds,config,median_rho_struct,mean_rho_struct,std_rho_struct,median_accuracy_gap,mean_accuracy_gap,std_accuracy_gap,median_ACC_oracle,median_ACC_emergent,rho_threshold,acc_gap_threshold,rho_pass,acc_gap_pass,n_seeds_gate1_pass,conclusion
+10,dev,0.8649130332364454,0.8641037315470447,0.016059332816657494,0.03975000000000006,0.031350000000000024,0.05025437791874453,0.88125,0.8412499999999999,0.8,0.15,True,True,10,PASS
