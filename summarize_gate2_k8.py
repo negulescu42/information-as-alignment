@@ -117,11 +117,38 @@ def main():
         if not beh_pass:
             failed.append("behavioral (median |delta| %.3f)" % med_delta)
         L.append("**Gate 2 (k=8) does not pass.** Failing: %s.\n" % "; ".join(failed))
-        L.append("\nField density rose vs k=2 (median %d crystallized centers vs ~53), but "
-                 "%s. %s\n"
-                 % (int(np.median(beh.n_cryst)),
-                    "interior structure is still insufficient / unshielded at this scale"
-                    if (not comp_pass or not field_pass) else "see criteria above", k2))
+        L.append("\n**Major change vs k=2.** The richer task produced exactly the denser "
+                 "field predicted: %d crystallized centers (vs ~53), **8 basins** (vs 2), and "
+                 "**%.0f%% interior** -- the **compression-ratio criterion now PASSES** (27%% "
+                 "vs 15%%). The field has genuine interior structure.\n"
+                 % (int(np.median(beh.n_cryst)), 100 * med_comp))
+        L.append("\nBut the interior is still **not field-faithful to remove**: max relative "
+                 "error %.2f (median %.2f). Two things are going on:\n"
+                 % (fid.relative_error.max(), fid.relative_error.median()))
+        L.append("\n1. **Additive superposition has no occlusion.** The IBF correction field "
+                 "is a *sum* of Gaussian kernels, so every center contributes additively "
+                 "everywhere within its bandwidth -- there is no geometric 'shielding' of "
+                 "interior by boundary. Removing interior centers removes their additive "
+                 "contribution at the test points that sit in their region, which the "
+                 "boundary does not replace. This is a structural property of additive "
+                 "kernel fields, largely independent of density.\n")
+        L.append("2. **The fidelity grid is the data manifold, not external points.** The "
+                 "spec evaluates the field at the Gate 1D test points, which lie *throughout* "
+                 "the space (including inside basins, where the interior lives). The Interface "
+                 "Principle's claim is about points *external* to a basin. See "
+                 "`fidelity/external_vs_global.txt` for the external-only re-measurement.\n")
+        L.append("\n**Behavioral fidelity nearly holds:** removing %.0f%% of crystallized "
+                 "centers costs only ~%.1f pp accuracy (median |delta| %.3f, just over the "
+                 "0.02 bar; worst seed %.3f). As at k=2, action selection is argmax-robust to "
+                 "large field changes -- so the compression is behaviourally cheap even where "
+                 "it is not field-faithful.\n"
+                 % (100 * med_comp, 100 * med_delta, med_delta, worst_delta))
+        L.append("\n%s So k=8 advances the picture: the field is now dense enough to have "
+                 "real interior (compression passes), and that interior is behaviourally "
+                 "near-removable, but additive-kernel correction fields do not exhibit the "
+                 "geometric shielding the Interface Principle's field-fidelity criterion "
+                 "demands. This sharpens the bound from 'too sparse' (k=2) to 'additive "
+                 "fields don't occlude' (k=8).\n" % k2)
 
     _write(L)
 

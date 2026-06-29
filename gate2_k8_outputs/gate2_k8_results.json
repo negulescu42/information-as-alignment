@@ -1,0 +1,782 @@
+{
+  "freq": 3.0,
+  "n_actions": 8,
+  "n_probes": 15,
+  "tau_basin": 0.01,
+  "tau_face": 0.0001,
+  "rel_err_threshold": 0.05,
+  "acc_delta_threshold": 0.02,
+  "compression_threshold": 0.2,
+  "run1": [
+    {
+      "seed": 0,
+      "coord_dim": 10,
+      "ACC_interactive": 0.9575,
+      "ACC_oracle": 0.7191666666666666,
+      "accuracy_gap": -0.2383333333333334,
+      "n_centers": 1437,
+      "n_cryst": 182
+    },
+    {
+      "seed": 1,
+      "coord_dim": 10,
+      "ACC_interactive": 0.9666666666666667,
+      "ACC_oracle": 0.6691666666666667,
+      "accuracy_gap": -0.2975,
+      "n_centers": 1096,
+      "n_cryst": 187
+    },
+    {
+      "seed": 2,
+      "coord_dim": 10,
+      "ACC_interactive": 0.9591666666666667,
+      "ACC_oracle": 0.7058333333333333,
+      "accuracy_gap": -0.2533333333333334,
+      "n_centers": 1447,
+      "n_cryst": 171
+    }
+  ],
+  "run1_median_gap": -0.2533333333333334,
+  "rows": [
+    {
+      "seed": 0,
+      "n_total": 1437,
+      "n_cryst": 182,
+      "n_basins": 8,
+      "basin_sizes": [
+        25,
+        25,
+        27,
+        24,
+        14,
+        24,
+        28,
+        15
+      ],
+      "n_singleton": 0,
+      "n_boundary": 128,
+      "n_interior": 54,
+      "compression_ratio": 0.2967032967032967,
+      "ACC_full": 0.9575,
+      "ACC_compressed": 0.9358333333333333,
+      "ACC_oracle": 0.7191666666666666,
+      "ACC_delta": -0.021666666666666723,
+      "per_basin": [
+        {
+          "basin": 0,
+          "size": 25,
+          "boundary": 23,
+          "interior": 2
+        },
+        {
+          "basin": 1,
+          "size": 25,
+          "boundary": 12,
+          "interior": 13
+        },
+        {
+          "basin": 2,
+          "size": 27,
+          "boundary": 24,
+          "interior": 3
+        },
+        {
+          "basin": 3,
+          "size": 24,
+          "boundary": 22,
+          "interior": 2
+        },
+        {
+          "basin": 4,
+          "size": 14,
+          "boundary": 11,
+          "interior": 3
+        },
+        {
+          "basin": 5,
+          "size": 24,
+          "boundary": 22,
+          "interior": 2
+        },
+        {
+          "basin": 6,
+          "size": 28,
+          "boundary": 5,
+          "interior": 23
+        },
+        {
+          "basin": 7,
+          "size": 15,
+          "boundary": 9,
+          "interior": 6
+        }
+      ],
+      "fidelity": [
+        {
+          "basin": 0,
+          "size": 25,
+          "boundary": 23,
+          "interior": 2,
+          "max_field": 0.9556970018920328,
+          "max_error": 0.1592657047173623,
+          "relative_error": 0.16664874367649216
+        },
+        {
+          "basin": 1,
+          "size": 25,
+          "boundary": 12,
+          "interior": 13,
+          "max_field": 0.9813025414171486,
+          "max_error": 0.6598661194129265,
+          "relative_error": 0.6724390200729905
+        },
+        {
+          "basin": 2,
+          "size": 27,
+          "boundary": 24,
+          "interior": 3,
+          "max_field": 0.876373368217795,
+          "max_error": 0.41894641621026724,
+          "relative_error": 0.4780455812052321
+        },
+        {
+          "basin": 3,
+          "size": 24,
+          "boundary": 22,
+          "interior": 2,
+          "max_field": 0.899354334555528,
+          "max_error": 0.1959337593284366,
+          "relative_error": 0.21786047142751963
+        },
+        {
+          "basin": 4,
+          "size": 14,
+          "boundary": 11,
+          "interior": 3,
+          "max_field": 0.7026552606779041,
+          "max_error": 0.10419842078546643,
+          "relative_error": 0.14829237977967913
+        },
+        {
+          "basin": 5,
+          "size": 24,
+          "boundary": 22,
+          "interior": 2,
+          "max_field": 0.6231907295502618,
+          "max_error": 0.15133256557615657,
+          "relative_error": 0.24283507179428884
+        },
+        {
+          "basin": 6,
+          "size": 28,
+          "boundary": 5,
+          "interior": 23,
+          "max_field": 1.150712957962364,
+          "max_error": 1.148197975902831,
+          "relative_error": 0.9978144139753427
+        },
+        {
+          "basin": 7,
+          "size": 15,
+          "boundary": 9,
+          "interior": 6,
+          "max_field": 0.8372593802261411,
+          "max_error": 0.44366108210954297,
+          "relative_error": 0.5298968187573149
+        }
+      ]
+    },
+    {
+      "seed": 1,
+      "n_total": 1096,
+      "n_cryst": 187,
+      "n_basins": 8,
+      "basin_sizes": [
+        22,
+        33,
+        24,
+        18,
+        17,
+        27,
+        24,
+        22
+      ],
+      "n_singleton": 0,
+      "n_boundary": 144,
+      "n_interior": 43,
+      "compression_ratio": 0.22994652406417113,
+      "ACC_full": 0.9666666666666667,
+      "ACC_compressed": 0.9299999999999999,
+      "ACC_oracle": 0.6691666666666667,
+      "ACC_delta": -0.036666666666666736,
+      "per_basin": [
+        {
+          "basin": 0,
+          "size": 22,
+          "boundary": 19,
+          "interior": 3
+        },
+        {
+          "basin": 1,
+          "size": 33,
+          "boundary": 14,
+          "interior": 19
+        },
+        {
+          "basin": 2,
+          "size": 24,
+          "boundary": 24,
+          "interior": 0
+        },
+        {
+          "basin": 3,
+          "size": 18,
+          "boundary": 7,
+          "interior": 11
+        },
+        {
+          "basin": 4,
+          "size": 17,
+          "boundary": 14,
+          "interior": 3
+        },
+        {
+          "basin": 5,
+          "size": 27,
+          "boundary": 27,
+          "interior": 0
+        },
+        {
+          "basin": 6,
+          "size": 24,
+          "boundary": 21,
+          "interior": 3
+        },
+        {
+          "basin": 7,
+          "size": 22,
+          "boundary": 18,
+          "interior": 4
+        }
+      ],
+      "fidelity": [
+        {
+          "basin": 0,
+          "size": 22,
+          "boundary": 19,
+          "interior": 3,
+          "max_field": 0.664586666383586,
+          "max_error": 0.11624555184747937,
+          "relative_error": 0.1749140596854728
+        },
+        {
+          "basin": 1,
+          "size": 33,
+          "boundary": 14,
+          "interior": 19,
+          "max_field": 1.0038743637678398,
+          "max_error": 1.0076102184870603,
+          "relative_error": 1.0037214364204168
+        },
+        {
+          "basin": 2,
+          "size": 24,
+          "boundary": 24,
+          "interior": 0,
+          "max_field": 0.7454383506546367,
+          "max_error": 0.0,
+          "relative_error": 0.0
+        },
+        {
+          "basin": 3,
+          "size": 18,
+          "boundary": 7,
+          "interior": 11,
+          "max_field": 0.948813198314537,
+          "max_error": 0.6682029807709383,
+          "relative_error": 0.7042513551534725
+        },
+        {
+          "basin": 4,
+          "size": 17,
+          "boundary": 14,
+          "interior": 3,
+          "max_field": 0.7512081075013634,
+          "max_error": 0.37296557240587674,
+          "relative_error": 0.49648768248358005
+        },
+        {
+          "basin": 5,
+          "size": 27,
+          "boundary": 27,
+          "interior": 0,
+          "max_field": 0.770113777292637,
+          "max_error": 0.0,
+          "relative_error": 0.0
+        },
+        {
+          "basin": 6,
+          "size": 24,
+          "boundary": 21,
+          "interior": 3,
+          "max_field": 0.7055995917191381,
+          "max_error": 0.33704043916256227,
+          "relative_error": 0.4776652978123515
+        },
+        {
+          "basin": 7,
+          "size": 22,
+          "boundary": 18,
+          "interior": 4,
+          "max_field": 0.6493756590197715,
+          "max_error": 0.2765355770979354,
+          "relative_error": 0.4258483871612609
+        }
+      ]
+    },
+    {
+      "seed": 2,
+      "n_total": 1447,
+      "n_cryst": 171,
+      "n_basins": 8,
+      "basin_sizes": [
+        25,
+        19,
+        12,
+        25,
+        28,
+        22,
+        22,
+        18
+      ],
+      "n_singleton": 0,
+      "n_boundary": 121,
+      "n_interior": 50,
+      "compression_ratio": 0.29239766081871343,
+      "ACC_full": 0.9591666666666667,
+      "ACC_compressed": 0.94,
+      "ACC_oracle": 0.7058333333333333,
+      "ACC_delta": -0.019166666666666776,
+      "per_basin": [
+        {
+          "basin": 0,
+          "size": 25,
+          "boundary": 18,
+          "interior": 7
+        },
+        {
+          "basin": 1,
+          "size": 19,
+          "boundary": 13,
+          "interior": 6
+        },
+        {
+          "basin": 2,
+          "size": 12,
+          "boundary": 11,
+          "interior": 1
+        },
+        {
+          "basin": 3,
+          "size": 25,
+          "boundary": 22,
+          "interior": 3
+        },
+        {
+          "basin": 4,
+          "size": 28,
+          "boundary": 24,
+          "interior": 4
+        },
+        {
+          "basin": 5,
+          "size": 22,
+          "boundary": 8,
+          "interior": 14
+        },
+        {
+          "basin": 6,
+          "size": 22,
+          "boundary": 10,
+          "interior": 12
+        },
+        {
+          "basin": 7,
+          "size": 18,
+          "boundary": 15,
+          "interior": 3
+        }
+      ],
+      "fidelity": [
+        {
+          "basin": 0,
+          "size": 25,
+          "boundary": 18,
+          "interior": 7,
+          "max_field": 0.7035644140650011,
+          "max_error": 0.3156474779930949,
+          "relative_error": 0.44864048214790564
+        },
+        {
+          "basin": 1,
+          "size": 19,
+          "boundary": 13,
+          "interior": 6,
+          "max_field": 0.7759031952605235,
+          "max_error": 0.5124155341752836,
+          "relative_error": 0.6604116818170721
+        },
+        {
+          "basin": 2,
+          "size": 12,
+          "boundary": 11,
+          "interior": 1,
+          "max_field": 0.6959844240645864,
+          "max_error": 0.03980270124320129,
+          "relative_error": 0.057189068980929875
+        },
+        {
+          "basin": 3,
+          "size": 25,
+          "boundary": 22,
+          "interior": 3,
+          "max_field": 0.7526285261353244,
+          "max_error": 0.18807929178641636,
+          "relative_error": 0.24989657610666965
+        },
+        {
+          "basin": 4,
+          "size": 28,
+          "boundary": 24,
+          "interior": 4,
+          "max_field": 0.8606253763335466,
+          "max_error": 0.3520553726509672,
+          "relative_error": 0.4090692446345163
+        },
+        {
+          "basin": 5,
+          "size": 22,
+          "boundary": 8,
+          "interior": 14,
+          "max_field": 1.0086338775742898,
+          "max_error": 0.8645417724677925,
+          "relative_error": 0.8571413191685122
+        },
+        {
+          "basin": 6,
+          "size": 22,
+          "boundary": 10,
+          "interior": 12,
+          "max_field": 0.8492343345166534,
+          "max_error": 0.4810255501599917,
+          "relative_error": 0.5664226357229514
+        },
+        {
+          "basin": 7,
+          "size": 18,
+          "boundary": 15,
+          "interior": 3,
+          "max_field": 0.7326077896963973,
+          "max_error": 0.36681943145749096,
+          "relative_error": 0.5007037006246352
+        }
+      ]
+    },
+    {
+      "seed": 3,
+      "n_total": 1052,
+      "n_cryst": 176,
+      "n_basins": 8,
+      "basin_sizes": [
+        28,
+        29,
+        17,
+        18,
+        17,
+        24,
+        21,
+        22
+      ],
+      "n_singleton": 0,
+      "n_boundary": 128,
+      "n_interior": 48,
+      "compression_ratio": 0.2727272727272727,
+      "ACC_full": 0.9616666666666667,
+      "ACC_compressed": 0.8983333333333334,
+      "ACC_oracle": 0.7508333333333332,
+      "ACC_delta": -0.06333333333333324,
+      "per_basin": [
+        {
+          "basin": 0,
+          "size": 28,
+          "boundary": 17,
+          "interior": 11
+        },
+        {
+          "basin": 1,
+          "size": 29,
+          "boundary": 10,
+          "interior": 19
+        },
+        {
+          "basin": 2,
+          "size": 17,
+          "boundary": 10,
+          "interior": 7
+        },
+        {
+          "basin": 3,
+          "size": 18,
+          "boundary": 18,
+          "interior": 0
+        },
+        {
+          "basin": 4,
+          "size": 17,
+          "boundary": 13,
+          "interior": 4
+        },
+        {
+          "basin": 5,
+          "size": 24,
+          "boundary": 19,
+          "interior": 5
+        },
+        {
+          "basin": 6,
+          "size": 21,
+          "boundary": 21,
+          "interior": 0
+        },
+        {
+          "basin": 7,
+          "size": 22,
+          "boundary": 20,
+          "interior": 2
+        }
+      ],
+      "fidelity": [
+        {
+          "basin": 0,
+          "size": 28,
+          "boundary": 17,
+          "interior": 11,
+          "max_field": 0.8977166244002279,
+          "max_error": 0.730749218017041,
+          "relative_error": 0.8140087841459546
+        },
+        {
+          "basin": 1,
+          "size": 29,
+          "boundary": 10,
+          "interior": 19,
+          "max_field": 0.9340568467023994,
+          "max_error": 0.8652963646301467,
+          "relative_error": 0.9263851205548744
+        },
+        {
+          "basin": 2,
+          "size": 17,
+          "boundary": 10,
+          "interior": 7,
+          "max_field": 0.522448187750184,
+          "max_error": 0.41651330561487404,
+          "relative_error": 0.7972337071907165
+        },
+        {
+          "basin": 3,
+          "size": 18,
+          "boundary": 18,
+          "interior": 0,
+          "max_field": 0.6749346274811011,
+          "max_error": 0.0,
+          "relative_error": 0.0
+        },
+        {
+          "basin": 4,
+          "size": 17,
+          "boundary": 13,
+          "interior": 4,
+          "max_field": 0.5771220899140027,
+          "max_error": 0.3055997525063565,
+          "relative_error": 0.5295235753303806
+        },
+        {
+          "basin": 5,
+          "size": 24,
+          "boundary": 19,
+          "interior": 5,
+          "max_field": 0.7062572173475091,
+          "max_error": 0.19247364041671355,
+          "relative_error": 0.2725262633241956
+        },
+        {
+          "basin": 6,
+          "size": 21,
+          "boundary": 21,
+          "interior": 0,
+          "max_field": 0.6434937412708471,
+          "max_error": 0.0,
+          "relative_error": 0.0
+        },
+        {
+          "basin": 7,
+          "size": 22,
+          "boundary": 20,
+          "interior": 2,
+          "max_field": 0.771511808850447,
+          "max_error": 0.1040780937436935,
+          "relative_error": 0.13490149150831504
+        }
+      ]
+    },
+    {
+      "seed": 4,
+      "n_total": 1274,
+      "n_cryst": 182,
+      "n_basins": 8,
+      "basin_sizes": [
+        18,
+        25,
+        25,
+        24,
+        25,
+        23,
+        24,
+        18
+      ],
+      "n_singleton": 0,
+      "n_boundary": 135,
+      "n_interior": 47,
+      "compression_ratio": 0.25824175824175827,
+      "ACC_full": 0.9691666666666667,
+      "ACC_compressed": 0.96,
+      "ACC_oracle": 0.7,
+      "ACC_delta": -0.009166666666666767,
+      "per_basin": [
+        {
+          "basin": 0,
+          "size": 18,
+          "boundary": 16,
+          "interior": 2
+        },
+        {
+          "basin": 1,
+          "size": 25,
+          "boundary": 23,
+          "interior": 2
+        },
+        {
+          "basin": 2,
+          "size": 25,
+          "boundary": 10,
+          "interior": 15
+        },
+        {
+          "basin": 3,
+          "size": 24,
+          "boundary": 19,
+          "interior": 5
+        },
+        {
+          "basin": 4,
+          "size": 25,
+          "boundary": 20,
+          "interior": 5
+        },
+        {
+          "basin": 5,
+          "size": 23,
+          "boundary": 10,
+          "interior": 13
+        },
+        {
+          "basin": 6,
+          "size": 24,
+          "boundary": 20,
+          "interior": 4
+        },
+        {
+          "basin": 7,
+          "size": 18,
+          "boundary": 17,
+          "interior": 1
+        }
+      ],
+      "fidelity": [
+        {
+          "basin": 0,
+          "size": 18,
+          "boundary": 16,
+          "interior": 2,
+          "max_field": 0.6473644973241252,
+          "max_error": 0.5054292198827259,
+          "relative_error": 0.7807490554298819
+        },
+        {
+          "basin": 1,
+          "size": 25,
+          "boundary": 23,
+          "interior": 2,
+          "max_field": 0.7783519641317991,
+          "max_error": 0.161917098919025,
+          "relative_error": 0.2080255544531585
+        },
+        {
+          "basin": 2,
+          "size": 25,
+          "boundary": 10,
+          "interior": 15,
+          "max_field": 0.9297770587350752,
+          "max_error": 0.8860013839471843,
+          "relative_error": 0.9529180952875544
+        },
+        {
+          "basin": 3,
+          "size": 24,
+          "boundary": 19,
+          "interior": 5,
+          "max_field": 0.7444941460811731,
+          "max_error": 0.4308352310197944,
+          "relative_error": 0.5786952566782847
+        },
+        {
+          "basin": 4,
+          "size": 25,
+          "boundary": 20,
+          "interior": 5,
+          "max_field": 0.8126947125595417,
+          "max_error": 0.4057401474139085,
+          "relative_error": 0.499252845002676
+        },
+        {
+          "basin": 5,
+          "size": 23,
+          "boundary": 10,
+          "interior": 13,
+          "max_field": 1.0384481860987955,
+          "max_error": 0.7817643589426742,
+          "relative_error": 0.7528198029834268
+        },
+        {
+          "basin": 6,
+          "size": 24,
+          "boundary": 20,
+          "interior": 4,
+          "max_field": 0.6642787919699471,
+          "max_error": 0.45586499492698423,
+          "relative_error": 0.6862555306130903
+        },
+        {
+          "basin": 7,
+          "size": 18,
+          "boundary": 17,
+          "interior": 1,
+          "max_field": 0.6377077864784975,
+          "max_error": 0.07667220755748877,
+          "relative_error": 0.12023094146122826
+        }
+      ]
+    }
+  ]
+}
