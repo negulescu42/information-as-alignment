@@ -51,6 +51,7 @@ class Gate1Config:
     manifold: str = "normal"        # "normal" or "uniform"
     generator: str = "1A"           # "1A" (geometry-easy) or "1B" (stress)
     u2_freq: float = 3.0            # Gate 1B: high-frequency aliasing of u2
+    u_C: float = None               # Gate 3: third-context coefficient (partial overlap)
 
     # ---- Scale 1 representation dynamics ----
     E_scale1: int = 30
@@ -151,6 +152,9 @@ class TwoScaleToyEnvironment:
         self.cfg = cfg if cfg is not None else Gate1Config()
         self.seed = seed
         self.k = self.cfg.k
+        self.u_ctx = {'A': +1.0, 'B': -1.0}
+        if self.cfg.u_C is not None:
+            self.u_ctx['C'] = float(self.cfg.u_C)
         # action coefficient vectors: 2 actions keep the original +/-1 contrast;
         # k>2 actions are evenly spaced directions on the unit circle, so the
         # correct action is the angular sector of [u1, u_c*u2] -- a balanced
@@ -214,8 +218,15 @@ class TwoScaleToyEnvironment:
     # ------------------------------------------------------------------
     #  task: truth computed from hidden u (NOT from x20)
     # ------------------------------------------------------------------
+    def _u_c(self, ctx):
+        # context coefficient: A=+1, B=-1, optional Gate 3 context C (partial
+        # overlap, set via cfg.u_C). Falls back to the module dict for A/B.
+        if hasattr(self, "u_ctx") and ctx in self.u_ctx:
+            return self.u_ctx[ctx]
+        return U_CTX[ctx]
+
     def score_clean(self, u, ctx):
-        u_c = U_CTX[ctx]
+        u_c = self._u_c(ctx)
         s = np.zeros(self.k)
         for j in range(self.k):
             s[j] = BETA * u[0] * self.p_vec[j] + ALPHA * u_c * u[1] * self.r_vec[j]
@@ -225,7 +236,7 @@ class TwoScaleToyEnvironment:
         return int(np.argmax(self.score_clean(u, ctx)))
 
     def correct_actions_batch(self, U, ctx):
-        u_c = U_CTX[ctx]
+        u_c = self._u_c(ctx)
         U = np.atleast_2d(U)
         N = len(U)
         S = np.zeros((N, self.k))
