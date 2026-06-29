@@ -69,6 +69,10 @@ class Gate1Config:
     k_nearest: int = 15
     sigma_graph_b_frac: float = 2.0     # behavior bandwidth = frac * median sig-dist
     interp_sigma_frac: float = 0.6      # interpolation bandwidth = frac * sigma_x
+    # graph-variant knobs (Gate 1B behavioral-geometry branch)
+    graph_alpha: float = 0.5            # additive mode: geometry weight
+    graph_beta: float = 0.5             # additive mode: behavior weight
+    behavior_first_geom_reg: float = 0.3  # behavior-first: geometry regularizer floor
 
     # ---- Scale 2 ----
     E_scale2: int = 25              # epochs per context

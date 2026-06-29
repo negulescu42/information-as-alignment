@@ -41,10 +41,12 @@ class Scale1RepresentationParticle:
 
 
 class Scale1RepresentationLearner:
-    def __init__(self, cfg: Gate1Config, seed, enable_crystallization=True):
+    def __init__(self, cfg: Gate1Config, seed, enable_crystallization=True,
+                 graph_mode="multiplicative"):
         self.cfg = cfg
         self.seed = seed
         self.enable_crystallization = enable_crystallization
+        self.graph_mode = graph_mode
         self.rng = np.random.RandomState(seed + 31)
         self.k = cfg.k
         self.n_slots = cfg.k * cfg.k          # context * action
@@ -283,19 +285,51 @@ class Scale1RepresentationLearner:
         iu = np.triu_indices(M, 1)
         med_b = float(np.median(Db[iu])) if len(iu[0]) else 1.0
         sigma_gb = max(self.cfg.sigma_graph_b_frac * med_b, 1e-3)
+        # behavior self-tuning local bandwidth (for the behavior-driven modes)
+        kthb = np.maximum(np.sort(Db, axis=1)[:, kk], 1e-6)
+        Wb_local = np.exp(-Db**2 / (kthb[:, None] * kthb[None, :]))
         Wb = np.exp(-Db**2 / (2.0 * sigma_gb**2))
 
         Sn = 0.5 + 0.5 * (S - S.min()) / (S.max() - S.min() + 1e-9)
         Wstab = np.sqrt(Sn[:, None] * Sn[None, :])
 
-        W = Wx * Wb * Wstab
+        mode = self.graph_mode
+        a = self.cfg.graph_alpha
+        b = self.cfg.graph_beta
 
-        # k-nearest-neighbour sparsification (by geometry), symmetrized
-        Wsp = np.zeros_like(W)
-        for i in range(M):
-            nn = np.argsort(Dx[i])[1:kk + 1]
-            Wsp[i, nn] = W[i, nn]
-        W = np.maximum(Wsp, Wsp.T)
+        def sparsify_by(Dist, Wfull):
+            Wsp = np.zeros_like(Wfull)
+            for i in range(M):
+                nn = np.argsort(Dist[i])[1:kk + 1]
+                Wsp[i, nn] = Wfull[i, nn]
+            return np.maximum(Wsp, Wsp.T)
+
+        if mode == 'multiplicative':
+            # BASELINE (Gate 1A): behavior multiplicatively gates geometric kNN.
+            W = sparsify_by(Dx, Wx * Wb * Wstab)
+        elif mode == 'additive':
+            # mixed-view affinity: geometry OR behavior can carry an edge.
+            Wmix = (a * Wx + b * Wb_local) * Wstab
+            # sparsify by the combined affinity (largest mixed weight = nearest)
+            W = sparsify_by(-Wmix, Wmix)
+        elif mode == 'union':
+            # neighborhood = kNN_geometry UNION kNN_behavior.
+            Wfull = Wx * Wb * Wstab
+            Wsp = np.zeros_like(Wfull)
+            for i in range(M):
+                gi = np.argsort(Dx[i])[1:kk + 1]
+                bi = np.argsort(Db[i])[1:kk + 1]
+                idx = np.union1d(gi, bi)
+                Wsp[i, idx] = Wfull[i, idx]
+            W = np.maximum(Wsp, Wsp.T)
+        elif mode == 'behavior_first':
+            # connectivity primarily behavioral; geometry only a mild regularizer.
+            reg = self.cfg.behavior_first_geom_reg
+            Wfull = Wb_local * Wstab * (reg + (1.0 - reg) * Wx)
+            W = sparsify_by(Db, Wfull)
+        else:
+            raise ValueError("unknown graph_mode: %s" % mode)
+
         W[W < 1e-10] = 0.0
         return W
 
