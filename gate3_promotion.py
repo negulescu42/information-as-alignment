@@ -134,6 +134,8 @@ def promote(agent):
         interior = [cryst[i] for i in intr]
         if not boundary:
             continue
+        for c in boundary:
+            c.interface_group = int(b)        # Path C: absorb cross-context D as a unit
         interfaces.append(PromotedInterface(b, boundary, interior, phase_origin=0))
         interior_ids |= set(id(c) for c in interior)
     # interior centers become dormant: removed from the active readout population

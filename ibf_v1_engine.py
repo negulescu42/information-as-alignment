@@ -100,6 +100,7 @@ class MemoryCenter:
     was_ever_crystallized: bool = False
     crucible_verified: bool = False
     dissolution_log: List[Dict] = field(default_factory=list)
+    interface_group: int = None      # Gate 3 Path C: promoted-interface membership
 
     def D_var(self):
         if self.n_updates < 20:
@@ -245,11 +246,31 @@ class IBFAgent:
         K_all = self.kernel_batch(z_chosen) if self.centers else np.array([])
 
         if self.enable_crucible:
+            # Gate 3 Path C: a promoted interface absorbs cross-context pressure
+            # AS A UNIT. Without this, each of an interface's N boundary centers
+            # takes its own full juris_D = D*kw, so the interface's total v-drift
+            # is sum over N centers; with fewer centers sharing the load (interior
+            # dormant) each drifts faster. We normalise the v-update by the
+            # interface's total activation so the interface absorbs the pressure of
+            # ONE peak center, not N copies. Detection signal (D_history, used by
+            # the reversal test) is left RAW so the Crucible is not weakened.
+            group_act = {}
+            for i, c in enumerate(self.centers):
+                g = c.interface_group
+                if g is not None and c.is_crystallized() and c.context_id != self.current_context:
+                    kw = float(K_all[i])
+                    if kw >= C.activation_thresh:
+                        group_act[g] = group_act.get(g, 0.0) + kw
             for i, c in enumerate(self.centers):
                 if c.is_crystallized() and c.context_id != self.current_context:
                     kw = float(K_all[i])
                     if kw >= C.activation_thresh:
-                        juris_D = D * kw
+                        g = c.interface_group
+                        if g is not None and group_act.get(g, 0.0) > 1e-9:
+                            eff_kw = kw / group_act[g]      # interface-as-a-unit
+                        else:
+                            eff_kw = kw                      # standard (flat) path
+                        juris_D = D * eff_kw
                         c.v = np.clip(c.v + C.eta_cryst * juris_D, -C.v_max, C.v_max)
                         c.n_updates += 1
                         c.D_sum += juris_D
