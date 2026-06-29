@@ -1,0 +1,187 @@
+"""
+gate1_environment.py
+====================
+
+Phase 1 of the Gate 1 branch: the two-scale toy environment.
+
+A hidden 2D variable u = [u1, u2] is observed only through a fixed nonlinear
+20D embedding x20. The learner sees x20 only. The true coordinates u are used
+exclusively for:
+
+    1. generating the environment;
+    2. the oracle frozen-encoder baseline;
+    3. evaluation metrics / plot diagnostics.
+
+The Scale 1 representation learner must never touch u.
+
+Task structure (identical logic to the original 2D toy model, but truth is
+computed from the hidden u, not the observation):
+
+    s_j(u, c) = beta * u1 * p_j + alpha * u_c * u2 * r_j
+    correct_action = argmax_j s_j(u, c)
+
+with p = r = [+1, -1], u_A = +1, u_B = -1, alpha = beta = 1.0.
+"""
+
+import numpy as np
+from dataclasses import dataclass
+
+
+# Action / context constants (mirror the v1 toy model).
+P_VEC = np.array([+1.0, -1.0])
+R_VEC = np.array([+1.0, -1.0])
+U_CTX = {'A': +1.0, 'B': -1.0}
+ALPHA = 1.0
+BETA = 1.0
+
+
+@dataclass
+class Gate1Config:
+    # ---- dimensions ----
+    d_hidden: int = 2
+    D_obs: int = 20
+    k: int = 2                      # number of actions / contexts
+
+    # ---- dataset sizes ----
+    N_repr_pool: int = 2000         # Scale 1 representation fitting pool
+    N_train_pool: int = 1000        # Scale 2 training pool
+    N_test: int = 1000              # held-out evaluation
+    noise_std: float = 0.03
+    manifold: str = "normal"        # "normal" or "uniform"
+
+    # ---- Scale 1 representation dynamics ----
+    E_scale1: int = 30
+    eta_repr: float = 0.10
+    mu_repr_base: float = 0.03
+    mu_repr_cryst: float = 0.001
+    n_repr_cryst_min: int = 20
+    repr_convergence_threshold: float = 0.05
+    creation_thresh_repr: float = 0.35
+    activation_thresh_repr: float = 0.15
+    capacity_repr: int = 2000
+    sigma_x_scale: float = 1.0      # multiplier on auto-calibrated raw bandwidth
+    merge_thresh_x_frac: float = 0.5    # fraction of sigma_x
+    merge_thresh_signature: float = 0.15
+
+    # ---- emergent graph / embedding ----
+    k_nearest: int = 15
+    sigma_graph_b_frac: float = 2.0     # behavior bandwidth = frac * median sig-dist
+    interp_sigma_frac: float = 0.6      # interpolation bandwidth = frac * sigma_x
+
+    # ---- Scale 2 ----
+    E_scale2: int = 25              # epochs per context
+
+
+def make_features(U):
+    """Fixed nonlinear feature map R^2 -> R^20 (vectorized over rows of U)."""
+    u1 = U[:, 0]
+    u2 = U[:, 1]
+    F = np.stack([
+        u1,
+        u2,
+        u1**2,
+        u2**2,
+        u1 * u2,
+        np.sin(u1),
+        np.sin(u2),
+        np.cos(u1),
+        np.cos(u2),
+        np.tanh(u1),
+        np.tanh(u2),
+        u1**3,
+        u2**3,
+        u1**2 * u2,
+        u1 * u2**2,
+        np.exp(-0.5 * u1**2),
+        np.exp(-0.5 * u2**2),
+        np.sin(u1 + u2),
+        np.cos(u1 - u2),
+        u1 - u2,
+    ], axis=1)
+    return F
+
+
+class TwoScaleToyEnvironment:
+    """Hidden 2D manifold observed through a fixed nonlinear 20D embedding."""
+
+    def __init__(self, seed, cfg: Gate1Config = None):
+        self.cfg = cfg if cfg is not None else Gate1Config()
+        self.seed = seed
+        self.k = self.cfg.k
+        rng = np.random.RandomState(seed)
+
+        # ---- fixed random orthogonal mixing matrix ----
+        A = rng.randn(self.cfg.D_obs, self.cfg.D_obs)
+        Q, Rmat = np.linalg.qr(A)
+        # make the sign deterministic
+        Q = Q * np.sign(np.diag(Rmat))[np.newaxis, :]
+        self.R = Q
+
+        # ---- reference standardization statistics (fixed) ----
+        ref = self._sample_u(rng, 8000)
+        F = make_features(ref)
+        self.feat_mean = F.mean(axis=0)
+        self.feat_std = F.std(axis=0) + 1e-8
+        F_std = (F - self.feat_mean) / self.feat_std
+        Xr = F_std @ self.R
+        self.obs_mean = Xr.mean(axis=0)
+        self.obs_std = Xr.std(axis=0) + 1e-8
+
+        # ---- generate the datasets ----
+        self.pool_u2 = self._sample_u(rng, self.cfg.N_repr_pool)
+        self.pool_x20 = self.embed(self.pool_u2, rng)
+
+        self.train_u2 = self._sample_u(rng, self.cfg.N_train_pool)
+        self.train_x20 = self.embed(self.train_u2, rng)
+
+        self.test_A_u2 = self._sample_u(rng, self.cfg.N_test)
+        self.test_A_x20 = self.embed(self.test_A_u2, rng)
+        self.test_B_u2 = self._sample_u(rng, self.cfg.N_test)
+        self.test_B_x20 = self.embed(self.test_B_u2, rng)
+
+    # ------------------------------------------------------------------
+    #  data generation
+    # ------------------------------------------------------------------
+    def _sample_u(self, rng, n):
+        if self.cfg.manifold == "uniform":
+            return rng.uniform(-2.5, 2.5, size=(n, self.cfg.d_hidden))
+        return rng.randn(n, self.cfg.d_hidden)
+
+    def embed(self, U, rng=None):
+        """Map hidden coords U (N,2) to observations x20 (N,20)."""
+        F = make_features(np.atleast_2d(U))
+        F_std = (F - self.feat_mean) / self.feat_std
+        X = F_std @ self.R
+        if rng is not None and self.cfg.noise_std > 0:
+            X = X + rng.randn(*X.shape) * self.cfg.noise_std
+        X = (X - self.obs_mean) / self.obs_std
+        return X
+
+    # ------------------------------------------------------------------
+    #  task: truth computed from hidden u (NOT from x20)
+    # ------------------------------------------------------------------
+    def score_clean(self, u, ctx):
+        u_c = U_CTX[ctx]
+        s = np.zeros(self.k)
+        for j in range(self.k):
+            s[j] = BETA * u[0] * P_VEC[j] + ALPHA * u_c * u[1] * R_VEC[j]
+        return s
+
+    def correct_action(self, u, ctx):
+        return int(np.argmax(self.score_clean(u, ctx)))
+
+    def correct_actions_batch(self, U, ctx):
+        u_c = U_CTX[ctx]
+        U = np.atleast_2d(U)
+        N = len(U)
+        S = np.zeros((N, self.k))
+        for j in range(self.k):
+            S[:, j] = BETA * U[:, 0] * P_VEC[j] + ALPHA * u_c * U[:, 1] * R_VEC[j]
+        return np.argmax(S, axis=1)
+
+    # convenience accessors used by the Scale 2 runner
+    def get_test_obs(self, ctx):
+        return self.test_A_x20 if ctx == 'A' else self.test_B_x20
+
+    def get_test_u(self, ctx):
+        return self.test_A_u2 if ctx == 'A' else self.test_B_u2

@@ -1,0 +1,4 @@
+__pycache__/
+*.pyc
+toy_model_outputs/
+gate1_outputs_run.log
