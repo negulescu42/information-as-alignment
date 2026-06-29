@@ -48,6 +48,8 @@ class Gate1Config:
     N_test: int = 1000              # held-out evaluation
     noise_std: float = 0.03
     manifold: str = "normal"        # "normal" or "uniform"
+    generator: str = "1A"           # "1A" (geometry-easy) or "1B" (stress)
+    u2_freq: float = 3.0            # Gate 1B: high-frequency aliasing of u2
 
     # ---- Scale 1 representation dynamics ----
     E_scale1: int = 30
@@ -72,33 +74,58 @@ class Gate1Config:
     E_scale2: int = 25              # epochs per context
 
 
-def make_features(U):
-    """Fixed nonlinear feature map R^2 -> R^20 (vectorized over rows of U)."""
+def make_features_1A(U):
+    """Gate 1A feature map R^2 -> R^20: a smooth, near-isometric embedding.
+
+    Both hidden coordinates enter through low-frequency / polynomial terms, so
+    ambient geometry alone already preserves the manifold (the "geometry-easy"
+    regime). This is the original Gate 1 generator.
+    """
     u1 = U[:, 0]
     u2 = U[:, 1]
-    F = np.stack([
-        u1,
-        u2,
-        u1**2,
-        u2**2,
-        u1 * u2,
-        np.sin(u1),
-        np.sin(u2),
-        np.cos(u1),
-        np.cos(u2),
-        np.tanh(u1),
-        np.tanh(u2),
-        u1**3,
-        u2**3,
-        u1**2 * u2,
-        u1 * u2**2,
-        np.exp(-0.5 * u1**2),
-        np.exp(-0.5 * u2**2),
-        np.sin(u1 + u2),
-        np.cos(u1 - u2),
-        u1 - u2,
+    return np.stack([
+        u1, u2, u1**2, u2**2, u1 * u2,
+        np.sin(u1), np.sin(u2), np.cos(u1), np.cos(u2),
+        np.tanh(u1), np.tanh(u2),
+        u1**3, u2**3, u1**2 * u2, u1 * u2**2,
+        np.exp(-0.5 * u1**2), np.exp(-0.5 * u2**2),
+        np.sin(u1 + u2), np.cos(u1 - u2), u1 - u2,
     ], axis=1)
-    return F
+
+
+def make_features_1B(U, f=3.0):
+    """Gate 1B stress feature map R^2 -> R^20: geometry-only is insufficient.
+
+    u1 is encoded through smooth, low-frequency terms -> ambient geometry
+    recovers u1. u2 is encoded ONLY through high-frequency (aliased) terms
+    sin(f*u2), cos(f*u2), ... -> globally, ambient distance does NOT track
+    |delta u2| (points a full period apart in u2 are near in x, neighbours can
+    have very different true u2), so raw-distance / PCA / spectral embeddings
+    cannot order u2. u2 remains *locally* accessible (the high-frequency map is
+    locally invertible within a period), so a Scale 1 particle still localizes
+    u2 well enough to form a u2-dependent behavioral signature -- the only
+    channel through which the global u2 ordering survives.
+    """
+    u1 = U[:, 0]
+    u2 = U[:, 1]
+    return np.stack([
+        # u1: smooth / geometry-accessible (12 features)
+        u1, u1**2, u1**3, np.sin(u1), np.cos(u1), np.tanh(u1),
+        np.exp(-0.5 * u1**2), np.sin(2 * u1), np.cos(2 * u1), u1,
+        np.sin(3 * u1), np.cos(3 * u1),
+        # u2: high-frequency aliased (6 features)
+        np.sin(f * u2), np.cos(f * u2), np.sin(2 * f * u2), np.cos(2 * f * u2),
+        np.sin(f * u2 + 1.0), np.cos(f * u2 + 1.0),
+        # mild aliased coupling (2 features)
+        0.2 * np.sin(f * (u1 + u2)), 0.2 * np.cos(f * (u1 - u2)),
+    ], axis=1)
+
+
+def make_features(U, generator="1A", f=3.0):
+    """Fixed nonlinear feature map R^2 -> R^20 for the chosen generator."""
+    if generator == "1B":
+        return make_features_1B(U, f=f)
+    return make_features_1A(U)
 
 
 class TwoScaleToyEnvironment:
@@ -119,7 +146,7 @@ class TwoScaleToyEnvironment:
 
         # ---- reference standardization statistics (fixed) ----
         ref = self._sample_u(rng, 8000)
-        F = make_features(ref)
+        F = make_features(ref, self.cfg.generator, self.cfg.u2_freq)
         self.feat_mean = F.mean(axis=0)
         self.feat_std = F.std(axis=0) + 1e-8
         F_std = (F - self.feat_mean) / self.feat_std
@@ -149,7 +176,7 @@ class TwoScaleToyEnvironment:
 
     def embed(self, U, rng=None):
         """Map hidden coords U (N,2) to observations x20 (N,20)."""
-        F = make_features(np.atleast_2d(U))
+        F = make_features(np.atleast_2d(U), self.cfg.generator, self.cfg.u2_freq)
         F_std = (F - self.feat_mean) / self.feat_std
         X = F_std @ self.R
         if rng is not None and self.cfg.noise_std > 0:

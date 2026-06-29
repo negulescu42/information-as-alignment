@@ -105,7 +105,23 @@ ACC_emergent >= ACC_oracle - 0.15         (accuracy gap <= 0.15)
 The machine-generated conclusion (PASS / FAIL / INCONCLUSIVE) and the exact
 numbers are written to `gate1_outputs/gate1_report.md` and
 `gate1_outputs/gate1_summary.csv` after a run. See that report for the
-authoritative result; a representative summary is reproduced in
-`GATE1_CONCLUSION.md` once the development run completes.
-```
+authoritative result.
+
+### Gate 1A vs causal validation
+
+This generator is **geometrically easy**: the no-crystallization ablation and
+the shuffled-signature control also recover the manifold above ρ = 0.8, i.e. a
+geometry-only baseline passes too. So a pass here is a **Gate 1A pass** (the
+pipeline runs end-to-end and clears the bar) — it is **not** causal validation
+that lower-scale *crystallization* induces the configuration space. The
+summarizer labels it accordingly.
+
+To actually stress the causal claim, use the **Gate 1B** stress generator, where
+geometry-only recovery is insufficient (u2 is encoded only through
+high-frequency aliased terms). See `GATE1B_README.md` and:
+
+```bash
+python gate1b_geometry_check.py 5          # show geometry-only fails on 1B
+python run_gate1.py --generator 1B --config dev
+python summarize_gate1.py gate1b_outputs
 ```

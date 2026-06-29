@@ -349,6 +349,8 @@ def build_cfg(args):
         cfg.E_scale1 = args.e1
     if args.e2 is not None:
         cfg.E_scale2 = args.e2
+    if args.generator is not None:
+        cfg.generator = args.generator
     return cfg, seeds
 
 
@@ -362,9 +364,20 @@ def main():
     ap.add_argument('--n-test', dest='n_test', type=int, default=None)
     ap.add_argument('--e1', type=int, default=None)
     ap.add_argument('--e2', type=int, default=None)
+    ap.add_argument('--generator', default=None, choices=['1A', '1B'],
+                    help="data generator: 1A (geometry-easy) or 1B (stress)")
+    ap.add_argument('--out-dir', default=None,
+                    help="output directory (default gate1_outputs, or "
+                         "gate1b_outputs when --generator 1B)")
     ap.add_argument('--no-figures', action='store_true')
     args = ap.parse_args()
 
+    global OUT_DIR, FIG_DIR
+    if args.out_dir is not None:
+        OUT_DIR = args.out_dir
+    elif args.generator == '1B':
+        OUT_DIR = "gate1b_outputs"
+    FIG_DIR = os.path.join(OUT_DIR, "figures")
     os.makedirs(FIG_DIR, exist_ok=True)
     cfg, seeds = build_cfg(args)
 

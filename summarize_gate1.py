@@ -17,6 +17,7 @@ Aggregate pass rule (spec sec 12):
 """
 
 import os
+import sys
 import json
 import numpy as np
 import pandas as pd
@@ -24,7 +25,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-OUT_DIR = "gate1_outputs"
+OUT_DIR = sys.argv[1] if len(sys.argv) > 1 else "gate1_outputs"
 FIG_DIR = os.path.join(OUT_DIR, "figures")
 RESULTS = os.path.join(OUT_DIR, "gate1_results.json")
 
@@ -131,13 +132,24 @@ def main():
 
     fig_path = accuracy_gap_barchart(df)
 
+    generator = (payload.get('cfg') or {}).get('generator', '1A')
+    rho_nc = agg(df, 'rho_nocryst')['median']
+    rho_sh = agg(df, 'rho_shuffled')['median']
+    # is geometry alone already sufficient? (controls that strip the learned
+    # behavioral structure still recover high rho)
+    geom_easy = (rho_nc > RHO_THRESHOLD) or (rho_sh > RHO_THRESHOLD)
+    gate_label = conclusion
+    if conclusion == "PASS" and generator == "1A" and geom_easy:
+        gate_label = "PASS (Gate 1A only -- not causal validation)"
+
     # -------- markdown report --------
     lines = []
-    lines.append("# Gate 1 Report -- Recursive Scale Structure (Postulate 2)\n")
-    lines.append("Config: **%s** | seeds: **%d** (%s)\n"
-                 % (payload.get('config'), len(df),
+    title_gen = "Gate 1B (stress generator)" if generator == "1B" else "Gate 1A (geometry-easy generator)"
+    lines.append("# %s Report -- Recursive Scale Structure (Postulate 2)\n" % title_gen)
+    lines.append("Generator: **%s** | config: **%s** | seeds: **%d** (%s)\n"
+                 % (generator, payload.get('config'), len(df),
                     ", ".join(str(int(s)) for s in df['seed'])))
-    lines.append("\n## Conclusion: **%s**\n" % conclusion)
+    lines.append("\n## Conclusion: **%s**\n" % gate_label)
     lines.append("")
     lines.append("| metric | result | threshold | pass |")
     lines.append("|---|---|---|---|")
@@ -204,20 +216,58 @@ def main():
 
     lines.append("\n## Interpretation\n")
     if both:
-        lines.append("rho_struct > 0.8 means Scale 1 crystallization recovered the hidden "
+        lines.append("rho_struct > 0.8 means the emergent representation recovered the hidden "
                      "manifold structure. accuracy gap <= 0.15 means the existing v1 "
                      "correction dynamics operate on the emergent representation about as "
-                     "well as on the oracle true-2D space. Both thresholds passed: "
-                     "**Postulate 2 (Recursive Scale Structure) is validated for this "
-                     "computational instantiation at Gate 1.**")
+                     "well as on the oracle true-2D space. Both thresholds passed.")
     elif rho_pass and not gap_pass:
         lines.append("rho passed but the accuracy gap exceeds 0.15: the emergent coordinates "
                      "recover geometry but are not operationally usable by the correction "
-                     "dynamics. Gate 1 does **not** pass.")
+                     "dynamics. Does **not** pass.")
     elif not rho_pass:
-        lines.append("rho_struct did not clear 0.8: Scale 1 crystallization did not recover "
-                     "the hidden manifold. Gate 1 does **not** pass.")
+        lines.append("rho_struct did not clear 0.8: the emergent representation did not "
+                     "recover the hidden manifold. Does **not** pass.")
     lines.append("")
+
+    # ---- causal-validity caveat (the load-bearing distinction) ----
+    lines.append("\n## Causal validity of the result\n")
+    if generator == "1A" and geom_easy:
+        lines.append("**This generator is geometrically easy.** The no-crystallization "
+                     "ablation (median rho=%.3f) and the shuffled-signature control "
+                     "(median rho=%.3f) *also* recover the manifold above the %.2f "
+                     "threshold. That means the manifold geometry is essentially "
+                     "recoverable from the ambient 20D distances alone -- the learned "
+                     "behavioral signature and the crystallization step are **not** the "
+                     "load-bearing cause of manifold recovery here; the near-isometric "
+                     "embedding is.\n" % (rho_nc, rho_sh, RHO_THRESHOLD))
+        lines.append("Therefore, if the thresholds pass, this is a **Gate 1A pass** "
+                     "(the pipeline runs end-to-end and clears the bar on an easy "
+                     "generator) -- it is **not** causal validation of Postulate 2. A "
+                     "geometry-only baseline would pass too. Establishing that "
+                     "lower-scale *crystallization* is what induces the usable "
+                     "configuration space requires a generator where geometry-only "
+                     "recovery is insufficient.\n")
+        lines.append("That generator is **Gate 1B** (`--generator 1B`): u1 is encoded "
+                     "smoothly (geometry-accessible) while u2 is encoded only through "
+                     "high-frequency aliased terms, so raw-distance / PCA / spectral "
+                     "embeddings cannot order u2 (geometry-only rho falls well below "
+                     "%.2f). u2 then survives only via the behavioral signature of "
+                     "crystallized particles. See `GATE1B_README.md`.\n" % RHO_THRESHOLD)
+    elif generator == "1B":
+        lines.append("On the **Gate 1B stress generator**, geometry-only recovery is "
+                     "insufficient by construction (raw-distance / PCA / spectral "
+                     "embeddings cannot order the high-frequency-encoded u2). Compare the "
+                     "emergent result (median rho=%.3f) against the no-crystallization "
+                     "ablation (%.3f) and shuffled-signature control (%.3f): a gap in "
+                     "favour of the full method is the signature of genuine, "
+                     "crystallization-driven representational buildup rather than "
+                     "geometry leaking the answer.\n"
+                     % (rho_stats['median'], rho_nc, rho_sh))
+    else:
+        lines.append("The no-crystallization ablation (median rho=%.3f) and "
+                     "shuffled-signature control (median rho=%.3f) are below the "
+                     "emergent result, consistent with crystallization / behavioral "
+                     "structure contributing to recovery.\n" % (rho_nc, rho_sh))
 
     with open(os.path.join(OUT_DIR, "gate1_report.md"), "w") as f:
         f.write("\n".join(lines))
