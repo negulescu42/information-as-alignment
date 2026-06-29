@@ -74,6 +74,17 @@ class Gate1Config:
     graph_beta: float = 0.5             # additive mode: behavior weight
     behavior_first_geom_reg: float = 0.3  # behavior-first: geometry regularizer floor
 
+    # ---- Gate 1C: discrepancy-driven splitting of non-converging particles ----
+    enable_splitting: bool = False
+    split_threshold: float = 0.10       # split if rolling D-variance exceeds this
+    split_sigma_factor: float = 0.7     # child bandwidth = factor * parent
+    split_min_log: int = 8              # min logged activations to attempt a split
+    min_split_sigma_frac: float = 0.30  # do not split below frac * sigma_x (depth cap)
+    activation_log_cap: int = 60        # per-particle activation memory (samples)
+    # Gate 1C second lever: behavior-augmented particle creation
+    enable_behavioral_creation: bool = False
+    behavioral_creation_threshold: float = 0.10
+
     # ---- Scale 2 ----
     E_scale2: int = 25              # epochs per context
 

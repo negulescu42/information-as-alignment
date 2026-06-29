@@ -35,9 +35,18 @@ class Scale1RepresentationParticle:
     D_history: List[float] = field(default_factory=list)
     stability: float = 0.0
     was_ever_crystallized: bool = False
+    # Gate 1C: recent activating observations + their full reward vector, used to
+    # partition a non-converging particle's jurisdiction along the behavioral
+    # fault line (discrepancy-driven splitting).
+    activation_log: list = field(default_factory=list)
+    depth: int = 0                      # number of ancestral splits
 
     def is_crystallized(self):
         return self.was_ever_crystallized and self.mu_eff < 0.01
+
+    def D_var_rolling(self, window=30):
+        rec = self.D_history[-window:]
+        return float(np.var(rec)) if len(rec) >= 2 else 0.0
 
 
 class Scale1RepresentationLearner:
@@ -53,6 +62,8 @@ class Scale1RepresentationLearner:
         self.particles: List[Scale1RepresentationParticle] = []
         self.sigma_x = None
         self.merge_thresh_x = None
+        self.n_splits = 0
+        self.n_behavioral_creations = 0
 
     # ------------------------------------------------------------------
     #  calibration of raw-space bandwidth
@@ -139,22 +150,43 @@ class Scale1RepresentationLearner:
             for idx in order:
                 x_obs = X_pool[idx]
                 u = env.pool_u2[idx]                      # used ONLY to query env reward
+                # full reward vector for this observation (one slot per ctx,action)
+                reward_vec = np.empty(self.n_slots)
+                for (c, a) in combos:
+                    correct = env.correct_action(u, 'A' if c == 0 else 'B')
+                    reward_vec[c * self.k + a] = 1.0 if a == correct else 0.0
+
                 K = self._kernel_to_particles(x_obs)
                 max_K = float(np.max(K)) if K.size else 0.0
                 if max_K < self.cfg.creation_thresh_repr:
                     self._create_particle(x_obs)
                     K = self._kernel_to_particles(x_obs)
+                elif self.cfg.enable_behavioral_creation:
+                    # behaviorally inconsistent incumbent -> spawn a competitor
+                    bi = int(np.argmax(K))
+                    if self.particles[bi].D_var_rolling() > self.cfg.behavioral_creation_threshold:
+                        self._create_particle(x_obs)
+                        self.n_behavioral_creations += 1
+                        K = self._kernel_to_particles(x_obs)
+
                 for (c, a) in combos:
-                    ctx = 'A' if c == 0 else 'B'
-                    correct = env.correct_action(u, ctx)
-                    R_imposed = 1.0 if a == correct else 0.0
-                    self._apply(K, c, a, R_imposed)
+                    self._apply(K, c, a, reward_vec[c * self.k + a])
+                if self.cfg.enable_splitting:
+                    self._log_activation(K, x_obs, reward_vec)
             self.end_epoch()
             if verbose and (epoch % 5 == 0 or epoch == self.cfg.E_scale1 - 1):
                 nc = sum(p.is_crystallized() for p in self.particles)
-                print("  [Scale1] epoch %2d/%d  particles=%d  crystallized=%d"
-                      % (epoch + 1, self.cfg.E_scale1, len(self.particles), nc))
+                print("  [Scale1] epoch %2d/%d  particles=%d  crystallized=%d  splits=%d"
+                      % (epoch + 1, self.cfg.E_scale1, len(self.particles), nc, self.n_splits))
         return self
+
+    def _log_activation(self, K, x_obs, reward_vec):
+        cap = self.cfg.activation_log_cap
+        for i, p in enumerate(self.particles):
+            if float(K[i]) >= self.cfg.activation_thresh_repr:
+                p.activation_log.append((x_obs.copy(), reward_vec.copy()))
+                if len(p.activation_log) > cap:
+                    del p.activation_log[0]
 
     # ------------------------------------------------------------------
     #  end of epoch: decay, crystallization, merge
@@ -162,6 +194,9 @@ class Scale1RepresentationLearner:
     def end_epoch(self):
         for p in self.particles:
             p.signature *= (1.0 - p.mu_eff)
+
+        if self.cfg.enable_splitting:
+            self._split_particles()
 
         if self.enable_crystallization:
             for p in self.particles:
@@ -185,6 +220,73 @@ class Scale1RepresentationLearner:
                 p.stability = 1.0 / (var + 1e-3)
 
         self._merge()
+
+    # ------------------------------------------------------------------
+    #  Gate 1C: discrepancy-driven splitting
+    # ------------------------------------------------------------------
+    def _split_particles(self):
+        """A non-converging particle (high rolling D-variance after enough
+        exposure) subdivides its jurisdiction along the behavioral fault line:
+        k-means(2) on its logged activating observations -> two child particles
+        at the cluster centroids, each at reduced bandwidth, re-seeded from its
+        cluster's records and born transient."""
+        if len(self.particles) >= self.cfg.capacity_repr:
+            return
+        new_particles = []
+        for p in self.particles:
+            if (not p.is_crystallized()
+                    and p.n_updates >= self.cfg.n_repr_cryst_min
+                    and p.D_var_rolling() > self.cfg.split_threshold
+                    and p.sigma > self.sigma_x * self.cfg.min_split_sigma_frac
+                    and len(p.activation_log) >= self.cfg.split_min_log):
+                children = self._make_children(p)
+                if children is not None:
+                    new_particles.extend(children)
+                    self.n_splits += 1
+                    continue
+            new_particles.append(p)
+        self.particles = new_particles
+
+    def _make_children(self, p):
+        from sklearn.cluster import KMeans
+        X = np.array([rec[0] for rec in p.activation_log])
+        if len(np.unique(X, axis=0)) < 2:
+            return None
+        try:
+            km = KMeans(n_clusters=2, n_init=3, random_state=self.seed).fit(X)
+        except Exception:
+            return None
+        labels = km.labels_
+        children = []
+        for cl in (0, 1):
+            recs = [p.activation_log[t] for t in range(len(labels)) if labels[t] == cl]
+            if len(recs) < 3:
+                continue
+            centroid = km.cluster_centers_[cl]
+            child = Scale1RepresentationParticle(
+                x=centroid.copy(),
+                sigma=p.sigma * self.cfg.split_sigma_factor,
+                mu_eff=self.cfg.mu_repr_base,
+                signature=np.zeros(self.n_slots),
+                signature_counts=np.zeros(self.n_slots, dtype=int),
+                depth=p.depth + 1,
+            )
+            child.activation_log = list(recs[-self.cfg.activation_log_cap:])
+            # re-seed the child's signature from its cluster's records
+            for (xo, rv) in recs:
+                kw = float(np.exp(-np.sum((xo - centroid) ** 2) / (2.0 * child.sigma ** 2)))
+                if kw < self.cfg.activation_thresh_repr:
+                    continue
+                for slot in range(self.n_slots):
+                    D = rv[slot] - child.signature[slot]
+                    child.signature[slot] += self.cfg.eta_repr * kw * D
+                    child.signature_counts[slot] += 1
+                    child.D_history.append(D)
+                    child.n_updates += 1
+            children.append(child)
+        if len(children) < 2:
+            return None          # only a genuine 2-way split counts
+        return children
 
     def _merge(self):
         M = len(self.particles)
