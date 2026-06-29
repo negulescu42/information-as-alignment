@@ -115,6 +115,61 @@ class Random2DEncoder(_BaseEncoder):
         return self._coords_batch(obs[np.newaxis, :])[0]
 
 
+class PassThroughEncoder(_BaseEncoder):
+    """Coords ARE the observation (any dimension) ++ action embedding.
+
+    Used by Gate 1D to feed pre-computed interactive coordinates straight into
+    the v1 Scale 2 engine, exactly as Oracle2DEncoder feeds true 2D coords.
+    """
+
+    def __init__(self, action_embedding):
+        super().__init__(action_embedding)
+
+    def _coords(self, obs):
+        return obs
+
+    def _coords_batch(self, obs):
+        return obs
+
+
+def probe_signature(u, env, k, n_probes, rng, contexts=('A', 'B')):
+    """
+    Interactive behavioral signature at a point, built by taking exploratory
+    actions and observing rewards (Gate 1D). Rewards are deterministic given
+    (u, context, action): reward = 1 if action is correct else 0. Each probe is
+    one (context, action) interaction sampled uniformly; an unobserved slot
+    defaults to 0.5 (unknown). The signature dimension is k * len(contexts).
+
+    This is the only channel through which an observation-aliased coordinate can
+    enter the representation at test time, because different hidden coordinates
+    produce different reward patterns across the same actions.
+    """
+    n_slots = k * len(contexts)
+    seen = np.full(n_slots, 0.5)
+    correct = {c: env.correct_action(u, c) for c in contexts}
+    for _ in range(n_probes):
+        ci = rng.randint(len(contexts))
+        a = rng.randint(k)
+        ctx = contexts[ci]
+        seen[ci * k + a] = 1.0 if a == correct[ctx] else 0.0
+    return seen
+
+
+def build_interactive_coords(static_encoder, X20, U, env, k, n_probes, seed,
+                             contexts=('A', 'B')):
+    """
+    q2 = [ static geometric projection(x20) , interactive probe signature ].
+
+    The probe signature uses U only to query the environment for rewards (i.e.
+    to interact); it is never used as a coordinate. Returns (N, 2 + k*|ctx|).
+    """
+    q_geom = static_encoder.encode_observation_batch(X20)        # (N, 2)
+    rng = np.random.RandomState(seed + 4242)
+    sig = np.array([probe_signature(U[i], env, k, n_probes, rng, contexts)
+                    for i in range(len(U))])
+    return np.concatenate([q_geom, sig], axis=1)
+
+
 class EmergentScaleEncoder(_BaseEncoder):
     """
     The Gate 1 candidate. Interpolates an emergent 2D coordinate q_hat(x) from
