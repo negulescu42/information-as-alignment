@@ -170,6 +170,44 @@ def build_interactive_coords(static_encoder, X20, U, env, k, n_probes, seed,
     return np.concatenate([q_geom, sig], axis=1)
 
 
+def build_interactive_coords_informed(geom_encoder, scout, scout_action_emb,
+                                      X20, U, env, k, n_probes, seed,
+                                      contexts=('A', 'B')):
+    """
+    Interactive coords whose probe actions are chosen by AGENCY: a Boltzmann
+    policy over the current Scale 2 corrections (the `scout` agent), rather than
+    uniform random. This tests whether Scale 2 agency, fed back into Scale 1
+    representation formation, produces better probes than random -- the first
+    cross-scale agency signal.
+
+    The scout is trained on the static geometric coords (q_geom); its k_eff*R_eff
+    Boltzmann allocates exploration to where it is uncertain (near decision
+    boundaries, where the aliased coordinate matters) and exploits elsewhere.
+    """
+    qg = geom_encoder.encode_observation_batch(X20)
+    rng = np.random.RandomState(seed + 4242)
+    ctx_id = {'A': 0, 'B': 1}
+    N = len(U)
+    n_slots = k * len(contexts)
+    out = np.full((N, n_slots), 0.5)
+    for i in range(N):
+        correct = {c: env.correct_action(U[i], c) for c in contexts}
+        for _ in range(n_probes):
+            ci = rng.randint(len(contexts))
+            ctx = contexts[ci]
+            scout.current_context = ctx_id[ctx]
+            zs = [np.concatenate([qg[i], scout_action_emb[a]]) for a in range(k)]
+            R = np.array([scout.R_eff(z) for z in zs])
+            kk = np.array([scout.k_eff(z) for z in zs])
+            logits = kk * R
+            logits -= logits.max()
+            p = np.exp(logits)
+            p /= p.sum()
+            a = int(rng.choice(k, p=p))
+            out[i, ci * k + a] = 1.0 if a == correct[ctx] else 0.0
+    return np.concatenate([qg, out], axis=1)
+
+
 class EmergentScaleEncoder(_BaseEncoder):
     """
     The Gate 1 candidate. Interpolates an emergent 2D coordinate q_hat(x) from
