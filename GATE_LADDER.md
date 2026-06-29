@@ -13,6 +13,7 @@ results.
 | **1D** | `gate-1d-interactive-encoder` | interactive encoding externalizes the aliased coordinate | **PASS** (accuracy_gap < 0.15, 10/10 seeds) |
 | **2 (k=2)** | `gate-2-interface-extraction` | basins partition; interior removable (Interface Principle) | FAIL — field too sparse (all-surface) |
 | **2 (k=8)** | `gate-2-retry-k8` | same, on a *dense* field (8-action task) | **PASS** — external shielding 0.3%, compression 27% |
+| **3** | `gate-3-promotion` | promoted interfaces reused as primitives in continual learning | **FAIL** — static compression OK, dynamic reuse lossy (retention −11pp) |
 
 ## The two load-bearing findings
 
@@ -48,9 +49,18 @@ results.
 - A 2-action toy produces an all-surface correction field with no shielded
   interior — interface extraction needs a dense field (Gate 2 k=2 → k=8).
 
-## Next
+## Gate 3 outcome — the recursion boundary
 
-Gate 2 passed → **Gate 3 (promotion + recursive interaction)** is unblocked. A
-spec *proposal* is in `GATE3_SPEC_PROPOSAL.md` for supervisor approval (each gate
-to date has run against a supervisor-approved spec). No promotion/recursion code
-written yet.
+Gate 3 ran (supervisor-approved spec) and **failed**: promoted boundary-only
+interfaces preserve current-context accuracy and compress the population (16%),
+but **degrade retention of the promoted context by ~11pp** (BT_A −0.40 → −0.51).
+The interior is externally negligible for *static* readout (Gate 2) yet carries
+redundancy needed to survive *interference* during later phases. Compression is
+real; **recursive reuse of compressed interfaces is lossy**.
+
+**Net program result.** Postulate 2 is validated for **representation through
+interaction** (Gate 1D) and **static interface compression with external
+shielding** (Gate 2). Its **recursive-reuse** extension (Gate 3) is **not**
+validated in this instantiation — the theory is bounded to single-scale dynamics
+plus static compression. Every result, positive and negative, is committed with
+its diagnostics.
