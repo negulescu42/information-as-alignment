@@ -63,12 +63,41 @@ Candidate A already cleared the leading indicator, and with deterministic binary
 reward the hash carries no information beyond Candidate A's sign-bits, so it
 cannot raise ρ_struct.
 
+## Run 5 -- official 10-seed pass (criterion: accuracy_gap < 0.15)
+
+The supervisor confirmed the **accuracy gap** is the correct criterion (Postulate
+2's content is whether the emergent configuration space *supports* higher-scale
+dynamics, not geometric isometry), so ρ_struct is reported but not gating.
+
+`python run_gate1d_run5.py 10 && python summarize_gate1d_run5.py`
+
+| | rho_struct | rho_u2 | ACC | ACC_oracle | accuracy_gap |
+|---|---|---|---|---|---|
+| **median (10 seeds)** | 0.691 | 0.750 | **0.963** | 0.901 | **−0.058** |
+
+**accuracy_gap < 0.15 on all 10 seeds** (every gap negative, −0.014 to −0.104).
+
+### VERDICT: GATE 1D PASS
+Postulate 2 is validated in this computational instantiation, with the specific
+finding that it requires **interactive** (not static) representation formation:
+the emergent configuration space supports Scale 2 correction dynamics that
+match/exceed oracle-provided coordinates.
+
+### Informed-vs-random probe control (cross-scale agency)
+Probes chosen by a Boltzmann policy over the scout Scale 2 agent's corrections vs
+uniform random: a **wash in aggregate** (informed ACC 0.960 vs random 0.963;
+informed > random on 6/10 seeds; ρ_u2 0.754 vs 0.750). For k=2 actions with
+deterministic reward, uniform probing already covers the behavioral slots, so
+agency-guided probing has little headroom here. Reported honestly — no
+cross-scale agency advantage established in this task (would need more actions /
+graded reward to leave room for it).
+
 ## Status against the plan
 ```
-Leading indicator (rho_u2 > 0.5):                 PASS
-Operational pass (rho_u2 > 0.5 AND gap < 0.15):   PASS at f=3.0
-Strict pass (rho_struct > 0.8 AND gap < 0.15):    NOT met (rho_struct ~0.68)
-Run 5 (10-seed, gated on rho_struct > 0.8):       NOT triggered
+Leading indicator (rho_u2 > 0.5):                       PASS (median 0.75)
+OFFICIAL pass (accuracy_gap < 0.15, 10 seeds + median): PASS (all negative)
+Reported (not gating): rho_struct ~0.69
+Probe cost: ~3 interactions (rho_u2 >= 0.76 by 3 probes)
 ```
 
 ## Theoretical significance
