@@ -1,0 +1,6 @@
+median compression ratio = 0.154 (threshold 0.20) -> FAIL
+  seed 0: cryst=55 boundary=50 interior=5 ratio=0.091
+  seed 1: cryst=53 boundary=44 interior=9 ratio=0.170
+  seed 2: cryst=57 boundary=47 interior=10 ratio=0.175
+  seed 3: cryst=53 boundary=48 interior=5 ratio=0.094
+  seed 4: cryst=52 boundary=44 interior=8 ratio=0.154

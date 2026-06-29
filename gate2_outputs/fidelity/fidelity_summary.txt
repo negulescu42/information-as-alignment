@@ -1,0 +1,3 @@
+field fidelity: FAIL
+  3 basins with >=5 interior; max rel-error 0.485
+  all basins (any interior): max rel-error 0.807, median 0.413
