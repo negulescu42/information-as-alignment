@@ -78,7 +78,7 @@ def make_seed_figures(seed, env, s1, parts, q_parts, emergent_enc,
     sig = np.array([p.signature for p in parts])
     dom = np.argmax(np.abs(sig), axis=1) if len(sig) else np.zeros(len(parts), int)
     nupd = np.array([p.n_updates for p in parts], dtype=float)
-    sizes = 20 + 120 * (nupd - nupd.min()) / (nupd.ptp() + 1e-9)
+    sizes = 20 + 120 * (nupd - nupd.min()) / (np.ptp(nupd) + 1e-9)
     sc = ax.scatter(q_parts[:, 0], q_parts[:, 1], s=sizes, c=dom, cmap='tab10',
                     alpha=0.85, edgecolors='black', linewidths=0.3)
     ax.set_title("Fig 13.3 (seed %d) -- %d crystallized particles\n(size ~ n_updates, color ~ dominant signature slot)"
