@@ -119,7 +119,10 @@
           "interior": 2,
           "max_field": 0.9556970018920328,
           "max_error": 0.1592657047173623,
-          "relative_error": 0.16664874367649216
+          "relative_error": 0.16664874367649216,
+          "external_relative_error": 5.437964979310957e-05,
+          "n_external_pts": 4352,
+          "median_interior_depth_sigma": 1.7363021142642894
         },
         {
           "basin": 1,
@@ -128,7 +131,10 @@
           "interior": 13,
           "max_field": 0.9813025414171486,
           "max_error": 0.6598661194129265,
-          "relative_error": 0.6724390200729905
+          "relative_error": 0.6724390200729905,
+          "external_relative_error": 0.005317985765615251,
+          "n_external_pts": 4372,
+          "median_interior_depth_sigma": 1.5738643207004948
         },
         {
           "basin": 2,
@@ -137,7 +143,10 @@
           "interior": 3,
           "max_field": 0.876373368217795,
           "max_error": 0.41894641621026724,
-          "relative_error": 0.4780455812052321
+          "relative_error": 0.4780455812052321,
+          "external_relative_error": 0.0023155991956924737,
+          "n_external_pts": 4365,
+          "median_interior_depth_sigma": 1.6900354965999833
         },
         {
           "basin": 3,
@@ -146,7 +155,10 @@
           "interior": 2,
           "max_field": 0.899354334555528,
           "max_error": 0.1959337593284366,
-          "relative_error": 0.21786047142751963
+          "relative_error": 0.21786047142751963,
+          "external_relative_error": 0.0007521804538176682,
+          "n_external_pts": 4352,
+          "median_interior_depth_sigma": 1.7639714784900344
         },
         {
           "basin": 4,
@@ -155,7 +167,10 @@
           "interior": 3,
           "max_field": 0.7026552606779041,
           "max_error": 0.10419842078546643,
-          "relative_error": 0.14829237977967913
+          "relative_error": 0.14829237977967913,
+          "external_relative_error": 0.0026766206582187336,
+          "n_external_pts": 4434,
+          "median_interior_depth_sigma": 1.5877622158144244
         },
         {
           "basin": 5,
@@ -164,7 +179,10 @@
           "interior": 2,
           "max_field": 0.6231907295502618,
           "max_error": 0.15133256557615657,
-          "relative_error": 0.24283507179428884
+          "relative_error": 0.24283507179428884,
+          "external_relative_error": 0.0038899524969318684,
+          "n_external_pts": 4357,
+          "median_interior_depth_sigma": 1.6619603025476977
         },
         {
           "basin": 6,
@@ -173,7 +191,10 @@
           "interior": 23,
           "max_field": 1.150712957962364,
           "max_error": 1.148197975902831,
-          "relative_error": 0.9978144139753427
+          "relative_error": 0.9978144139753427,
+          "external_relative_error": 0.0013590109352715086,
+          "n_external_pts": 4476,
+          "median_interior_depth_sigma": 2.1781970529385966
         },
         {
           "basin": 7,
@@ -182,7 +203,10 @@
           "interior": 6,
           "max_field": 0.8372593802261411,
           "max_error": 0.44366108210954297,
-          "relative_error": 0.5298968187573149
+          "relative_error": 0.5298968187573149,
+          "external_relative_error": 0.0038322735912900622,
+          "n_external_pts": 4449,
+          "median_interior_depth_sigma": 1.712200207340285
         }
       ]
     },
@@ -267,7 +291,10 @@
           "interior": 3,
           "max_field": 0.664586666383586,
           "max_error": 0.11624555184747937,
-          "relative_error": 0.1749140596854728
+          "relative_error": 0.1749140596854728,
+          "external_relative_error": 0.003122903911314277,
+          "n_external_pts": 4339,
+          "median_interior_depth_sigma": 1.6554683446981455
         },
         {
           "basin": 1,
@@ -276,7 +303,10 @@
           "interior": 19,
           "max_field": 1.0038743637678398,
           "max_error": 1.0076102184870603,
-          "relative_error": 1.0037214364204168
+          "relative_error": 1.0037214364204168,
+          "external_relative_error": 0.0021569280099184743,
+          "n_external_pts": 4304,
+          "median_interior_depth_sigma": 2.148633819568247
         },
         {
           "basin": 2,
@@ -285,7 +315,10 @@
           "interior": 0,
           "max_field": 0.7454383506546367,
           "max_error": 0.0,
-          "relative_error": 0.0
+          "relative_error": 0.0,
+          "external_relative_error": 0.0,
+          "n_external_pts": 4317,
+          "median_interior_depth_sigma": null
         },
         {
           "basin": 3,
@@ -294,7 +327,10 @@
           "interior": 11,
           "max_field": 0.948813198314537,
           "max_error": 0.6682029807709383,
-          "relative_error": 0.7042513551534725
+          "relative_error": 0.7042513551534725,
+          "external_relative_error": 0.0026895420265478118,
+          "n_external_pts": 4539,
+          "median_interior_depth_sigma": 1.6159153828006643
         },
         {
           "basin": 4,
@@ -303,7 +339,10 @@
           "interior": 3,
           "max_field": 0.7512081075013634,
           "max_error": 0.37296557240587674,
-          "relative_error": 0.49648768248358005
+          "relative_error": 0.49648768248358005,
+          "external_relative_error": 0.0003385118915233617,
+          "n_external_pts": 4383,
+          "median_interior_depth_sigma": 1.7022221894402214
         },
         {
           "basin": 5,
@@ -312,7 +351,10 @@
           "interior": 0,
           "max_field": 0.770113777292637,
           "max_error": 0.0,
-          "relative_error": 0.0
+          "relative_error": 0.0,
+          "external_relative_error": 0.0,
+          "n_external_pts": 4365,
+          "median_interior_depth_sigma": null
         },
         {
           "basin": 6,
@@ -321,7 +363,10 @@
           "interior": 3,
           "max_field": 0.7055995917191381,
           "max_error": 0.33704043916256227,
-          "relative_error": 0.4776652978123515
+          "relative_error": 0.4776652978123515,
+          "external_relative_error": 0.00015737649344450857,
+          "n_external_pts": 4357,
+          "median_interior_depth_sigma": 1.6625489733631993
         },
         {
           "basin": 7,
@@ -330,7 +375,10 @@
           "interior": 4,
           "max_field": 0.6493756590197715,
           "max_error": 0.2765355770979354,
-          "relative_error": 0.4258483871612609
+          "relative_error": 0.4258483871612609,
+          "external_relative_error": 0.003989961617710596,
+          "n_external_pts": 4447,
+          "median_interior_depth_sigma": 1.670869541708019
         }
       ]
     },
@@ -415,7 +463,10 @@
           "interior": 7,
           "max_field": 0.7035644140650011,
           "max_error": 0.3156474779930949,
-          "relative_error": 0.44864048214790564
+          "relative_error": 0.44864048214790564,
+          "external_relative_error": 0.004364346273754094,
+          "n_external_pts": 4371,
+          "median_interior_depth_sigma": 1.6636882426894346
         },
         {
           "basin": 1,
@@ -424,7 +475,10 @@
           "interior": 6,
           "max_field": 0.7759031952605235,
           "max_error": 0.5124155341752836,
-          "relative_error": 0.6604116818170721
+          "relative_error": 0.6604116818170721,
+          "external_relative_error": 0.005604629768715234,
+          "n_external_pts": 4472,
+          "median_interior_depth_sigma": 1.7035143954868186
         },
         {
           "basin": 2,
@@ -433,7 +487,10 @@
           "interior": 1,
           "max_field": 0.6959844240645864,
           "max_error": 0.03980270124320129,
-          "relative_error": 0.057189068980929875
+          "relative_error": 0.057189068980929875,
+          "external_relative_error": 7.013582834842187e-05,
+          "n_external_pts": 4429,
+          "median_interior_depth_sigma": 1.7169092302932072
         },
         {
           "basin": 3,
@@ -442,7 +499,10 @@
           "interior": 3,
           "max_field": 0.7526285261353244,
           "max_error": 0.18807929178641636,
-          "relative_error": 0.24989657610666965
+          "relative_error": 0.24989657610666965,
+          "external_relative_error": 0.0010563439918382276,
+          "n_external_pts": 4348,
+          "median_interior_depth_sigma": 1.8364730967538745
         },
         {
           "basin": 4,
@@ -451,7 +511,10 @@
           "interior": 4,
           "max_field": 0.8606253763335466,
           "max_error": 0.3520553726509672,
-          "relative_error": 0.4090692446345163
+          "relative_error": 0.4090692446345163,
+          "external_relative_error": 0.00223196978686232,
+          "n_external_pts": 4341,
+          "median_interior_depth_sigma": 1.6670564273287751
         },
         {
           "basin": 5,
@@ -460,7 +523,10 @@
           "interior": 14,
           "max_field": 1.0086338775742898,
           "max_error": 0.8645417724677925,
-          "relative_error": 0.8571413191685122
+          "relative_error": 0.8571413191685122,
+          "external_relative_error": 0.001849716726995494,
+          "n_external_pts": 4455,
+          "median_interior_depth_sigma": 1.6986385121245915
         },
         {
           "basin": 6,
@@ -469,7 +535,10 @@
           "interior": 12,
           "max_field": 0.8492343345166534,
           "max_error": 0.4810255501599917,
-          "relative_error": 0.5664226357229514
+          "relative_error": 0.5664226357229514,
+          "external_relative_error": 0.0012966961021019156,
+          "n_external_pts": 4414,
+          "median_interior_depth_sigma": 1.9233476232642426
         },
         {
           "basin": 7,
@@ -478,7 +547,10 @@
           "interior": 3,
           "max_field": 0.7326077896963973,
           "max_error": 0.36681943145749096,
-          "relative_error": 0.5007037006246352
+          "relative_error": 0.5007037006246352,
+          "external_relative_error": 0.00498221181202868,
+          "n_external_pts": 4402,
+          "median_interior_depth_sigma": 1.8902751452154583
         }
       ]
     },
@@ -563,7 +635,10 @@
           "interior": 11,
           "max_field": 0.8977166244002279,
           "max_error": 0.730749218017041,
-          "relative_error": 0.8140087841459546
+          "relative_error": 0.8140087841459546,
+          "external_relative_error": 0.0056045634622490115,
+          "n_external_pts": 4444,
+          "median_interior_depth_sigma": 1.8278689899608578
         },
         {
           "basin": 1,
@@ -572,7 +647,10 @@
           "interior": 19,
           "max_field": 0.9340568467023994,
           "max_error": 0.8652963646301467,
-          "relative_error": 0.9263851205548744
+          "relative_error": 0.9263851205548744,
+          "external_relative_error": 0.007991501768092444,
+          "n_external_pts": 4391,
+          "median_interior_depth_sigma": 1.8268867822270538
         },
         {
           "basin": 2,
@@ -581,7 +659,10 @@
           "interior": 7,
           "max_field": 0.522448187750184,
           "max_error": 0.41651330561487404,
-          "relative_error": 0.7972337071907165
+          "relative_error": 0.7972337071907165,
+          "external_relative_error": 0.0044202490261996165,
+          "n_external_pts": 4402,
+          "median_interior_depth_sigma": 1.9643003281137252
         },
         {
           "basin": 3,
@@ -590,7 +671,10 @@
           "interior": 0,
           "max_field": 0.6749346274811011,
           "max_error": 0.0,
-          "relative_error": 0.0
+          "relative_error": 0.0,
+          "external_relative_error": 0.0,
+          "n_external_pts": 4359,
+          "median_interior_depth_sigma": null
         },
         {
           "basin": 4,
@@ -599,7 +683,10 @@
           "interior": 4,
           "max_field": 0.5771220899140027,
           "max_error": 0.3055997525063565,
-          "relative_error": 0.5295235753303806
+          "relative_error": 0.5295235753303806,
+          "external_relative_error": 0.0026469891083783286,
+          "n_external_pts": 4390,
+          "median_interior_depth_sigma": 1.8286503192003871
         },
         {
           "basin": 5,
@@ -608,7 +695,10 @@
           "interior": 5,
           "max_field": 0.7062572173475091,
           "max_error": 0.19247364041671355,
-          "relative_error": 0.2725262633241956
+          "relative_error": 0.2725262633241956,
+          "external_relative_error": 0.0004794083363423169,
+          "n_external_pts": 4332,
+          "median_interior_depth_sigma": 1.7694342473434819
         },
         {
           "basin": 6,
@@ -617,7 +707,10 @@
           "interior": 0,
           "max_field": 0.6434937412708471,
           "max_error": 0.0,
-          "relative_error": 0.0
+          "relative_error": 0.0,
+          "external_relative_error": 0.0,
+          "n_external_pts": 4329,
+          "median_interior_depth_sigma": null
         },
         {
           "basin": 7,
@@ -626,7 +719,10 @@
           "interior": 2,
           "max_field": 0.771511808850447,
           "max_error": 0.1040780937436935,
-          "relative_error": 0.13490149150831504
+          "relative_error": 0.13490149150831504,
+          "external_relative_error": 0.0008205444118168666,
+          "n_external_pts": 4329,
+          "median_interior_depth_sigma": 1.916064137724201
         }
       ]
     },
@@ -711,7 +807,10 @@
           "interior": 2,
           "max_field": 0.6473644973241252,
           "max_error": 0.5054292198827259,
-          "relative_error": 0.7807490554298819
+          "relative_error": 0.7807490554298819,
+          "external_relative_error": 0.00024586313178645434,
+          "n_external_pts": 4378,
+          "median_interior_depth_sigma": 2.0962647971265076
         },
         {
           "basin": 1,
@@ -720,7 +819,10 @@
           "interior": 2,
           "max_field": 0.7783519641317991,
           "max_error": 0.161917098919025,
-          "relative_error": 0.2080255544531585
+          "relative_error": 0.2080255544531585,
+          "external_relative_error": 0.0024890428777726813,
+          "n_external_pts": 4356,
+          "median_interior_depth_sigma": 1.6419010853696971
         },
         {
           "basin": 2,
@@ -729,7 +831,10 @@
           "interior": 15,
           "max_field": 0.9297770587350752,
           "max_error": 0.8860013839471843,
-          "relative_error": 0.9529180952875544
+          "relative_error": 0.9529180952875544,
+          "external_relative_error": 0.001996524370065376,
+          "n_external_pts": 4451,
+          "median_interior_depth_sigma": 1.919435948452707
         },
         {
           "basin": 3,
@@ -738,7 +843,10 @@
           "interior": 5,
           "max_field": 0.7444941460811731,
           "max_error": 0.4308352310197944,
-          "relative_error": 0.5786952566782847
+          "relative_error": 0.5786952566782847,
+          "external_relative_error": 0.0039651106054580994,
+          "n_external_pts": 4363,
+          "median_interior_depth_sigma": 1.6039435641513657
         },
         {
           "basin": 4,
@@ -747,7 +855,10 @@
           "interior": 5,
           "max_field": 0.8126947125595417,
           "max_error": 0.4057401474139085,
-          "relative_error": 0.499252845002676
+          "relative_error": 0.499252845002676,
+          "external_relative_error": 0.0036922054649776576,
+          "n_external_pts": 4385,
+          "median_interior_depth_sigma": 1.6626320629327742
         },
         {
           "basin": 5,
@@ -756,7 +867,10 @@
           "interior": 13,
           "max_field": 1.0384481860987955,
           "max_error": 0.7817643589426742,
-          "relative_error": 0.7528198029834268
+          "relative_error": 0.7528198029834268,
+          "external_relative_error": 0.004050620594557989,
+          "n_external_pts": 4438,
+          "median_interior_depth_sigma": 1.6737649122321616
         },
         {
           "basin": 6,
@@ -765,7 +879,10 @@
           "interior": 4,
           "max_field": 0.6642787919699471,
           "max_error": 0.45586499492698423,
-          "relative_error": 0.6862555306130903
+          "relative_error": 0.6862555306130903,
+          "external_relative_error": 0.0008035987400351849,
+          "n_external_pts": 4344,
+          "median_interior_depth_sigma": 1.6300478812607069
         },
         {
           "basin": 7,
@@ -774,7 +891,10 @@
           "interior": 1,
           "max_field": 0.6377077864784975,
           "max_error": 0.07667220755748877,
-          "relative_error": 0.12023094146122826
+          "relative_error": 0.12023094146122826,
+          "external_relative_error": 0.00010252086982912977,
+          "n_external_pts": 4376,
+          "median_interior_depth_sigma": 1.6570032864786501
         }
       ]
     }
