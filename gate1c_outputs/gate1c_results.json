@@ -1,0 +1,976 @@
+{
+  "freqs": [
+    3.0,
+    2.0,
+    1.5
+  ],
+  "graph_modes": [
+    "multiplicative",
+    "union"
+  ],
+  "rho_threshold": 0.8,
+  "rho_u2_gate": 0.5,
+  "acc_gap_threshold": 0.15,
+  "rows": [
+    {
+      "freq": 3.0,
+      "split": false,
+      "seed": 0,
+      "n_particles": 263,
+      "n_crystallized": 145,
+      "n_splits": 0,
+      "x_u2_ceiling": 0.031256806591062905,
+      "diagnostic": {
+        "sig_u1_reg": 0.9702935221206196,
+        "sig_u2_reg": 0.11786541646619358,
+        "sig_u2_pair": 0.007957187202692189,
+        "per_particle_u2_var": 0.7787664901188719
+      },
+      "emergent": {
+        "multiplicative": {
+          "rho_struct": 0.48582774196003925,
+          "rho_u1": 0.9747663188136545,
+          "rho_u2": 0.021364132389826915
+        },
+        "union": {
+          "rho_struct": 0.5040799453968414,
+          "rho_u1": 0.9726498172233999,
+          "rho_u2": 0.025482910264016105
+        }
+      },
+      "best_mode": "union",
+      "rho_struct": 0.5040799453968414,
+      "rho_u1": 0.9726498172233999,
+      "rho_u2": 0.025482910264016105
+    },
+    {
+      "freq": 3.0,
+      "split": false,
+      "seed": 1,
+      "n_particles": 241,
+      "n_crystallized": 122,
+      "n_splits": 0,
+      "x_u2_ceiling": -0.007343344494856251,
+      "diagnostic": {
+        "sig_u1_reg": 0.9760669104360085,
+        "sig_u2_reg": -0.031921801507291965,
+        "sig_u2_pair": 0.00012547661571585348,
+        "per_particle_u2_var": 0.8335469832108974
+      },
+      "emergent": {
+        "multiplicative": {
+          "rho_struct": 0.5613016572222462,
+          "rho_u1": 0.9871139378678518,
+          "rho_u2": 0.10406095459756176
+        },
+        "union": {
+          "rho_struct": 0.5508436830176702,
+          "rho_u1": 0.9859748114418156,
+          "rho_u2": 0.0635590767388714
+        }
+      },
+      "best_mode": "multiplicative",
+      "rho_struct": 0.5613016572222462,
+      "rho_u1": 0.9871139378678518,
+      "rho_u2": 0.10406095459756176
+    },
+    {
+      "freq": 3.0,
+      "split": false,
+      "seed": 2,
+      "n_particles": 262,
+      "n_crystallized": 155,
+      "n_splits": 0,
+      "x_u2_ceiling": 0.07749552260956272,
+      "diagnostic": {
+        "sig_u1_reg": 0.9445204889159757,
+        "sig_u2_reg": -0.0809775441046108,
+        "sig_u2_pair": 0.003023632675459427,
+        "per_particle_u2_var": 0.7722163194438236
+      },
+      "emergent": {
+        "multiplicative": {
+          "rho_struct": 0.48742686035487254,
+          "rho_u1": 0.9764376282487669,
+          "rho_u2": -0.10955820955030114
+        },
+        "union": {
+          "rho_struct": 0.4903701616038232,
+          "rho_u1": 0.9735895833129158,
+          "rho_u2": -0.021931679366735488
+        }
+      },
+      "best_mode": "union",
+      "rho_struct": 0.4903701616038232,
+      "rho_u1": 0.9735895833129158,
+      "rho_u2": -0.021931679366735488
+    },
+    {
+      "freq": 3.0,
+      "split": false,
+      "seed": 3,
+      "n_particles": 260,
+      "n_crystallized": 128,
+      "n_splits": 0,
+      "x_u2_ceiling": 0.08817024546481801,
+      "diagnostic": {
+        "sig_u1_reg": 0.9587731965007237,
+        "sig_u2_reg": 0.038970681875762435,
+        "sig_u2_pair": 0.02084036889322374,
+        "per_particle_u2_var": 0.8055540062529256
+      },
+      "emergent": {
+        "multiplicative": {
+          "rho_struct": 0.5305327662710115,
+          "rho_u1": 0.9814369868517684,
+          "rho_u2": -0.08869187780647286
+        },
+        "union": {
+          "rho_struct": 0.5319223912049839,
+          "rho_u1": 0.9801520739778026,
+          "rho_u2": -0.07687565723668495
+        }
+      },
+      "best_mode": "union",
+      "rho_struct": 0.5319223912049839,
+      "rho_u1": 0.9801520739778026,
+      "rho_u2": -0.07687565723668495
+    },
+    {
+      "freq": 3.0,
+      "split": false,
+      "seed": 4,
+      "n_particles": 233,
+      "n_crystallized": 138,
+      "n_splits": 0,
+      "x_u2_ceiling": 0.0370418265419471,
+      "diagnostic": {
+        "sig_u1_reg": 0.958393742290014,
+        "sig_u2_reg": -0.021089667045132165,
+        "sig_u2_pair": -0.0030422657333392645,
+        "per_particle_u2_var": 0.794037639009684
+      },
+      "emergent": {
+        "multiplicative": {
+          "rho_struct": 0.548179626721017,
+          "rho_u1": 0.9794548944123767,
+          "rho_u2": -0.02541578322036634
+        },
+        "union": {
+          "rho_struct": 0.5346096845597508,
+          "rho_u1": 0.9828875399873065,
+          "rho_u2": -0.04115310199367058
+        }
+      },
+      "best_mode": "multiplicative",
+      "rho_struct": 0.548179626721017,
+      "rho_u1": 0.9794548944123767,
+      "rho_u2": -0.02541578322036634
+    },
+    {
+      "freq": 3.0,
+      "split": true,
+      "seed": 0,
+      "n_particles": 1398,
+      "n_crystallized": 709,
+      "n_splits": 3238,
+      "x_u2_ceiling": 0.031256806591062905,
+      "diagnostic": {
+        "sig_u1_reg": 0.8102784466218959,
+        "sig_u2_reg": 0.6959022531812554,
+        "sig_u2_pair": 0.1663636249790365,
+        "per_particle_u2_var": 0.4331374525011768
+      },
+      "emergent": {
+        "multiplicative": {
+          "rho_struct": 0.6000679679412042,
+          "rho_u1": 0.9966017400193335,
+          "rho_u2": 0.17597751086123178
+        },
+        "union": {
+          "rho_struct": 0.5976852205274966,
+          "rho_u1": 0.9959888443204924,
+          "rho_u2": 0.2589175435282614
+        }
+      },
+      "best_mode": "multiplicative",
+      "rho_struct": 0.6000679679412042,
+      "rho_u1": 0.9966017400193335,
+      "rho_u2": 0.17597751086123178
+    },
+    {
+      "freq": 3.0,
+      "split": true,
+      "seed": 1,
+      "n_particles": 1328,
+      "n_crystallized": 686,
+      "n_splits": 3227,
+      "x_u2_ceiling": -0.007343344494856251,
+      "diagnostic": {
+        "sig_u1_reg": 0.782516856144937,
+        "sig_u2_reg": 0.7113964425723986,
+        "sig_u2_pair": 0.20633662662413402,
+        "per_particle_u2_var": 0.5198437067111131
+      },
+      "emergent": {
+        "multiplicative": {
+          "rho_struct": 0.5970227766754201,
+          "rho_u1": 0.9972190802120023,
+          "rho_u2": -0.05954510605673396
+        },
+        "union": {
+          "rho_struct": 0.5982985309996017,
+          "rho_u1": 0.9979559772886365,
+          "rho_u2": -0.03161812909032322
+        }
+      },
+      "best_mode": "union",
+      "rho_struct": 0.5982985309996017,
+      "rho_u1": 0.9979559772886365,
+      "rho_u2": -0.03161812909032322
+    },
+    {
+      "freq": 3.0,
+      "split": true,
+      "seed": 2,
+      "n_particles": 1397,
+      "n_crystallized": 685,
+      "n_splits": 3263,
+      "x_u2_ceiling": 0.07749552260956272,
+      "diagnostic": {
+        "sig_u1_reg": 0.8449272957350561,
+        "sig_u2_reg": 0.6334246701768688,
+        "sig_u2_pair": 0.1514961109910839,
+        "per_particle_u2_var": 0.607274988525756
+      },
+      "emergent": {
+        "multiplicative": {
+          "rho_struct": 0.5543497301709499,
+          "rho_u1": 0.9965381837575972,
+          "rho_u2": -0.028598539983777597
+        },
+        "union": {
+          "rho_struct": 0.5484073737427301,
+          "rho_u1": 0.9966079623106923,
+          "rho_u2": -0.07216080178668652
+        }
+      },
+      "best_mode": "multiplicative",
+      "rho_struct": 0.5543497301709499,
+      "rho_u1": 0.9965381837575972,
+      "rho_u2": -0.028598539983777597
+    },
+    {
+      "freq": 3.0,
+      "split": true,
+      "seed": 3,
+      "n_particles": 1487,
+      "n_crystallized": 720,
+      "n_splits": 3651,
+      "x_u2_ceiling": 0.08817024546481801,
+      "diagnostic": {
+        "sig_u1_reg": 0.7714426998812974,
+        "sig_u2_reg": 0.6613264014484377,
+        "sig_u2_pair": 0.14871323512709123,
+        "per_particle_u2_var": 0.4214341404008601
+      },
+      "emergent": {
+        "multiplicative": {
+          "rho_struct": 0.5520529566222949,
+          "rho_u1": 0.9976261958466203,
+          "rho_u2": -0.05697929976999744
+        },
+        "union": {
+          "rho_struct": 0.5524726490051487,
+          "rho_u1": 0.9977155301725574,
+          "rho_u2": -0.08423782486472073
+        }
+      },
+      "best_mode": "union",
+      "rho_struct": 0.5524726490051487,
+      "rho_u1": 0.9977155301725574,
+      "rho_u2": -0.08423782486472073
+    },
+    {
+      "freq": 3.0,
+      "split": true,
+      "seed": 4,
+      "n_particles": 1474,
+      "n_crystallized": 687,
+      "n_splits": 3571,
+      "x_u2_ceiling": 0.0370418265419471,
+      "diagnostic": {
+        "sig_u1_reg": 0.8007361104071772,
+        "sig_u2_reg": 0.6622097305485123,
+        "sig_u2_pair": 0.1629909199093374,
+        "per_particle_u2_var": 0.4947786854327676
+      },
+      "emergent": {
+        "multiplicative": {
+          "rho_struct": 0.584804841792475,
+          "rho_u1": 0.9973328592539917,
+          "rho_u2": -0.0054533939265991845
+        },
+        "union": {
+          "rho_struct": 0.5827310912659899,
+          "rho_u1": 0.9970226335848176,
+          "rho_u2": 0.00014622384693163256
+        }
+      },
+      "best_mode": "multiplicative",
+      "rho_struct": 0.584804841792475,
+      "rho_u1": 0.9973328592539917,
+      "rho_u2": -0.0054533939265991845
+    },
+    {
+      "freq": 2.0,
+      "split": false,
+      "seed": 0,
+      "n_particles": 240,
+      "n_crystallized": 172,
+      "n_splits": 0,
+      "x_u2_ceiling": 0.46141718939753856,
+      "diagnostic": {
+        "sig_u1_reg": 0.9477273893071143,
+        "sig_u2_reg": 0.2119193037632826,
+        "sig_u2_pair": -0.008080979921531908,
+        "per_particle_u2_var": 0.3463105896916677
+      },
+      "emergent": {
+        "multiplicative": {
+          "rho_struct": 0.5713392096752999,
+          "rho_u1": 0.9873173021163965,
+          "rho_u2": 0.31805579151499563
+        },
+        "union": {
+          "rho_struct": 0.5220339390966314,
+          "rho_u1": 0.9843817136170144,
+          "rho_u2": 0.2995098056100426
+        }
+      },
+      "best_mode": "multiplicative",
+      "rho_struct": 0.5713392096752999,
+      "rho_u1": 0.9873173021163965,
+      "rho_u2": 0.31805579151499563
+    },
+    {
+      "freq": 2.0,
+      "split": false,
+      "seed": 1,
+      "n_particles": 223,
+      "n_crystallized": 148,
+      "n_splits": 0,
+      "x_u2_ceiling": 0.4653038935866815,
+      "diagnostic": {
+        "sig_u1_reg": 0.9451097001332831,
+        "sig_u2_reg": 0.11739718307339143,
+        "sig_u2_pair": -0.004077101098376259,
+        "per_particle_u2_var": 0.4746122600454538
+      },
+      "emergent": {
+        "multiplicative": {
+          "rho_struct": 0.6158504914951699,
+          "rho_u1": 0.9895616617962422,
+          "rho_u2": 0.21002055578395315
+        },
+        "union": {
+          "rho_struct": 0.5639905771318355,
+          "rho_u1": 0.9888296536628184,
+          "rho_u2": 0.21835620395782174
+        }
+      },
+      "best_mode": "multiplicative",
+      "rho_struct": 0.6158504914951699,
+      "rho_u1": 0.9895616617962422,
+      "rho_u2": 0.21002055578395315
+    },
+    {
+      "freq": 2.0,
+      "split": false,
+      "seed": 2,
+      "n_particles": 242,
+      "n_crystallized": 173,
+      "n_splits": 0,
+      "x_u2_ceiling": 0.4445620475086355,
+      "diagnostic": {
+        "sig_u1_reg": 0.9512661913453876,
+        "sig_u2_reg": 0.3912228502565527,
+        "sig_u2_pair": 0.005477656498934003,
+        "per_particle_u2_var": 0.2806757277583818
+      },
+      "emergent": {
+        "multiplicative": {
+          "rho_struct": 0.5333681034674383,
+          "rho_u1": 0.9892234358159534,
+          "rho_u2": 0.16370093001033342
+        },
+        "union": {
+          "rho_struct": 0.5270571620513782,
+          "rho_u1": 0.9822166912965699,
+          "rho_u2": 0.10406115623506927
+        }
+      },
+      "best_mode": "multiplicative",
+      "rho_struct": 0.5333681034674383,
+      "rho_u1": 0.9892234358159534,
+      "rho_u2": 0.16370093001033342
+    },
+    {
+      "freq": 2.0,
+      "split": false,
+      "seed": 3,
+      "n_particles": 228,
+      "n_crystallized": 155,
+      "n_splits": 0,
+      "x_u2_ceiling": 0.4461326935025307,
+      "diagnostic": {
+        "sig_u1_reg": 0.9445623827425184,
+        "sig_u2_reg": 0.30873172080189126,
+        "sig_u2_pair": -0.01828999981122731,
+        "per_particle_u2_var": 0.3681210659274688
+      },
+      "emergent": {
+        "multiplicative": {
+          "rho_struct": 0.5521518037109752,
+          "rho_u1": 0.9835944843831598,
+          "rho_u2": 0.09667574084156491
+        },
+        "union": {
+          "rho_struct": 0.4871464441026498,
+          "rho_u1": 0.976285514283492,
+          "rho_u2": 0.16695741063789596
+        }
+      },
+      "best_mode": "multiplicative",
+      "rho_struct": 0.5521518037109752,
+      "rho_u1": 0.9835944843831598,
+      "rho_u2": 0.09667574084156491
+    },
+    {
+      "freq": 2.0,
+      "split": false,
+      "seed": 4,
+      "n_particles": 205,
+      "n_crystallized": 137,
+      "n_splits": 0,
+      "x_u2_ceiling": 0.41135160026754397,
+      "diagnostic": {
+        "sig_u1_reg": 0.9547164924258243,
+        "sig_u2_reg": 0.10172133567327123,
+        "sig_u2_pair": -0.01776328052547769,
+        "per_particle_u2_var": 0.311808551615739
+      },
+      "emergent": {
+        "multiplicative": {
+          "rho_struct": 0.5466184152769301,
+          "rho_u1": 0.9855376170846343,
+          "rho_u2": 0.21006633407037856
+        },
+        "union": {
+          "rho_struct": 0.5136402172556381,
+          "rho_u1": 0.9831900354448383,
+          "rho_u2": 0.20069778553095036
+        }
+      },
+      "best_mode": "multiplicative",
+      "rho_struct": 0.5466184152769301,
+      "rho_u1": 0.9855376170846343,
+      "rho_u2": 0.21006633407037856
+    },
+    {
+      "freq": 2.0,
+      "split": true,
+      "seed": 0,
+      "n_particles": 936,
+      "n_crystallized": 601,
+      "n_splits": 1812,
+      "x_u2_ceiling": 0.46141718939753856,
+      "diagnostic": {
+        "sig_u1_reg": 0.798381803259311,
+        "sig_u2_reg": 0.7434786028178617,
+        "sig_u2_pair": 0.2623119546232531,
+        "per_particle_u2_var": 0.006572248573425856
+      },
+      "emergent": {
+        "multiplicative": {
+          "rho_struct": 0.6382473933454165,
+          "rho_u1": 0.9941710463449593,
+          "rho_u2": 0.20079645329392548
+        },
+        "union": {
+          "rho_struct": 0.6321989468089135,
+          "rho_u1": 0.9957941754908387,
+          "rho_u2": 0.17132457027300302
+        }
+      },
+      "best_mode": "multiplicative",
+      "rho_struct": 0.6382473933454165,
+      "rho_u1": 0.9941710463449593,
+      "rho_u2": 0.20079645329392548
+    },
+    {
+      "freq": 2.0,
+      "split": true,
+      "seed": 1,
+      "n_particles": 906,
+      "n_crystallized": 592,
+      "n_splits": 2006,
+      "x_u2_ceiling": 0.4653038935866815,
+      "diagnostic": {
+        "sig_u1_reg": 0.7740591118082955,
+        "sig_u2_reg": 0.7413966983336779,
+        "sig_u2_pair": 0.2816635457535653,
+        "per_particle_u2_var": 0.006300897060824939
+      },
+      "emergent": {
+        "multiplicative": {
+          "rho_struct": 0.5936392051382569,
+          "rho_u1": 0.9934697052189467,
+          "rho_u2": 0.2434831498127757
+        },
+        "union": {
+          "rho_struct": 0.6036344640097201,
+          "rho_u1": 0.9963079589773218,
+          "rho_u2": 0.23640884898721098
+        }
+      },
+      "best_mode": "union",
+      "rho_struct": 0.6036344640097201,
+      "rho_u1": 0.9963079589773218,
+      "rho_u2": 0.23640884898721098
+    },
+    {
+      "freq": 2.0,
+      "split": true,
+      "seed": 2,
+      "n_particles": 933,
+      "n_crystallized": 569,
+      "n_splits": 2040,
+      "x_u2_ceiling": 0.4445620475086355,
+      "diagnostic": {
+        "sig_u1_reg": 0.8066210720484607,
+        "sig_u2_reg": 0.7635322850056793,
+        "sig_u2_pair": 0.2922031485197645,
+        "per_particle_u2_var": 0.00528885388255316
+      },
+      "emergent": {
+        "multiplicative": {
+          "rho_struct": 0.5858781175304572,
+          "rho_u1": 0.9966430738119312,
+          "rho_u2": 0.014913054589495439
+        },
+        "union": {
+          "rho_struct": 0.5907264363019111,
+          "rho_u1": 0.9965488505427837,
+          "rho_u2": 0.03250925010277892
+        }
+      },
+      "best_mode": "union",
+      "rho_struct": 0.5907264363019111,
+      "rho_u1": 0.9965488505427837,
+      "rho_u2": 0.03250925010277892
+    },
+    {
+      "freq": 2.0,
+      "split": true,
+      "seed": 3,
+      "n_particles": 888,
+      "n_crystallized": 540,
+      "n_splits": 1878,
+      "x_u2_ceiling": 0.4461326935025307,
+      "diagnostic": {
+        "sig_u1_reg": 0.7769615826330787,
+        "sig_u2_reg": 0.7590570137167675,
+        "sig_u2_pair": 0.2999912990124194,
+        "per_particle_u2_var": 0.004829725008216746
+      },
+      "emergent": {
+        "multiplicative": {
+          "rho_struct": 0.5804002354238976,
+          "rho_u1": 0.9961475127501417,
+          "rho_u2": 0.023088256536183734
+        },
+        "union": {
+          "rho_struct": 0.5825405134446754,
+          "rho_u1": 0.9966901854465048,
+          "rho_u2": 0.02095134390382115
+        }
+      },
+      "best_mode": "union",
+      "rho_struct": 0.5825405134446754,
+      "rho_u1": 0.9966901854465048,
+      "rho_u2": 0.02095134390382115
+    },
+    {
+      "freq": 2.0,
+      "split": true,
+      "seed": 4,
+      "n_particles": 918,
+      "n_crystallized": 532,
+      "n_splits": 1881,
+      "x_u2_ceiling": 0.41135160026754397,
+      "diagnostic": {
+        "sig_u1_reg": 0.7985820847658919,
+        "sig_u2_reg": 0.7184198494504448,
+        "sig_u2_pair": 0.27918759153988737,
+        "per_particle_u2_var": 0.0038806556026700894
+      },
+      "emergent": {
+        "multiplicative": {
+          "rho_struct": 0.5913281049374476,
+          "rho_u1": 0.9952426138068201,
+          "rho_u2": 0.1602262247358304
+        },
+        "union": {
+          "rho_struct": 0.600300329232706,
+          "rho_u1": 0.9965217391304348,
+          "rho_u2": 0.17974955277280857
+        }
+      },
+      "best_mode": "union",
+      "rho_struct": 0.600300329232706,
+      "rho_u1": 0.9965217391304348,
+      "rho_u2": 0.17974955277280857
+    },
+    {
+      "freq": 1.5,
+      "split": false,
+      "seed": 0,
+      "n_particles": 214,
+      "n_crystallized": 164,
+      "n_splits": 0,
+      "x_u2_ceiling": 0.8374624574564773,
+      "diagnostic": {
+        "sig_u1_reg": 0.9159573788006792,
+        "sig_u2_reg": 0.6332402428476661,
+        "sig_u2_pair": 0.09447987612417731,
+        "per_particle_u2_var": 0.02324293841902044
+      },
+      "emergent": {
+        "multiplicative": {
+          "rho_struct": 0.5635480899944474,
+          "rho_u1": 0.9860451782797586,
+          "rho_u2": 0.6026244736052623
+        },
+        "union": {
+          "rho_struct": 0.5514900461918046,
+          "rho_u1": 0.9776299736663739,
+          "rho_u2": 0.6798497761086234
+        }
+      },
+      "best_mode": "multiplicative",
+      "rho_struct": 0.5635480899944474,
+      "rho_u1": 0.9860451782797586,
+      "rho_u2": 0.6026244736052623,
+      "ACC_oracle": 0.9237500000000001,
+      "ACC_emergent": 0.788125,
+      "accuracy_gap": 0.1356250000000001
+    },
+    {
+      "freq": 1.5,
+      "split": false,
+      "seed": 1,
+      "n_particles": 209,
+      "n_crystallized": 148,
+      "n_splits": 0,
+      "x_u2_ceiling": 0.8170750783189015,
+      "diagnostic": {
+        "sig_u1_reg": 0.9162684850692782,
+        "sig_u2_reg": 0.5575116817204921,
+        "sig_u2_pair": 0.0924832075929303,
+        "per_particle_u2_var": 0.026323183128825086
+      },
+      "emergent": {
+        "multiplicative": {
+          "rho_struct": 0.5992686815523219,
+          "rho_u1": 0.9884709830109223,
+          "rho_u2": 0.4687425415837953
+        },
+        "union": {
+          "rho_struct": 0.5479485307298022,
+          "rho_u1": 0.9793357703974488,
+          "rho_u2": 0.5570621895798842
+        }
+      },
+      "best_mode": "multiplicative",
+      "rho_struct": 0.5992686815523219,
+      "rho_u1": 0.9884709830109223,
+      "rho_u2": 0.4687425415837953,
+      "ACC_oracle": 0.885625,
+      "ACC_emergent": 0.75,
+      "accuracy_gap": 0.135625
+    },
+    {
+      "freq": 1.5,
+      "split": false,
+      "seed": 2,
+      "n_particles": 235,
+      "n_crystallized": 187,
+      "n_splits": 0,
+      "x_u2_ceiling": 0.815437454326468,
+      "diagnostic": {
+        "sig_u1_reg": 0.9103518201238413,
+        "sig_u2_reg": 0.571707120133794,
+        "sig_u2_pair": 0.09441807214842078,
+        "per_particle_u2_var": 0.022888830720584945
+      },
+      "emergent": {
+        "multiplicative": {
+          "rho_struct": 0.4921010037782338,
+          "rho_u1": 0.9844309381215346,
+          "rho_u2": 0.44584362048467197
+        },
+        "union": {
+          "rho_struct": 0.47962233360976675,
+          "rho_u1": 0.9747014966832964,
+          "rho_u2": 0.6077027522528027
+        }
+      },
+      "best_mode": "multiplicative",
+      "rho_struct": 0.4921010037782338,
+      "rho_u1": 0.9844309381215346,
+      "rho_u2": 0.44584362048467197,
+      "ACC_oracle": 0.88125,
+      "ACC_emergent": 0.756875,
+      "accuracy_gap": 0.12437500000000001
+    },
+    {
+      "freq": 1.5,
+      "split": false,
+      "seed": 3,
+      "n_particles": 220,
+      "n_crystallized": 164,
+      "n_splits": 0,
+      "x_u2_ceiling": 0.7697321649664056,
+      "diagnostic": {
+        "sig_u1_reg": 0.9280874513189266,
+        "sig_u2_reg": 0.40174173512441114,
+        "sig_u2_pair": 0.07482260333598185,
+        "per_particle_u2_var": 0.024934620114753843
+      },
+      "emergent": {
+        "multiplicative": {
+          "rho_struct": 0.5565376693960129,
+          "rho_u1": 0.9891381015344615,
+          "rho_u2": 0.5835162612917921
+        },
+        "union": {
+          "rho_struct": 0.538307287700664,
+          "rho_u1": 0.9784024266936299,
+          "rho_u2": 0.6364048489427659
+        }
+      },
+      "best_mode": "multiplicative",
+      "rho_struct": 0.5565376693960129,
+      "rho_u1": 0.9891381015344615,
+      "rho_u2": 0.5835162612917921,
+      "ACC_oracle": 0.930625,
+      "ACC_emergent": 0.768125,
+      "accuracy_gap": 0.1625000000000001
+    },
+    {
+      "freq": 1.5,
+      "split": false,
+      "seed": 4,
+      "n_particles": 194,
+      "n_crystallized": 149,
+      "n_splits": 0,
+      "x_u2_ceiling": 0.7830722993819726,
+      "diagnostic": {
+        "sig_u1_reg": 0.900176583106678,
+        "sig_u2_reg": 0.5303225022398613,
+        "sig_u2_pair": 0.09397740302560129,
+        "per_particle_u2_var": 0.027372257946098526
+      },
+      "emergent": {
+        "multiplicative": {
+          "rho_struct": 0.5517607804823365,
+          "rho_u1": 0.9888812097912199,
+          "rho_u2": 0.6186846520516894
+        },
+        "union": {
+          "rho_struct": 0.5313569854814347,
+          "rho_u1": 0.9805433393704374,
+          "rho_u2": 0.665803842264914
+        }
+      },
+      "best_mode": "multiplicative",
+      "rho_struct": 0.5517607804823365,
+      "rho_u1": 0.9888812097912199,
+      "rho_u2": 0.6186846520516894,
+      "ACC_oracle": 0.906875,
+      "ACC_emergent": 0.739375,
+      "accuracy_gap": 0.16749999999999998
+    },
+    {
+      "freq": 1.5,
+      "split": true,
+      "seed": 0,
+      "n_particles": 508,
+      "n_crystallized": 443,
+      "n_splits": 781,
+      "x_u2_ceiling": 0.8374624574564773,
+      "diagnostic": {
+        "sig_u1_reg": 0.759410120060721,
+        "sig_u2_reg": 0.8115051136756359,
+        "sig_u2_pair": 0.320977596290299,
+        "per_particle_u2_var": 0.012562779083377426
+      },
+      "emergent": {
+        "multiplicative": {
+          "rho_struct": 0.6169948643343113,
+          "rho_u1": 0.9953123923599151,
+          "rho_u2": 0.555167057411749
+        },
+        "union": {
+          "rho_struct": 0.5978010851285083,
+          "rho_u1": 0.9940306003400038,
+          "rho_u2": 0.4070587450971678
+        }
+      },
+      "best_mode": "multiplicative",
+      "rho_struct": 0.6169948643343113,
+      "rho_u1": 0.9953123923599151,
+      "rho_u2": 0.555167057411749,
+      "ACC_oracle": 0.9237500000000001,
+      "ACC_emergent": 0.781875,
+      "accuracy_gap": 0.14187500000000008
+    },
+    {
+      "freq": 1.5,
+      "split": true,
+      "seed": 1,
+      "n_particles": 557,
+      "n_crystallized": 430,
+      "n_splits": 862,
+      "x_u2_ceiling": 0.8170750783189015,
+      "diagnostic": {
+        "sig_u1_reg": 0.7524408972257115,
+        "sig_u2_reg": 0.8229115837438619,
+        "sig_u2_pair": 0.350667132068557,
+        "per_particle_u2_var": 0.009522023428299446
+      },
+      "emergent": {
+        "multiplicative": {
+          "rho_struct": 0.6143306374489185,
+          "rho_u1": 0.9953723930265891,
+          "rho_u2": 0.5736823742486027
+        },
+        "union": {
+          "rho_struct": 0.62307187755869,
+          "rho_u1": 0.9965572950810564,
+          "rho_u2": 0.5850998344426048
+        }
+      },
+      "best_mode": "union",
+      "rho_struct": 0.62307187755869,
+      "rho_u1": 0.9965572950810564,
+      "rho_u2": 0.5850998344426048,
+      "ACC_oracle": 0.885625,
+      "ACC_emergent": 0.7193750000000001,
+      "accuracy_gap": 0.1662499999999999
+    },
+    {
+      "freq": 1.5,
+      "split": true,
+      "seed": 2,
+      "n_particles": 534,
+      "n_crystallized": 447,
+      "n_splits": 763,
+      "x_u2_ceiling": 0.815437454326468,
+      "diagnostic": {
+        "sig_u1_reg": 0.8008855695752148,
+        "sig_u2_reg": 0.8291956749826042,
+        "sig_u2_pair": 0.34130873393473493,
+        "per_particle_u2_var": 0.019469697674414185
+      },
+      "emergent": {
+        "multiplicative": {
+          "rho_struct": 0.5906739326653838,
+          "rho_u1": 0.9949257213969044,
+          "rho_u2": 0.30848031644796053
+        },
+        "union": {
+          "rho_struct": 0.5817450874522764,
+          "rho_u1": 0.9945470505227835,
+          "rho_u2": 0.23084078711985687
+        }
+      },
+      "best_mode": "multiplicative",
+      "rho_struct": 0.5906739326653838,
+      "rho_u1": 0.9949257213969044,
+      "rho_u2": 0.30848031644796053,
+      "ACC_oracle": 0.88125,
+      "ACC_emergent": 0.73875,
+      "accuracy_gap": 0.14249999999999996
+    },
+    {
+      "freq": 1.5,
+      "split": true,
+      "seed": 3,
+      "n_particles": 561,
+      "n_crystallized": 467,
+      "n_splits": 843,
+      "x_u2_ceiling": 0.7697321649664056,
+      "diagnostic": {
+        "sig_u1_reg": 0.739824863063753,
+        "sig_u2_reg": 0.7946585608557843,
+        "sig_u2_pair": 0.34775333992648144,
+        "per_particle_u2_var": 0.015425170494199354
+      },
+      "emergent": {
+        "multiplicative": {
+          "rho_struct": 0.6410533671872141,
+          "rho_u1": 0.995642618251314,
+          "rho_u2": 0.13170546339403771
+        },
+        "union": {
+          "rho_struct": 0.6534861733198679,
+          "rho_u1": 0.9950057222858031,
+          "rho_u2": 0.1885340948232758
+        }
+      },
+      "best_mode": "union",
+      "rho_struct": 0.6534861733198679,
+      "rho_u1": 0.9950057222858031,
+      "rho_u2": 0.1885340948232758,
+      "ACC_oracle": 0.930625,
+      "ACC_emergent": 0.7375,
+      "accuracy_gap": 0.193125
+    },
+    {
+      "freq": 1.5,
+      "split": true,
+      "seed": 4,
+      "n_particles": 528,
+      "n_crystallized": 432,
+      "n_splits": 749,
+      "x_u2_ceiling": 0.7830722993819726,
+      "diagnostic": {
+        "sig_u1_reg": 0.7170475026795811,
+        "sig_u2_reg": 0.7948037195049341,
+        "sig_u2_pair": 0.3155811860793306,
+        "per_particle_u2_var": 0.01242019121110806
+      },
+      "emergent": {
+        "multiplicative": {
+          "rho_struct": 0.6209860676312953,
+          "rho_u1": 0.9952395026611407,
+          "rho_u2": 0.20726674740830456
+        },
+        "union": {
+          "rho_struct": 0.6351002805054846,
+          "rho_u1": 0.9952497249969442,
+          "rho_u2": 0.13468949654996165
+        }
+      },
+      "best_mode": "union",
+      "rho_struct": 0.6351002805054846,
+      "rho_u1": 0.9952497249969442,
+      "rho_u2": 0.13468949654996165,
+      "ACC_oracle": 0.906875,
+      "ACC_emergent": 0.788125,
+      "accuracy_gap": 0.11875000000000002
+    }
+  ]
+}
