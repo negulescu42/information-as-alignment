@@ -1,0 +1,52 @@
+{
+  "rows": [
+    {
+      "seed": 0,
+      "basin": 1,
+      "n_interior": 13,
+      "global_leak": 0.6724390200729905,
+      "external_leak": 0.005317985765615251,
+      "n_external_pts": 4372,
+      "median_interior_depth": 1.5738643207004948
+    },
+    {
+      "seed": 0,
+      "basin": 6,
+      "n_interior": 23,
+      "global_leak": 0.9978144139753429,
+      "external_leak": 0.0013590109352715086,
+      "n_external_pts": 4476,
+      "median_interior_depth": 2.1781970529385966
+    },
+    {
+      "seed": 0,
+      "basin": 7,
+      "n_interior": 6,
+      "global_leak": 0.5298968187573149,
+      "external_leak": 0.0038322735912900622,
+      "n_external_pts": 4449,
+      "median_interior_depth": 1.712200207340285
+    },
+    {
+      "seed": 1,
+      "basin": 1,
+      "n_interior": 19,
+      "global_leak": 1.0037214364204166,
+      "external_leak": 0.0021569280099184743,
+      "n_external_pts": 4304,
+      "median_interior_depth": 2.148633819568247
+    },
+    {
+      "seed": 1,
+      "basin": 3,
+      "n_interior": 11,
+      "global_leak": 0.7042513551534724,
+      "external_leak": 0.0026895420265478118,
+      "n_external_pts": 4539,
+      "median_interior_depth": 1.6159153828006643
+    }
+  ],
+  "median_global_leak": 0.7042513551534724,
+  "median_external_leak": 0.0026895420265478118,
+  "median_interior_depth_sigma": 1.712200207340285
+}

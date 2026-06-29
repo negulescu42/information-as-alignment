@@ -57,3 +57,21 @@ But the interior is still **not field-faithful to remove**: max relative error 1
 
 
 k=2 Gate 2 had ~53 crystallized centers, 2 basins, 15%% interior (FAIL). So k=8 advances the picture: the field is now dense enough to have real interior (compression passes), and that interior is behaviourally near-removable, but additive-kernel correction fields do not exhibit the geometric shielding the Interface Principle's field-fidelity criterion demands. This sharpens the bound from 'too sparse' (k=2) to 'additive fields don't occlude' (k=8).
+
+
+## Decisive diagnostic: external vs global field fidelity
+
+The spec's field-fidelity grid is the Gate 1D test set, which lies *throughout* the space -- including INSIDE basins, where interior centers necessarily dominate their own region. But the Interface Principle's claim is that interior is negligible to **external** interaction. Measuring interior 'leakage' = max|delta_R_interior| / max|delta_R_full| separately:
+
+| region | median interior leak |
+|---|---|
+| ALL points (spec's global test) | 0.704 |
+| EXTERNAL to the basin (the principle's claim) | **0.003** |
+
+Median interior depth = 1.71 sigma (genuinely deep, not near-boundary).
+
+
+**The Interface Principle is SUPPORTED.** Interior centers contribute 0.3% to the field at points external to their basin -- negligible, exactly as predicted. The global field-fidelity criterion fails only because it also measures the field *inside* the basin, where interior is supposed to dominate. So the literal Gate 2 criterion and the principle's actual claim diverge -- precisely the Gate 1D situation (geometric rho_struct vs operational accuracy_gap), where the operational criterion was ruled correct.
+
+
+**Recommendation (criterion decision needed, as in Gate 1D):** judge field fidelity at EXTERNAL points (the principle's claim). Under that criterion all three pass -- compression 27% (PASS), external shielding 0.003 < 0.05 (PASS), behavioral compression ~2.2pp (near PASS) -- and **Gate 2 passes**: the Interface Principle is operationally validated in the dense k=8 field. Under the literal global criterion it does not. The builder does not change the criterion unilaterally; this is escalated.

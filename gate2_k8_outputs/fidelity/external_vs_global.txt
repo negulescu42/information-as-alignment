@@ -1,0 +1,8 @@
+seed 0 basin 1: interior=13 | global leak=0.672 | external leak=0.005 (4372 ext pts) | interior depth(median)=1.57 sigma
+seed 0 basin 6: interior=23 | global leak=0.998 | external leak=0.001 (4476 ext pts) | interior depth(median)=2.18 sigma
+seed 0 basin 7: interior=6 | global leak=0.530 | external leak=0.004 (4449 ext pts) | interior depth(median)=1.71 sigma
+seed 1 basin 1: interior=19 | global leak=1.004 | external leak=0.002 (4304 ext pts) | interior depth(median)=2.15 sigma
+seed 1 basin 3: interior=11 | global leak=0.704 | external leak=0.003 (4539 ext pts) | interior depth(median)=1.62 sigma
+
+MEDIAN over 5 basins (>=5 interior): global leak=0.704, external leak=0.003, interior depth=1.71 sigma
+Interface Principle (interior negligible EXTERNALLY): SUPPORTED (external leak < 0.05)
