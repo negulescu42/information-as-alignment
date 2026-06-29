@@ -40,7 +40,8 @@ class Gate1Config:
     # ---- dimensions ----
     d_hidden: int = 2
     D_obs: int = 20
-    k: int = 2                      # number of actions / contexts
+    k: int = 2                      # number of actions
+    n_contexts: int = 2             # number of contexts (A, B)
 
     # ---- dataset sizes ----
     N_repr_pool: int = 2000         # Scale 1 representation fitting pool
@@ -150,6 +151,17 @@ class TwoScaleToyEnvironment:
         self.cfg = cfg if cfg is not None else Gate1Config()
         self.seed = seed
         self.k = self.cfg.k
+        # action coefficient vectors: 2 actions keep the original +/-1 contrast;
+        # k>2 actions are evenly spaced directions on the unit circle, so the
+        # correct action is the angular sector of [u1, u_c*u2] -- a balanced
+        # k-way task in which BOTH hidden coordinates matter.
+        if self.k == 2:
+            self.p_vec = np.array([+1.0, -1.0])
+            self.r_vec = np.array([+1.0, -1.0])
+        else:
+            ang = 2.0 * np.pi * np.arange(self.k) / self.k
+            self.p_vec = np.cos(ang)
+            self.r_vec = np.sin(ang)
         rng = np.random.RandomState(seed)
 
         # ---- fixed random orthogonal mixing matrix ----
@@ -206,7 +218,7 @@ class TwoScaleToyEnvironment:
         u_c = U_CTX[ctx]
         s = np.zeros(self.k)
         for j in range(self.k):
-            s[j] = BETA * u[0] * P_VEC[j] + ALPHA * u_c * u[1] * R_VEC[j]
+            s[j] = BETA * u[0] * self.p_vec[j] + ALPHA * u_c * u[1] * self.r_vec[j]
         return s
 
     def correct_action(self, u, ctx):
@@ -218,7 +230,7 @@ class TwoScaleToyEnvironment:
         N = len(U)
         S = np.zeros((N, self.k))
         for j in range(self.k):
-            S[:, j] = BETA * U[:, 0] * P_VEC[j] + ALPHA * u_c * U[:, 1] * R_VEC[j]
+            S[:, j] = BETA * U[:, 0] * self.p_vec[j] + ALPHA * u_c * U[:, 1] * self.r_vec[j]
         return np.argmax(S, axis=1)
 
     # convenience accessors used by the Scale 2 runner

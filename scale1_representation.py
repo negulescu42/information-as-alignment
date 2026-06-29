@@ -57,8 +57,9 @@ class Scale1RepresentationLearner:
         self.enable_crystallization = enable_crystallization
         self.graph_mode = graph_mode
         self.rng = np.random.RandomState(seed + 31)
-        self.k = cfg.k
-        self.n_slots = cfg.k * cfg.k          # context * action
+        self.k = cfg.k                        # number of actions
+        self.n_contexts = getattr(cfg, "n_contexts", 2)
+        self.n_slots = self.n_contexts * self.k   # context * action
         self.particles: List[Scale1RepresentationParticle] = []
         self.sigma_x = None
         self.merge_thresh_x = None
@@ -142,7 +143,7 @@ class Scale1RepresentationLearner:
                   % (self.sigma_x, self.eff_rank, self.merge_thresh_x))
 
         # dense, balanced interaction over both contexts and both actions
-        combos = [(c, a) for c in range(self.k) for a in range(self.k)]
+        combos = [(c, a) for c in range(self.n_contexts) for a in range(self.k)]
         N = len(X_pool)
 
         for epoch in range(self.cfg.E_scale1):

@@ -140,6 +140,15 @@ def run_seed(seed, n_probes, fig_dir):
     m, _, agent = run_scale2_v1(enc, cP, env.train_u2, cA, env.test_A_u2,
                                 cB, env.test_B_u2, env, seed, E2, want_log=True)
 
+    return analyze_trained_system(agent, enc, cA, cB, env, seed, E2, fig_dir)
+
+
+def analyze_trained_system(agent, enc, cA, cB, env, seed, E2, fig_dir):
+    """Gate 2 post-hoc analysis on ANY trained interactive Scale 2 agent.
+
+    This is the validated, task-agnostic Gate 2 pipeline -- the k=8 retry
+    (run_gate2_k8.py) calls it unchanged.
+    """
     cryst = [c for c in agent.centers if c.is_crystallized()]
     n_total = len(agent.centers)
     n_cryst = len(cryst)
