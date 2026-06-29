@@ -150,10 +150,10 @@ def interface_crucible(agent, interfaces):
     for itf in interfaces:
         if not itf.active:
             continue
-        dissolved = [c for c in itf.boundary_centers
-                     if (not c.is_crystallized()) or len(c.dissolution_log) > 0]
-        itf.dissolution_count = len(dissolved)
-        if len(dissolved) > len(itf.boundary_centers) / 2.0:
+        dissolved_ids = set(id(c) for c in itf.boundary_centers
+                            if (not c.is_crystallized()) or len(c.dissolution_log) > 0)
+        itf.dissolution_count = len(dissolved_ids)
+        if len(dissolved_ids) > len(itf.boundary_centers) / 2.0:
             itf.active = False
             itf.verified = False
             for c in itf.interior_centers:
@@ -166,7 +166,8 @@ def interface_crucible(agent, interfaces):
             stats["interior_restored"] += itf.interior_restored
         else:
             itf.verified = True
-            itf.boundary_centers = [c for c in itf.boundary_centers if c not in dissolved]
+            itf.boundary_centers = [c for c in itf.boundary_centers
+                                    if id(c) not in dissolved_ids]
             stats["verified"] += 1
     return stats
 
