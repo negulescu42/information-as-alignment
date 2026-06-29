@@ -254,20 +254,24 @@ class IBFAgent:
             # interface's total activation so the interface absorbs the pressure of
             # ONE peak center, not N copies. Detection signal (D_history, used by
             # the reversal test) is left RAW so the Crucible is not weakened.
-            group_act = {}
+            group_sum, group_max = {}, {}
             for i, c in enumerate(self.centers):
                 g = c.interface_group
                 if g is not None and c.is_crystallized() and c.context_id != self.current_context:
                     kw = float(K_all[i])
                     if kw >= C.activation_thresh:
-                        group_act[g] = group_act.get(g, 0.0) + kw
+                        group_sum[g] = group_sum.get(g, 0.0) + kw
+                        group_max[g] = max(group_max.get(g, 0.0), kw)
             for i, c in enumerate(self.centers):
                 if c.is_crystallized() and c.context_id != self.current_context:
                     kw = float(K_all[i])
                     if kw >= C.activation_thresh:
                         g = c.interface_group
-                        if g is not None and group_act.get(g, 0.0) > 1e-9:
-                            eff_kw = kw / group_act[g]      # interface-as-a-unit
+                        if g is not None and group_sum.get(g, 0.0) > 1e-9:
+                            # interface absorbs the pressure of ONE peak center:
+                            # total over the group = D * peak_kw (<= flat D*sum_kw,
+                            # and exactly = flat when a single center is activated).
+                            eff_kw = group_max[g] * kw / group_sum[g]
                         else:
                             eff_kw = kw                      # standard (flat) path
                         juris_D = D * eff_kw
