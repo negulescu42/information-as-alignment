@@ -194,10 +194,31 @@ def analyze_trained_system(agent, enc, cA, cB, env, seed, E2, fig_dir):
         max_full = float(np.max(np.abs(full)))
         max_err = float(np.max(np.abs(full - bnd_only)))
         rel_err = max_err / (max_full + 1e-10)
+        # EXTERNAL field fidelity (the Interface Principle's actual claim):
+        # interior leakage measured ONLY at points external to this basin, i.e.
+        # where the basin's own kernel footprint is below tau. The original spec
+        # measured fidelity at ALL test points -- including basin interiors, where
+        # interior centers are *meant* to dominate -- which is not what the
+        # principle predicts. (Spec correction; see gate2_report.)
+        interior_field = raw_delta_R(Z_eval, Z, sig, vs, intr)
+        Zb = Z[members]; sgb = sig[members]
+        d2 = (np.sum(Z_eval**2, 1)[:, None] + np.sum(Zb**2, 1)[None, :]
+              - 2 * Z_eval @ Zb.T)
+        Kmax = np.max(np.exp(-np.maximum(d2, 0) / (2 * sgb[None, :]**2)), axis=1)
+        ext = Kmax < TAU_BASIN
+        ext_rel_err = (float(np.max(np.abs(interior_field[ext])) / (max_full + 1e-10))
+                       if ext.any() else float("nan"))
+        # interior depth: median min-distance to a same-basin boundary center / sigma
+        depths = [min(np.linalg.norm(Z[i] - Z[j]) / sig[i] for j in boundary)
+                  for i in intr] if boundary else []
         fidelity_rows.append(dict(basin=pb["basin"], size=pb["size"],
                                   boundary=pb["boundary"], interior=pb["interior"],
                                   max_field=max_full, max_error=max_err,
-                                  relative_error=rel_err))
+                                  relative_error=rel_err,
+                                  external_relative_error=ext_rel_err,
+                                  n_external_pts=int(ext.sum()),
+                                  median_interior_depth_sigma=(float(np.median(depths))
+                                                               if depths else None)))
 
     # ---- Step 4: behavioral fidelity (full vs compressed vs oracle) ----
     def acc_gate(ag, encoder, coordsA, coordsB):
