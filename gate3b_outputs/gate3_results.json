@@ -1,0 +1,557 @@
+{
+  "k": 8,
+  "e_phase": 20,
+  "n_probes": 15,
+  "rows": [
+    {
+      "seed": 0,
+      "u_C": -0.47785338546750544,
+      "n_promoted": 8,
+      "F": {
+        "A": {
+          "acc": {
+            "A": 0.9525,
+            "B": 0.1325,
+            "C": 0.1075
+          },
+          "active": 85,
+          "active_same": 85
+        },
+        "B": {
+          "acc": {
+            "A": 0.93,
+            "B": 0.9325,
+            "C": 0.2325
+          },
+          "active": 149,
+          "active_same": 149
+        },
+        "C": {
+          "acc": {
+            "A": 0.2925,
+            "B": 0.915,
+            "C": 0.6875
+          },
+          "active": 251,
+          "active_same": 251
+        }
+      },
+      "P": {
+        "A": {
+          "acc": {
+            "A": 0.9525,
+            "B": 0.1325,
+            "C": 0.1075
+          },
+          "active": 39,
+          "active_same": 85
+        },
+        "B": {
+          "acc": {
+            "A": 0.9325,
+            "B": 0.935,
+            "C": 0.17
+          },
+          "active": 112,
+          "active_same": 158
+        },
+        "C": {
+          "acc": {
+            "A": 0.56,
+            "B": 0.92,
+            "C": 0.6975
+          },
+          "active": 211,
+          "active_same": 257
+        }
+      },
+      "N": {
+        "A": {
+          "acc": {
+            "A": 0.9525,
+            "B": 0.1325,
+            "C": 0.1075
+          },
+          "active": 85,
+          "active_same": 85
+        },
+        "B": {
+          "acc": {
+            "A": 0.1125,
+            "B": 0.9425,
+            "C": 0.1075
+          },
+          "active": 88,
+          "active_same": 88
+        },
+        "C": {
+          "acc": {
+            "A": 0.1125,
+            "B": 0.1325,
+            "C": 0.69
+          },
+          "active": 115,
+          "active_same": 115
+        }
+      },
+      "lifecycle": {
+        "B": {
+          "n_promoted": 8,
+          "verified": 8,
+          "dissolved": 0,
+          "interior_restored": 0,
+          "n_active": 8
+        },
+        "C": {
+          "n_promoted": 8,
+          "verified": 8,
+          "dissolved": 0,
+          "interior_restored": 0,
+          "n_active": 8
+        }
+      },
+      "flat_phaseA_survivors_after_C": 63,
+      "flat_phaseA_cryst_at_A": 85
+    },
+    {
+      "seed": 1,
+      "u_C": 0.5991554432816606,
+      "n_promoted": 8,
+      "F": {
+        "A": {
+          "acc": {
+            "A": 0.96,
+            "B": 0.15,
+            "C": 0.2325
+          },
+          "active": 86,
+          "active_same": 86
+        },
+        "B": {
+          "acc": {
+            "A": 0.9525,
+            "B": 0.9625,
+            "C": 0.725
+          },
+          "active": 159,
+          "active_same": 159
+        },
+        "C": {
+          "acc": {
+            "A": 0.6975,
+            "B": 0.9275,
+            "C": 0.79
+          },
+          "active": 256,
+          "active_same": 256
+        }
+      },
+      "P": {
+        "A": {
+          "acc": {
+            "A": 0.96,
+            "B": 0.15,
+            "C": 0.2325
+          },
+          "active": 41,
+          "active_same": 86
+        },
+        "B": {
+          "acc": {
+            "A": 0.96,
+            "B": 0.9675,
+            "C": 0.435
+          },
+          "active": 125,
+          "active_same": 170
+        },
+        "C": {
+          "acc": {
+            "A": 0.84,
+            "B": 0.9525,
+            "C": 0.7975
+          },
+          "active": 217,
+          "active_same": 262
+        }
+      },
+      "N": {
+        "A": {
+          "acc": {
+            "A": 0.96,
+            "B": 0.15,
+            "C": 0.2325
+          },
+          "active": 86,
+          "active_same": 86
+        },
+        "B": {
+          "acc": {
+            "A": 0.15,
+            "B": 0.9675,
+            "C": 0.2325
+          },
+          "active": 88,
+          "active_same": 88
+        },
+        "C": {
+          "acc": {
+            "A": 0.15,
+            "B": 0.15,
+            "C": 0.7825
+          },
+          "active": 109,
+          "active_same": 109
+        }
+      },
+      "lifecycle": {
+        "B": {
+          "n_promoted": 8,
+          "verified": 7,
+          "dissolved": 1,
+          "interior_restored": 0,
+          "n_active": 7
+        },
+        "C": {
+          "n_promoted": 8,
+          "verified": 7,
+          "dissolved": 0,
+          "interior_restored": 0,
+          "n_active": 7
+        }
+      },
+      "flat_phaseA_survivors_after_C": 68,
+      "flat_phaseA_cryst_at_A": 86
+    },
+    {
+      "seed": 2,
+      "u_C": -0.35552462345196206,
+      "n_promoted": 7,
+      "F": {
+        "A": {
+          "acc": {
+            "A": 0.9375,
+            "B": 0.155,
+            "C": 0.0975
+          },
+          "active": 82,
+          "active_same": 82
+        },
+        "B": {
+          "acc": {
+            "A": 0.92,
+            "B": 0.9225,
+            "C": 0.1775
+          },
+          "active": 148,
+          "active_same": 148
+        },
+        "C": {
+          "acc": {
+            "A": 0.535,
+            "B": 0.8875,
+            "C": 0.6375
+          },
+          "active": 266,
+          "active_same": 266
+        }
+      },
+      "P": {
+        "A": {
+          "acc": {
+            "A": 0.9375,
+            "B": 0.155,
+            "C": 0.0975
+          },
+          "active": 37,
+          "active_same": 82
+        },
+        "B": {
+          "acc": {
+            "A": 0.9275,
+            "B": 0.93,
+            "C": 0.1575
+          },
+          "active": 118,
+          "active_same": 163
+        },
+        "C": {
+          "acc": {
+            "A": 0.7225,
+            "B": 0.9125,
+            "C": 0.64
+          },
+          "active": 232,
+          "active_same": 277
+        }
+      },
+      "N": {
+        "A": {
+          "acc": {
+            "A": 0.9375,
+            "B": 0.155,
+            "C": 0.0975
+          },
+          "active": 82,
+          "active_same": 82
+        },
+        "B": {
+          "acc": {
+            "A": 0.135,
+            "B": 0.9325,
+            "C": 0.0975
+          },
+          "active": 79,
+          "active_same": 79
+        },
+        "C": {
+          "acc": {
+            "A": 0.135,
+            "B": 0.155,
+            "C": 0.6575
+          },
+          "active": 123,
+          "active_same": 123
+        }
+      },
+      "lifecycle": {
+        "B": {
+          "n_promoted": 7,
+          "verified": 6,
+          "dissolved": 1,
+          "interior_restored": 0,
+          "n_active": 6
+        },
+        "C": {
+          "n_promoted": 7,
+          "verified": 6,
+          "dissolved": 0,
+          "interior_restored": 0,
+          "n_active": 6
+        }
+      },
+      "flat_phaseA_survivors_after_C": 64,
+      "flat_phaseA_cryst_at_A": 82
+    },
+    {
+      "seed": 3,
+      "u_C": -0.32121746400329726,
+      "n_promoted": 8,
+      "F": {
+        "A": {
+          "acc": {
+            "A": 0.975,
+            "B": 0.1425,
+            "C": 0.3
+          },
+          "active": 97,
+          "active_same": 97
+        },
+        "B": {
+          "acc": {
+            "A": 0.975,
+            "B": 0.97,
+            "C": 0.345
+          },
+          "active": 176,
+          "active_same": 176
+        },
+        "C": {
+          "acc": {
+            "A": 0.6175,
+            "B": 0.9625,
+            "C": 0.6825
+          },
+          "active": 263,
+          "active_same": 263
+        }
+      },
+      "P": {
+        "A": {
+          "acc": {
+            "A": 0.975,
+            "B": 0.1425,
+            "C": 0.3
+          },
+          "active": 61,
+          "active_same": 97
+        },
+        "B": {
+          "acc": {
+            "A": 0.975,
+            "B": 0.97,
+            "C": 0.3075
+          },
+          "active": 145,
+          "active_same": 181
+        },
+        "C": {
+          "acc": {
+            "A": 0.81,
+            "B": 0.96,
+            "C": 0.71
+          },
+          "active": 234,
+          "active_same": 270
+        }
+      },
+      "N": {
+        "A": {
+          "acc": {
+            "A": 0.975,
+            "B": 0.1425,
+            "C": 0.3
+          },
+          "active": 97,
+          "active_same": 97
+        },
+        "B": {
+          "acc": {
+            "A": 0.1425,
+            "B": 0.9675,
+            "C": 0.3
+          },
+          "active": 94,
+          "active_same": 94
+        },
+        "C": {
+          "acc": {
+            "A": 0.1425,
+            "B": 0.1425,
+            "C": 0.6875
+          },
+          "active": 105,
+          "active_same": 105
+        }
+      },
+      "lifecycle": {
+        "B": {
+          "n_promoted": 8,
+          "verified": 8,
+          "dissolved": 0,
+          "interior_restored": 0,
+          "n_active": 8
+        },
+        "C": {
+          "n_promoted": 8,
+          "verified": 8,
+          "dissolved": 0,
+          "interior_restored": 0,
+          "n_active": 8
+        }
+      },
+      "flat_phaseA_survivors_after_C": 77,
+      "flat_phaseA_cryst_at_A": 97
+    },
+    {
+      "seed": 4,
+      "u_C": -0.5701864366544014,
+      "n_promoted": 8,
+      "F": {
+        "A": {
+          "acc": {
+            "A": 0.9525,
+            "B": 0.1,
+            "C": 0.09
+          },
+          "active": 96,
+          "active_same": 96
+        },
+        "B": {
+          "acc": {
+            "A": 0.935,
+            "B": 0.96,
+            "C": 0.2675
+          },
+          "active": 176,
+          "active_same": 176
+        },
+        "C": {
+          "acc": {
+            "A": 0.3575,
+            "B": 0.9425,
+            "C": 0.7125
+          },
+          "active": 284,
+          "active_same": 284
+        }
+      },
+      "P": {
+        "A": {
+          "acc": {
+            "A": 0.9525,
+            "B": 0.1,
+            "C": 0.09
+          },
+          "active": 50,
+          "active_same": 96
+        },
+        "B": {
+          "acc": {
+            "A": 0.9375,
+            "B": 0.9675,
+            "C": 0.15
+          },
+          "active": 142,
+          "active_same": 188
+        },
+        "C": {
+          "acc": {
+            "A": 0.645,
+            "B": 0.945,
+            "C": 0.725
+          },
+          "active": 258,
+          "active_same": 304
+        }
+      },
+      "N": {
+        "A": {
+          "acc": {
+            "A": 0.9525,
+            "B": 0.1,
+            "C": 0.09
+          },
+          "active": 96,
+          "active_same": 96
+        },
+        "B": {
+          "acc": {
+            "A": 0.1225,
+            "B": 0.965,
+            "C": 0.09
+          },
+          "active": 95,
+          "active_same": 95
+        },
+        "C": {
+          "acc": {
+            "A": 0.1225,
+            "B": 0.1,
+            "C": 0.745
+          },
+          "active": 120,
+          "active_same": 120
+        }
+      },
+      "lifecycle": {
+        "B": {
+          "n_promoted": 8,
+          "verified": 8,
+          "dissolved": 0,
+          "interior_restored": 0,
+          "n_active": 8
+        },
+        "C": {
+          "n_promoted": 8,
+          "verified": 8,
+          "dissolved": 0,
+          "interior_restored": 0,
+          "n_active": 8
+        }
+      },
+      "flat_phaseA_survivors_after_C": 74,
+      "flat_phaseA_cryst_at_A": 96
+    }
+  ]
+}
