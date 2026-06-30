@@ -152,17 +152,35 @@ def promote(agent):
     return interfaces
 
 
+# Gate 3B C3 fix: the per-particle reversal threshold is too conservative once
+# aggregated to an interface, because the cross-context signal is averaged across
+# the boundary. Interfaces need less per-center evidence to dissolve, so the
+# interface-level threshold is softened by 0.5x.
+REVERSAL_THRESHOLD_INTERFACE = C.reversal_threshold * 0.5
+
+
+def _contradicted(c):
+    """A boundary center is contradicted if the engine already dissolved it, or
+    if its cross-context reversal product clears the softened interface bar."""
+    if (not c.is_crystallized()) or len(c.dissolution_log) > 0:
+        return True
+    if c.n_cross_updates() >= C.n_cross_min and len(c.D_history) >= C.n_cross_min:
+        mu = float(np.mean(c.D_history[-C.n_cross_min:]))
+        if c.v * mu < REVERSAL_THRESHOLD_INTERFACE:
+            return True
+    return False
+
+
 def interface_crucible(agent, interfaces):
-    """Aggregate the standard per-center Crucible to the interface level. A
-    boundary center has 'dissolved' if it lost crystallization or logged a
-    dissolution this phase. Interior is a frozen same-context reserve and does NOT
-    participate (never restored, never dissolved)."""
+    """Aggregate the Crucible to the interface level with a softened reversal
+    threshold (0.5x the per-particle one). If > half a basin's boundary is
+    contradicted, the interface is invalidated. Interior is a frozen same-context
+    reserve and does NOT participate (never restored, never dissolved)."""
     stats = dict(verified=0, dissolved=0, interior_restored=0)
     for itf in interfaces:
         if not itf.active:
             continue
-        dissolved_ids = set(id(c) for c in itf.boundary_centers
-                            if (not c.is_crystallized()) or len(c.dissolution_log) > 0)
+        dissolved_ids = set(id(c) for c in itf.boundary_centers if _contradicted(c))
         itf.dissolution_count = len(dissolved_ids)
         if len(dissolved_ids) > len(itf.boundary_centers) / 2.0:
             itf.active = False
