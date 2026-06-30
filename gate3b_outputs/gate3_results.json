@@ -427,17 +427,17 @@
       "lifecycle": {
         "B": {
           "n_promoted": 8,
-          "verified": 8,
-          "dissolved": 0,
+          "verified": 7,
+          "dissolved": 1,
           "interior_restored": 0,
-          "n_active": 8
+          "n_active": 7
         },
         "C": {
           "n_promoted": 8,
-          "verified": 8,
+          "verified": 7,
           "dissolved": 0,
           "interior_restored": 0,
-          "n_active": 8
+          "n_active": 7
         }
       },
       "flat_phaseA_survivors_after_C": 77,

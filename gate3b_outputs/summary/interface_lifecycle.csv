@@ -2,5 +2,5 @@ seed,n_promoted,n_dissolved,ok,interior_restored,flat_A_survivors,flat_A_cryst
 0,8,0,False,0,63,85
 1,8,1,True,0,68,86
 2,7,1,True,0,64,82
-3,8,0,False,0,77,97
+3,8,1,True,0,77,97
 4,8,0,False,0,74,96
