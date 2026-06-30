@@ -47,7 +47,7 @@ from run_gate1 import (calibrate_action_embedding_obs, Scale2BaseEvaluator,
                        evaluate_scale2)
 import run_gate2 as G2
 
-OUT_DIR = "gate3_outputs"
+OUT_DIR = "gate3b_outputs"
 N_ACTIONS = 8
 N_PROBES = 15
 E_PHASE = 20
@@ -111,6 +111,13 @@ def eval_all_contexts(agent, encoder, coords_test, u_test, env):
 
 
 def n_active_cryst(agent):
+    # cross-context active = crystallized centers that can contribute to a
+    # cross-context query (frozen reserves never do). This is the compressed path.
+    return sum(1 for c in agent.centers if c.is_crystallized() and not c.frozen)
+
+
+def n_active_same(agent):
+    # same-context active = all crystallized centers, incl. frozen reserves.
     return sum(1 for c in agent.centers if c.is_crystallized())
 
 
@@ -136,18 +143,20 @@ def promote(agent):
             continue
         for c in boundary:
             c.interface_group = int(b)        # Path C: absorb cross-context D as a unit
+        for c in interior:
+            c.frozen = True                   # Gate 3B: read-only same-context reserve
         interfaces.append(PromotedInterface(b, boundary, interior, phase_origin=0))
-        interior_ids |= set(id(c) for c in interior)
-    # interior centers become dormant: removed from the active readout population
-    agent.centers = [c for c in agent.centers if id(c) not in interior_ids]
+    # Gate 3B: interior is NOT removed. It stays in agent.centers as a frozen
+    # reserve -- contributes to SAME-context readout (gated normally, context_id ==
+    # current), excluded from CROSS-context readout (unverified), and never written.
     return interfaces
 
 
 def interface_crucible(agent, interfaces):
     """Aggregate the standard per-center Crucible to the interface level. A
     boundary center has 'dissolved' if it lost crystallization or logged a
-    dissolution this phase. If > half a basin's boundary dissolves, the interface
-    is invalidated and its dormant interior is restored as transient particles."""
+    dissolution this phase. Interior is a frozen same-context reserve and does NOT
+    participate (never restored, never dissolved)."""
     stats = dict(verified=0, dissolved=0, interior_restored=0)
     for itf in interfaces:
         if not itf.active:
@@ -158,14 +167,7 @@ def interface_crucible(agent, interfaces):
         if len(dissolved_ids) > len(itf.boundary_centers) / 2.0:
             itf.active = False
             itf.verified = False
-            for c in itf.interior_centers:
-                c.mu_eff = C.mu_base
-                c.was_ever_crystallized = False
-                c.crucible_verified = False
-                agent.centers.append(c)
-            itf.interior_restored = len(itf.interior_centers)
             stats["dissolved"] += 1
-            stats["interior_restored"] += itf.interior_restored
         else:
             itf.verified = True
             itf.boundary_centers = [c for c in itf.boundary_centers
@@ -213,18 +215,22 @@ def run_seed(seed):
     agentP = copy.deepcopy(agent)
     interfaces = promote(agentP)
     n_promoted = len(interfaces)
-    activeA_P = n_active_cryst(agentP)
+
+    def cell(ag, encx):
+        return {"acc": eval_all_contexts(ag, encx, cT, uT, env),
+                "active": n_active_cryst(ag),          # cross-context (compressed)
+                "active_same": n_active_same(ag)}      # same-context (full)
 
     rec = dict(seed=seed, u_C=u_C, n_promoted=n_promoted,
-               F={"A": {"acc": accA, "active": activeA}},
-               P={"A": {"acc": accA, "active": activeA_P}},
+               F={"A": {"acc": accA, "active": activeA, "active_same": activeA}},
+               P={"A": {"acc": accA, "active": n_active_cryst(agentP),
+                        "active_same": n_active_same(agentP)}},
                N={}, lifecycle={})
 
     # fresh N agent for phase A current-context
     agentN, encN = make_agent(cP, seed)
     train_phase(agentN, encN, cP, uP, env, 'A', 0, E_PHASE, seed)
-    rec["N"]["A"] = {"acc": eval_all_contexts(agentN, encN, cT, uT, env),
-                     "active": n_active_cryst(agentN)}
+    rec["N"]["A"] = cell(agentN, encN)
 
     # ---- Phases B, C ----
     for name, cid in [("B", 1), ("C", 2)]:
@@ -233,14 +239,11 @@ def run_seed(seed):
         life = interface_crucible(agentP, interfaces)
         rec["lifecycle"][name] = dict(n_promoted=n_promoted, **life,
                                       n_active=sum(1 for i in interfaces if i.active))
-        rec["F"][name] = {"acc": eval_all_contexts(agentF, enc, cT, uT, env),
-                          "active": n_active_cryst(agentF)}
-        rec["P"][name] = {"acc": eval_all_contexts(agentP, enc, cT, uT, env),
-                          "active": n_active_cryst(agentP)}
+        rec["F"][name] = cell(agentF, enc)
+        rec["P"][name] = cell(agentP, enc)
         agentN, encN = make_agent(cP, seed)
         train_phase(agentN, encN, cP, uP, env, name, cid, E_PHASE, seed)
-        rec["N"][name] = {"acc": eval_all_contexts(agentN, encN, cT, uT, env),
-                          "active": n_active_cryst(agentN)}
+        rec["N"][name] = cell(agentN, encN)
 
     # flat-Crucible comparison: how many Phase-A crystals survive in F after C?
     survivedA_F = sum(1 for c in agentF.centers
@@ -254,7 +257,8 @@ def main():
     n_seeds = int(sys.argv[1]) if len(sys.argv) > 1 else 5
     os.makedirs(OUT_DIR, exist_ok=True)
     out = os.path.join(OUT_DIR, "gate3_results.json")
-    print("Gate 3 | k=%d f=3.0 | E_phase=%d | seeds=%d" % (N_ACTIONS, E_PHASE, n_seeds))
+    print("Gate 3B (context-aware) | k=%d f=3.0 | E_phase=%d | seeds=%d"
+          % (N_ACTIONS, E_PHASE, n_seeds))
     rows = []
     for seed in range(n_seeds):
         r = run_seed(seed)

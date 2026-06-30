@@ -101,6 +101,8 @@ class MemoryCenter:
     crucible_verified: bool = False
     dissolution_log: List[Dict] = field(default_factory=list)
     interface_group: int = None      # Gate 3 Path C: promoted-interface membership
+    frozen: bool = False             # Gate 3B: read-only reserve (same-context readout
+                                     # only; never updated / crystallized / dissolved)
 
     def D_var(self):
         if self.n_updates < 20:
@@ -263,6 +265,8 @@ class IBFAgent:
                         group_sum[g] = group_sum.get(g, 0.0) + kw
                         group_max[g] = max(group_max.get(g, 0.0), kw)
             for i, c in enumerate(self.centers):
+                if c.frozen:                       # Gate 3B: read-only reserve
+                    continue
                 if c.is_crystallized() and c.context_id != self.current_context:
                     kw = float(K_all[i])
                     if kw >= C.activation_thresh:
@@ -311,6 +315,8 @@ class IBFAgent:
 
         for i in li:
             c = self.centers[i]
+            if c.frozen:                           # Gate 3B: read-only reserve
+                continue
             kw = float(K_all[i])
             if kw < C.activation_thresh:
                 continue
@@ -331,10 +337,14 @@ class IBFAgent:
 
     def end_epoch(self):
         for c in self.centers:
+            if c.frozen:                           # Gate 3B: read-only reserve
+                continue
             c.v *= (1.0 - c.mu_eff)
             c.w *= (1.0 - c.mu_eff)
 
         for c in self.centers:
+            if c.frozen:                           # Gate 3B: read-only reserve
+                continue
             if self.enable_crystallization:
                 hist_len = len(c.D_history)
                 cryst_grad = c.D_history[-50:] if hist_len > 0 else [0.0]
@@ -372,7 +382,13 @@ class IBFAgent:
         self._merge()
 
     def _merge(self):
+        # Gate 3B: frozen read-only reserves never merge; hold them aside and
+        # re-append unchanged.
+        reserve = [c for c in self.centers if c.frozen]
+        if reserve:
+            self.centers = [c for c in self.centers if not c.frozen]
         if len(self.centers) < 2:
+            self.centers = self.centers + reserve
             return
         merged = set()
         new = []
@@ -417,7 +433,7 @@ class IBFAgent:
                            key=lambda c: abs(c.v) * c.n_updates)
             keep = C.capacity - len(cryst)
             new = cryst + trans[-keep:] if keep > 0 else cryst[:C.capacity]
-        self.centers = new
+        self.centers = new + reserve
 
     def count_crystallized(self):
         return sum(1 for c in self.centers if c.is_crystallized())

@@ -21,7 +21,8 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-OUT_DIR = "gate3_outputs"
+import sys
+OUT_DIR = sys.argv[1] if len(sys.argv) > 1 else "gate3_outputs"
 RESULTS = os.path.join(OUT_DIR, "gate3_results.json")
 C1, C2, C3 = 0.03, 0.15, None
 PHASES = ["A", "B", "C"]
